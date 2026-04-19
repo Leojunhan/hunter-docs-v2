@@ -1,0 +1,3152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OFW FB 流量获取 Agent · PRD v1.1</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #64748b;
+            --success: #16a34a;
+            --warning: #ca8a04;
+            --danger: #dc2626;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.7;
+            color: var(--text);
+            background: var(--bg);
+            padding: 2rem 0;
+        }
+        
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 2rem; }
+        
+        .header {
+            background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+            color: white;
+            padding: 3rem 2rem;
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .header .meta { opacity: 0.9; font-size: 0.95rem; }
+        
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+        }
+        
+        h1 { font-size: 2rem; margin: 2rem 0 1rem; color: var(--text); }
+        h2 { font-size: 1.5rem; margin: 2rem 0 1rem; color: var(--text); padding-bottom: 0.5rem; border-bottom: 2px solid var(--primary); }
+        h3 { font-size: 1.25rem; margin: 1.5rem 0 0.75rem; color: var(--text); }
+        h4 { font-size: 1.1rem; margin: 1.25rem 0 0.5rem; color: var(--text-light); }
+        
+        p { margin-bottom: 1rem; }
+        
+        blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: var(--text-light);
+            font-style: italic;
+            background: #eff6ff;
+            padding: 1rem 1.5rem;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        th { background: #f1f5f9; font-weight: 600; color: var(--text); }
+        tr:hover { background: #f8fafc; }
+        tr:last-child td { border-bottom: none; }
+        
+        code {
+            background: #f1f5f9;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: "Monaco", "Consolas", monospace;
+            font-size: 0.9em;
+        }
+        
+        pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+        
+        pre code { background: none; padding: 0; color: inherit; }
+        
+        ul, ol { margin-left: 2rem; margin-bottom: 1rem; }
+        li { margin-bottom: 0.5rem; }
+        
+        .toc {
+            background: #f8fafc;
+            padding: 1.5rem 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            border: 1px solid var(--border);
+        }
+        
+        .toc ul { margin: 0; }
+        .toc a { color: var(--primary); text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+        
+        .warning-box {
+            background: #fef3c7;
+            border-left: 4px solid var(--warning);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .danger-box {
+            background: #fee2e2;
+            border-left: 4px solid var(--danger);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-top: 3rem;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.75rem; }
+            .container { padding: 0 1rem; }
+            .card { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>OFW FB 流量获取 Agent · PRD</h1>
+            <div class="meta">
+                <p><strong>版本：</strong>v1.1 | <strong>生成时间：</strong>2026-04-15 | <strong>状态：</strong>待评审</p>
+                <p><strong>产品负责人：</strong>Diwei | <strong>优先级：</strong>P0（MVP 测试）</p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h1>OFW FB 流量获取 Agent · PRD</h1>
+<blockquote>
+<p><strong>文档版本：</strong> v1.0<br />
+<strong>生成时间：</strong> 2026-04-15<br />
+<strong>产品负责人：</strong> Diwei<br />
+<strong>技术负责人：</strong> 待定<br />
+<strong>状态：</strong> 待评审<br />
+<strong>优先级：</strong> P0（MVP 测试）</p>
+</blockquote>
+<hr />
+<h2>0. 执行摘要</h2>
+<h3>0.1 产品定位</h3>
+<p><strong>FB 流量获取 Agent = 评论监控 + 智能互动 + 私信转化</strong></p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>定义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>目标用户</strong></td>
+<td>菲律宾 OFW（有借贷需求的海外劳工）</td>
+</tr>
+<tr>
+<td><strong>核心价值</strong></td>
+<td>低成本获取精准流量，自动化初步筛选</td>
+</tr>
+<tr>
+<td><strong>产品形态</strong></td>
+<td>后台 SaaS + Messenger 机器人</td>
+</tr>
+<tr>
+<td><strong>商业模式</strong></td>
+<td>内部使用（降低获客成本）</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>0.2 核心目标</h3>
+<table>
+<thead>
+<tr>
+<th>目标</th>
+<th>指标</th>
+<th>目标值</th>
+<th>验证周期</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>获客效率</strong></td>
+<td>单账号日触达用户数</td>
+<td>30-50 人/天</td>
+<td>4 周</td>
+</tr>
+<tr>
+<td><strong>转化效率</strong></td>
+<td>触达→申请转化率</td>
+<td>&gt;3%</td>
+<td>4 周</td>
+</tr>
+<tr>
+<td><strong>成本控制</strong></td>
+<td>单账号月成本</td>
+<td>&lt;$200</td>
+<td>持续</td>
+</tr>
+<tr>
+<td><strong>风险控制</strong></td>
+<td>账号月封号率</td>
+<td>&lt;50%</td>
+<td>4 周</td>
+</tr>
+<tr>
+<td><strong>获客成本</strong></td>
+<td>单个申请成本</td>
+<td>&lt;$2</td>
+<td>4 周</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>0.3 关键决策</h3>
+<table>
+<thead>
+<tr>
+<th>决策项</th>
+<th>选择</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>技术路线</strong></td>
+<td>官方 API + 浏览器自动化混合</td>
+<td>平衡风险与成本</td>
+</tr>
+<tr>
+<td><strong>账号策略</strong></td>
+<td>矩阵账号（5-10 个）</td>
+<td>接受封号现实，分散风险</td>
+</tr>
+<tr>
+<td><strong>AI 介入程度</strong></td>
+<td>话术生成 + 意图识别</td>
+<td>核心交互 AI 化，操作人工审核</td>
+</tr>
+<tr>
+<td><strong>MVP 范围</strong></td>
+<td>评论监控 + 私信回复</td>
+<td>先验证转化，再扩展功能</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>0.4 成功/失败标准（新增）</h3>
+<h4>Phase 1 成功标准（4 周后评估）</h4>
+<p><strong>必须满足（全部）：</strong>
+- [ ] 获客成本 &lt; $3/申请（放宽版）
+- [ ] 转化率 &gt; 2%（放宽版）
+- [ ] 账号平均存活 &gt; 10 天
+- [ ] 无重大合规问题</p>
+<p><strong>满足则进入 Phase 2，否则：</strong>
+- 获客成本 &gt; $5 → 优化话术/渠道
+- 转化率 &lt; 1% → 重新设计对话流程
+- 账号存活 &lt; 5 天 → 降低频率/更换策略
+- 重大合规问题 → 立即停止，咨询律师</p>
+<h4>项目终止条件</h4>
+<p>满足以下任一条件，建议终止项目：
+- 连续 4 周获客成本 &gt; $5/申请
+- 账号封号率 &gt; 80%/月
+- 收到律师函/监管警告
+- 用户投诉率 &gt; 5%</p>
+<hr />
+<h2>1. 产品概述</h2>
+<h3>1.1 背景与问题</h3>
+<p><strong>业务背景：</strong>
+- OFW 信贷业务人工已跑通，但获客成本高（$4.5/人）
+- FB 是 OFW 聚集地，但传统投放成本高、质量低
+- 评论区有精准需求用户，但人工触达效率低</p>
+<p><strong>核心问题：</strong>
+| 问题 | 现状 | 期望 |
+|------|------|------|
+| <strong>获客成本高</strong> | $4.5/申请 | &lt;$2/申请 |
+| <strong>流量质量低</strong> | 通过率 20-30% | 通过率 40-55% |
+| <strong>触达效率低</strong> | 人工 50 条/天 | 自动 300 条/天 |
+| <strong>话术不统一</strong> | 运营各自发挥 | 标准化 + 个性化 |</p>
+<hr />
+<h3>1.2 产品目标</h3>
+<p><strong>Phase 1（MVP，4 周）：</strong>
+- 实现评论监控 + 自动回复
+- 实现 Messenger 自动对话
+- 验证转化率&gt;3%
+- 验证封号率&lt;50%/月</p>
+<p><strong>Phase 2（扩展，8 周）：</strong>
+- 扩展至 10 个账号矩阵
+- 优化话术，转化率提升至 5%
+- 降低封号率至 30%/月</p>
+<p><strong>Phase 3（规模化，12 周+）：</strong>
+- 扩展至 50+ 账号
+- 获客成本降至$1-2/人
+- 形成稳定获客渠道</p>
+<hr />
+<h3>1.3 用户画像</h3>
+<p><strong>C 端用户（OFW）：</strong></p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>基本信息</strong></td>
+<td>25-45 岁，菲律宾籍，海外务工</td>
+</tr>
+<tr>
+<td><strong>收入水平</strong></td>
+<td>月收入$300-800（稳定汇款）</td>
+</tr>
+<tr>
+<td><strong>借贷需求</strong></td>
+<td>医疗/教育/家用紧急支出</td>
+</tr>
+<tr>
+<td><strong>FB 使用习惯</strong></td>
+<td>日均 2-4 小时，活跃于 OFW 社群</td>
+</tr>
+<tr>
+<td><strong>语言偏好</strong></td>
+<td>Taglish（Tagalog+English 混合）</td>
+</tr>
+<tr>
+<td><strong>信任建立</strong></td>
+<td>需要多次互动，警惕诈骗</td>
+</tr>
+</tbody>
+</table>
+<p><strong>B 端用户（运营人员）：</strong></p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>职责</strong></td>
+<td>账号管理、话术审核、数据监控</td>
+</tr>
+<tr>
+<td><strong>使用频率</strong></td>
+<td>每日查看数据，每周优化话术</td>
+</tr>
+<tr>
+<td><strong>核心诉求</strong></td>
+<td>效率高、风险低、数据清晰</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>2. 功能需求</h2>
+<h3>2.1 系统架构</h3>
+<div class="codehilite"><pre><span></span><code>┌─────────────────────────────────────────────────────────────┐
+│                    OFW FB 流量获取 Agent                      │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
+│  │  监控层     │  │  互动层     │  │  转化层     │         │
+│  │             │  │             │  │             │         │
+│  │ • 帖子监听  │→ │ • 评论回复  │→ │ • 私信对话  │         │
+│  │ • 评论抓取  │  │ • 话术生成  │  │ • 申请引导  │         │
+│  │ • 用户画像  │  │ • 意图识别  │  │ • 数据入库  │         │
+│  └─────────────┘  └─────────────┘  └─────────────┘         │
+│           ↓               ↓               ↓                 │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │                  数据层 &amp; 管理后台                    │   │
+│  │  • 账号管理  • 话术库  • 数据看板  • 风控告警        │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+</code></pre></div>
+
+<hr />
+<h3>2.2 功能模块总览</h3>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>功能</th>
+<th>优先级</th>
+<th>周期</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>M1 账号管理</strong></td>
+<td>账号矩阵、状态监控、封号告警</td>
+<td>P0</td>
+<td>Week 1-2</td>
+</tr>
+<tr>
+<td><strong>M2 评论监控</strong></td>
+<td>帖子监听、评论抓取、用户画像</td>
+<td>P0</td>
+<td>Week 2-3</td>
+</tr>
+<tr>
+<td><strong>M3 智能互动</strong></td>
+<td>话术生成、意图识别、自动回复</td>
+<td>P0</td>
+<td>Week 3-4</td>
+</tr>
+<tr>
+<td><strong>M4 私信对话</strong></td>
+<td>Messenger 接入、多轮对话、申请引导</td>
+<td>P0</td>
+<td>Week 3-4</td>
+</tr>
+<tr>
+<td><strong>M5 数据看板</strong></td>
+<td>转化漏斗、账号健康、ROI 分析</td>
+<td>P1</td>
+<td>Week 4</td>
+</tr>
+<tr>
+<td><strong>M6 话术管理</strong></td>
+<td>话术库、A/B 测试、效果分析</td>
+<td>P1</td>
+<td>Week 4</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>2.3 详细功能设计</h3>
+<h4>M1：账号管理</h4>
+<p><strong>用户故事：</strong></p>
+<blockquote>
+<p>作为运营人员，我希望管理多个 FB 账号，查看账号状态，接收封号告警，以便及时调整策略。</p>
+</blockquote>
+<p><strong>功能列表：</strong></p>
+<table>
+<thead>
+<tr>
+<th>功能 ID</th>
+<th>功能名称</th>
+<th>描述</th>
+<th>优先级</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M1-1</td>
+<td>账号录入</td>
+<td>添加 FB 账号信息（账号/密码/Token/代理 IP）</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>M1-2</td>
+<td>账号列表</td>
+<td>展示所有账号状态（活跃/封禁/限流）</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>M1-3</td>
+<td>状态监控</td>
+<td>每小时检测账号可用性</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>M1-4</td>
+<td>封号告警</td>
+<td>账号封禁时发送通知（邮件/钉钉）</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>M1-5</td>
+<td>使用统计</td>
+<td>记录每个账号的日操作次数</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>M1-6</td>
+<td>代理配置</td>
+<td>为每个账号分配独立代理 IP</td>
+<td>P1</td>
+</tr>
+</tbody>
+</table>
+<p><strong>界面原型：</strong></p>
+<div class="codehilite"><pre><span></span><code>┌─────────────────────────────────────────────────────┐
+│  账号管理                                            │
+├─────────────────────────────────────────────────────┤
+│  + 新增账号                                          │
+├─────────────────────────────────────────────────────┤
+│  账号 ID  │ 状态  │ 今日操作 │ 剩余限额 │ 最后活跃  │
+├─────────────────────────────────────────────────────┤
+│  FB-A001 │ 🟢 活跃│   12/30  │    18    │ 5 分钟前   │
+│  FB-A002 │ 🟢 活跃│   28/30  │     2    │ 10 分钟前  │
+│  FB-A003 │ 🔴 封禁│   -      │    -     │ 2 天前     │
+│  FB-A004 │ 🟡 限流│   5/10   │     5    │ 1 小时前   │
+│  FB-A005 │ 🟢 活跃│   0/30   │    30    │ -         │
+├─────────────────────────────────────────────────────┤
+│  总计：活跃 3/5  封禁 1/5  限流 1/5                  │
+└─────────────────────────────────────────────────────┘
+</code></pre></div>
+
+<p><strong>验收标准：</strong>
+- [ ] 可添加/编辑/删除账号
+- [ ] 账号状态每小时自动更新
+- [ ] 封号时 5 分钟内发送告警
+- [ ] 超限操作自动阻止</p>
+<hr />
+<h4>M2：评论监控</h4>
+<p><strong>用户故事：</strong></p>
+<blockquote>
+<p>作为系统，我希望自动监控目标帖子的评论，提取有借贷意向的用户，以便运营人员触达。</p>
+</blockquote>
+<p><strong>功能列表：</strong></p>
+<table>
+<thead>
+<tr>
+<th>功能 ID</th>
+<th>功能名称</th>
+<th>描述</th>
+<th>优先级</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M2-1</td>
+<td>帖子配置</td>
+<td>添加监控帖子列表（帖子 URL/关键词）</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>M2-2</td>
+<td>评论抓取</td>
+<td>定时抓取评论（每 30 分钟）</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>M2-3</td>
+<td>意图识别</td>
+<td>AI 识别评论是否有借贷意向</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>M2-4</td>
+<td>用户画像</td>
+<td>提取用户公开信息（姓名/头像/历史评论）</td>
+<td>P1</td>
+</tr>
+<tr>
+<td>M2-5</td>
+<td>去重过滤</td>
+<td>过滤已触达用户，避免重复</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>M2-6</td>
+<td>优先级排序</td>
+<td>按意向强度排序（高/中/低）</td>
+<td>P1</td>
+</tr>
+</tbody>
+</table>
+<p><strong>意图识别分类：</strong></p>
+<table>
+<thead>
+<tr>
+<th>意图类型</th>
+<th>关键词示例</th>
+<th>优先级</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>高意向</strong></td>
+<td>"need money", "urgent", "how to apply"</td>
+<td>立即触达</td>
+</tr>
+<tr>
+<td><strong>中意向</strong></td>
+<td>"interest", "tell me more", "rate?"</td>
+<td>24 小时内触达</td>
+</tr>
+<tr>
+<td><strong>低意向</strong></td>
+<td>"scam?", "legit?", 纯询问</td>
+<td>人工审核</td>
+</tr>
+<tr>
+<td><strong>负向</strong></td>
+<td>"reported", "spam", 攻击性言论</td>
+<td>跳过</td>
+</tr>
+</tbody>
+</table>
+<p><strong>AI Prompt 设计：</strong></p>
+<div class="codehilite"><pre><span></span><code>你是一位菲律宾 OFW 信贷意图识别专家。
+
+任务：判断用户评论是否有借贷意向，并分类。
+
+输入：用户评论内容
+输出：JSON 格式
+{
+  &quot;intent&quot;: &quot;high|medium|low|negative&quot;,
+  &quot;confidence&quot;: 0.0-1.0,
+  &quot;reason&quot;: &quot;判断理由&quot;,
+  &quot;suggested_action&quot;: &quot;immediate_contact|delayed_contact|manual_review|skip&quot;
+}
+
+评论：{comment_text}
+
+请用 Taglish（Tagalog+English 混合）理解语境。
+</code></pre></div>
+
+<p><strong>验收标准：</strong>
+- [ ] 评论抓取延迟&lt;5 分钟
+- [ ] 意图识别准确率&gt;85%
+- [ ] 去重准确率 100%
+- [ ] 支持 100+ 帖子同时监控</p>
+<hr />
+<h4>M3：智能互动</h4>
+<p><strong>用户故事：</strong></p>
+<blockquote>
+<p>作为系统，我希望自动生成贴合场景的回复话术，降低人工成本，提高回复效率。</p>
+</blockquote>
+<p><strong>功能列表：</strong></p>
+<table>
+<thead>
+<tr>
+<th>功能 ID</th>
+<th>功能名称</th>
+<th>描述</th>
+<th>优先级</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M3-1</td>
+<td>话术模板库</td>
+<td>预设各类场景话术模板</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>M3-2</td>
+<td>AI 话术生成</td>
+<td>根据评论上下文生成个性化回复</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>M3-3</td>
+<td>话术审核</td>
+<td>运营可审核/修改 AI 生成的话术</td>
+<td>P1</td>
+</tr>
+<tr>
+<td>M3-4</td>
+<td>自动发布</td>
+<td>审核通过后自动发布评论回复</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>M3-5</td>
+<td>频率控制</td>
+<td>单账号日回复&lt;30 条，避免封号</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>M3-6</td>
+<td>A/B 测试</td>
+<td>测试不同话术的转化率</td>
+<td>P2</td>
+</tr>
+</tbody>
+</table>
+<p><strong>话术模板库：</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="n">COMMENT_TEMPLATES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;high_intent_urgent&#39;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;Hi </span><span class="si">{name}</span><span class="s2">，理解你现在急需。我们帮助过很多 OFW 解决紧急需求，</span>
+        <span class="n">如果有稳定收入可以申请</span><span class="err">。</span><span class="n">需要的话私信我了解更多细节</span><span class="err">。</span><span class="s2">&quot;,</span>
+        <span class="s2">&quot;</span><span class="si">{name}</span><span class="s2">，这种情况确实让人着急。我们平台专门服务 OFW，</span>
+        <span class="n">审批比较快</span><span class="err">。</span><span class="n">如果感兴趣可以私信聊聊</span><span class="err">，</span><span class="n">看看是否符合条件</span><span class="err">。</span><span class="s2">&quot;</span>
+    <span class="p">],</span>
+    <span class="s1">&#39;high_intent_apply&#39;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;Hi </span><span class="si">{name}</span><span class="s2">，欢迎申请！我们平台专门服务菲律宾 OFW，</span>
+        <span class="n">需要稳定收入证明</span><span class="err">。</span><span class="n">私信我</span><span class="err">，</span><span class="n">帮你预审一下条件</span><span class="err">。</span><span class="s2">&quot;,</span>
+    <span class="p">],</span>
+    <span class="s1">&#39;medium_intent_inquiry&#39;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;</span><span class="si">{name}</span><span class="s2">，感谢关注！我们平台利率透明，根据信用评估决定。</span>
+        <span class="n">OFW</span> <span class="n">有稳定收入的话通常能拿到不错的利率</span><span class="err">。</span>
+        <span class="n">感兴趣的话私信我</span><span class="err">，</span><span class="n">帮你估算一下</span><span class="err">。</span><span class="s2">&quot;</span>
+    <span class="p">],</span>
+    <span class="s1">&#39;low_intent_doubt&#39;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;Hi </span><span class="si">{name}</span><span class="s2">，理解你的顾虑。我们平台合法注册，</span>
+        <span class="n">已经帮助过很多</span> <span class="n">OFW</span><span class="err">。</span><span class="n">可以私信了解更多细节</span><span class="err">，</span>
+        <span class="n">不申请也没关系</span><span class="err">，</span><span class="n">先了解一下</span><span class="o">~</span><span class="s2">&quot;</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><strong>AI 话术生成 Prompt：</strong></p>
+<div class="codehilite"><pre><span></span><code>你是一位专业的 OFW 信贷客服，用友好、真诚、不推销的语气回复用户。
+
+语言要求：
+<span class="k">-</span> 使用 Taglish（Tagalog+English 混合）
+<span class="k">-</span> 语气温暖、专业、不油腻
+<span class="k">-</span> 避免过度承诺
+
+回复结构：
+1. 表达理解（共情）
+2. 简要介绍（1-2 句）
+3. 引导行动（私信/申请）
+4. 祝福结尾
+
+用户评论：{comment_text}
+用户画像：{user_profile}
+意图分类：{intent}
+
+生成回复（50-100 字）：
+</code></pre></div>
+
+<p><strong>验收标准：</strong>
+- [ ] 话术生成时间&lt;3 秒
+- [ ] 话术通过率&gt;80%（人工审核）
+- [ ] 频率控制准确率 100%
+- [ ] 支持话术模板管理</p>
+<hr />
+<h4>M4：私信对话</h4>
+<p><strong>用户故事：</strong></p>
+<blockquote>
+<p>作为用户，我希望在 Messenger 中获得快速、专业的回复，了解产品信息并完成申请。</p>
+</blockquote>
+<p><strong>功能列表：</strong></p>
+<table>
+<thead>
+<tr>
+<th>功能 ID</th>
+<th>功能名称</th>
+<th>描述</th>
+<th>优先级</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M4-1</td>
+<td>Messenger 接入</td>
+<td>接入 Meta 官方 Messenger API</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>M4-2</td>
+<td>自动回复</td>
+<td>用户消息自动回复（AI 生成）</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>M4-3</td>
+<td>多轮对话</td>
+<td>支持上下文多轮对话</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>M4-4</td>
+<td>信息收集</td>
+<td>引导用户提供基本信息（收入/工作/借款用途）</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>M4-5</td>
+<td>申请引导</td>
+<td>引导用户填写申请表单</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>M4-6</td>
+<td>24 小时管理</td>
+<td>跟踪 24 小时窗口，超时引导用户主动联系</td>
+<td>P1</td>
+</tr>
+<tr>
+<td>M4-7</td>
+<td>人工接管</td>
+<td>复杂问题转人工客服</td>
+<td>P1</td>
+</tr>
+</tbody>
+</table>
+<p><strong>对话流程设计：</strong></p>
+<div class="codehilite"><pre><span></span><code>用户首次联系
+    ↓
+AI 欢迎语 + 产品介绍（1-2 句）
+    ↓
+询问基本信息（工作/收入/借款用途）
+    ↓
+AI 初步评估（是否符合条件）
+    ↓
+符合条件 → 发送申请链接
+不符合 → 温和建议 + 留存
+    ↓
+24 小时内跟进（未申请用户）
+    ↓
+申请提交 → 转人工审批
+</code></pre></div>
+
+<p><strong>对话状态机：</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="n">DIALOGUE_STATES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;WELCOME&#39;</span><span class="p">:</span> <span class="s1">&#39;发送欢迎语&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;COLLECT_INFO&#39;</span><span class="p">:</span> <span class="s1">&#39;收集基本信息&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;PRE_QUALIFY&#39;</span><span class="p">:</span> <span class="s1">&#39;初步资质评估&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;SEND_APPLICATION&#39;</span><span class="p">:</span> <span class="s1">&#39;发送申请链接&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;FOLLOW_UP&#39;</span><span class="p">:</span> <span class="s1">&#39;跟进未申请用户&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;HANDOFF_HUMAN&#39;</span><span class="p">:</span> <span class="s1">&#39;转人工&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;CLOSED&#39;</span><span class="p">:</span> <span class="s1">&#39;对话结束&#39;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><strong>验收标准：</strong>
+- [ ] 消息回复延迟&lt;5 秒
+- [ ] 多轮对话上下文准确率&gt;90%
+- [ ] 信息收集完整率&gt;80%
+- [ ] 24 小时窗口管理准确率 100%</p>
+<hr />
+<h4>M5：数据看板</h4>
+<p><strong>用户故事：</strong></p>
+<blockquote>
+<p>作为运营人员，我希望实时查看获客数据、转化漏斗、账号健康度，以便优化策略。</p>
+</blockquote>
+<p><strong>功能列表：</strong></p>
+<table>
+<thead>
+<tr>
+<th>功能 ID</th>
+<th>功能名称</th>
+<th>描述</th>
+<th>优先级</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M5-1</td>
+<td>实时概览</td>
+<td>今日关键指标（触达/对话/申请/转化）</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>M5-2</td>
+<td>转化漏斗</td>
+<td>触达→对话→申请→通过→放款 全链路</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>M5-3</td>
+<td>账号健康</td>
+<td>各账号状态、操作次数、封号率</td>
+<td>P0</td>
+</tr>
+<tr>
+<td>M5-4</td>
+<td>渠道分析</td>
+<td>不同帖子/评论来源的转化对比</td>
+<td>P1</td>
+</tr>
+<tr>
+<td>M5-5</td>
+<td>话术效果</td>
+<td>不同话术的回复率/转化率对比</td>
+<td>P1</td>
+</tr>
+<tr>
+<td>M5-6</td>
+<td>ROI 分析</td>
+<td>获客成本 vs 放款收益</td>
+<td>P2</td>
+</tr>
+</tbody>
+</table>
+<p><strong>看板原型：</strong></p>
+<div class="codehilite"><pre><span></span><code>┌─────────────────────────────────────────────────────────────┐
+│  FB 流量 Agent · 实时看板              2026-04-15 11:30      │
+├─────────────────────────────────────────────────────────────┤
+│  今日数据                                                   │
+│  ┌──────────┬──────────┬──────────┬──────────┬──────────┐  │
+│  │ 监控评论 │ 回复评论 │ 私信触达 │ 对话开始 │ 申请提交 │  │
+│  │  1,234   │    89    │   156    │    42    │    8     │  │
+│  │  -       │  +12%    │   +5%    │   +8%    │   +25%   │  │
+│  └──────────┴──────────┴──────────┴──────────┴──────────┘  │
+│                                                             │
+│  转化漏斗（今日）                                           │
+│  评论 (1,234) → 回复 (89) → 对话 (42) → 申请 (8) → 通过 (3) │
+│            7.2%      47.2%     52.4%    37.5%    19.1%      │
+│                                                             │
+│  账号状态                                                   │
+│  🟢 活跃 3/5  🟡 限流 1/5  🔴 封禁 1/5                       │
+│                                                             │
+│  获客成本                                                   │
+│  今日：$1.8/申请  本周：$2.1/申请  本月：$2.5/申请          │
+└─────────────────────────────────────────────────────────────┘
+</code></pre></div>
+
+<p><strong>核心指标定义：</strong></p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>计算公式</th>
+<th>目标值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>触达率</strong></td>
+<td>回复评论数/监控评论数</td>
+<td>&gt;5%</td>
+</tr>
+<tr>
+<td><strong>回复率</strong></td>
+<td>私信对话数/触达用户数</td>
+<td>&gt;30%</td>
+</tr>
+<tr>
+<td><strong>转化率</strong></td>
+<td>申请数/对话数</td>
+<td>&gt;15%</td>
+</tr>
+<tr>
+<td><strong>通过率</strong></td>
+<td>通过数/申请数</td>
+<td>&gt;40%</td>
+</tr>
+<tr>
+<td><strong>获客成本</strong></td>
+<td>总成本/申请数</td>
+<td>&lt;$2</td>
+</tr>
+<tr>
+<td><strong>封号率</strong></td>
+<td>封号数/总账号数</td>
+<td>&lt;50%/月</td>
+</tr>
+</tbody>
+</table>
+<p><strong>验收标准：</strong>
+- [ ] 数据实时更新（延迟&lt;5 分钟）
+- [ ] 支持按日/周/月筛选
+- [ ] 支持数据导出（CSV）
+- [ ] 支持告警配置（指标异常通知）</p>
+<hr />
+<h4>M6：话术管理</h4>
+<p><strong>用户故事：</strong></p>
+<blockquote>
+<p>作为运营人员，我希望管理话术模板，进行 A/B 测试，优化话术效果。</p>
+</blockquote>
+<p><strong>功能列表：</strong></p>
+<table>
+<thead>
+<tr>
+<th>功能 ID</th>
+<th>功能名称</th>
+<th>描述</th>
+<th>优先级</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M6-1</td>
+<td>话术库管理</td>
+<td>增删改查话术模板</td>
+<td>P1</td>
+</tr>
+<tr>
+<td>M6-2</td>
+<td>话术分类</td>
+<td>按场景/意图/渠道分类</td>
+<td>P1</td>
+</tr>
+<tr>
+<td>M6-3</td>
+<td>A/B 测试配置</td>
+<td>配置多版本话术测试</td>
+<td>P2</td>
+</tr>
+<tr>
+<td>M6-4</td>
+<td>效果分析</td>
+<td>各话术的回复率/转化率对比</td>
+<td>P2</td>
+</tr>
+<tr>
+<td>M6-5</td>
+<td>话术迭代</td>
+<td>根据数据优化话术</td>
+<td>P2</td>
+</tr>
+</tbody>
+</table>
+<p><strong>验收标准：</strong>
+- [ ] 支持话术模板 CRUD
+- [ ] 支持话术分类标签
+- [ ] A/B 测试自动分配流量
+- [ ] 效果数据可视化</p>
+<hr />
+<h3>2.4 异常流程设计（新增）</h3>
+<h4>2.4.1 用户危机处理</h4>
+<table>
+<thead>
+<tr>
+<th>用户反应</th>
+<th>识别关键词</th>
+<th>应对策略</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>怀疑诈骗</td>
+<td>"scam", "fake", "reported", "诈骗"</td>
+<td>立即停止营销，提供公司信息，转人工</td>
+</tr>
+<tr>
+<td>愤怒/攻击</td>
+<td>脏话、威胁性语言</td>
+<td>道歉 + 停止对话 + 记录黑名单</td>
+</tr>
+<tr>
+<td>要求举报</td>
+<td>"report", "block", "spam"</td>
+<td>立即停止，记录原因，分析话术问题</td>
+</tr>
+<tr>
+<td>要求人工</td>
+<td>"human", "agent", "真人"</td>
+<td>转人工客服，SLA: 5 分钟内响应</td>
+</tr>
+</tbody>
+</table>
+<p><strong>危机处理话术示例：</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="err">用户：</span><span class="s">&quot;This is scam! I will report you!&quot;</span>
+
+<span class="n">AI</span><span class="w"> </span><span class="err">回复：</span>
+<span class="s">&quot;Hi, we understand your concern. We are a legitimate company </span>
+<span class="n">registered</span><span class="w"> </span><span class="n">with</span><span class="w"> </span><span class="n">Philippines</span><span class="w"> </span><span class="n">SEC</span><span class="w"> </span><span class="p">(</span><span class="n">Reg</span><span class="p">.</span><span class="w"> </span><span class="nl">No:</span><span class="w"> </span><span class="n">xxxxxx</span><span class="p">).</span><span class="w"> </span>
+<span class="n">We</span><span class="p">&#39;</span><span class="n">re</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="n">here</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">scam</span><span class="w"> </span><span class="n">anyone</span><span class="p">.</span><span class="w"> </span><span class="n">Let</span><span class="w"> </span><span class="n">me</span><span class="w"> </span><span class="n">connect</span><span class="w"> </span><span class="n">you</span><span class="w"> </span><span class="n">with</span><span class="w"> </span>
+<span class="n">our</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="n">service</span><span class="w"> </span><span class="n">manager</span><span class="w"> </span><span class="n">who</span><span class="w"> </span><span class="n">can</span><span class="w"> </span><span class="n">explain</span><span class="w"> </span><span class="n">more</span><span class="p">.</span><span class="w"> </span>
+<span class="n">Please</span><span class="w"> </span><span class="k">wait</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">moment</span><span class="p">.</span><span class="s">&quot;</span>
+
+<span class="err">→</span><span class="w"> </span><span class="err">立即转人工，同时发送告警通知运营</span>
+</code></pre></div>
+
+<hr />
+<h4>2.4.2 对话中断处理</h4>
+<p><strong>用户中途消失（已收集部分信息）跟进策略：</strong></p>
+<div class="codehilite"><pre><span></span><code>用户中途消失（已收集部分信息）
+    ↓
+D+1: 发送温和跟进（1 次）
+    ↓
+D+3: 发送价值信息（非营销，如 OFW 借贷指南）
+    ↓
+D+7: 最后跟进（提供限时优惠）
+    ↓
+D+14: 标记为&quot;流失&quot;，停止跟进
+</code></pre></div>
+
+<p><strong>跟进话术模板：</strong></p>
+<table>
+<thead>
+<tr>
+<th>时间</th>
+<th>话术类型</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D+1</td>
+<td>温和提醒</td>
+<td>"Hi [名字]，昨天聊到一半你好像忙去了~ 还有什么想了解的吗？"</td>
+</tr>
+<tr>
+<td>D+3</td>
+<td>价值提供</td>
+<td>"Hi [名字]，分享一份 OFW 借贷指南给你，里面有 5 个避免被拒的技巧~"</td>
+</tr>
+<tr>
+<td>D+7</td>
+<td>限时优惠</td>
+<td>"Hi [名字]，本周申请有利率优惠，明天截止。需要帮你保留名额吗？"</td>
+</tr>
+<tr>
+<td>D+14</td>
+<td>友好告别</td>
+<td>"Hi [名字]，暂时不打扰你了。有需要随时联系我们，祝一切顺利！"</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4>2.4.3 账号封禁应急</h4>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>应对</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>对话进行中账号被封</td>
+<td>自动切换备用账号，发送"系统维护"通知</td>
+</tr>
+<tr>
+<td>用户历史数据</td>
+<td>数据不丢失，可在新账号继续对话</td>
+</tr>
+<tr>
+<td>封号检测</td>
+<td>每 30 分钟检测一次，5 分钟内告警</td>
+</tr>
+</tbody>
+</table>
+<p><strong>封号应急流程：</strong></p>
+<div class="codehilite"><pre><span></span><code>发现封号 → 立即停止该账号所有操作 → 
+检查进行中的对话 → 切换备用账号继续 → 
+发送通知：&quot;Hi，刚才系统维护，现在继续为你服务~&quot; → 
+记录封号日志 → 分析封号原因
+</code></pre></div>
+
+<hr />
+<h4>2.4.4 技术故障降级</h4>
+<table>
+<thead>
+<tr>
+<th>故障类型</th>
+<th>降级方案</th>
+<th>触发条件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LLM API 故障</td>
+<td>切换备用 API（GPT→Claude）</td>
+<td>连续 5 次失败</td>
+</tr>
+<tr>
+<td>意图识别超时</td>
+<td>使用规则引擎兜底</td>
+<td>延迟&gt;3s</td>
+</tr>
+<tr>
+<td>话术生成失败</td>
+<td>使用预设模板</td>
+<td>生成失败</td>
+</tr>
+<tr>
+<td>对话上下文丢失</td>
+<td>重置对话，引导用户重新描述</td>
+<td>上下文错误</td>
+</tr>
+<tr>
+<td>Messenger API 故障</td>
+<td>引导用户添加 WhatsApp</td>
+<td>连续故障&gt;10 分钟</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>3. AI 能力设计</h2>
+<h3>3.1 AI 能力总览</h3>
+<table>
+<thead>
+<tr>
+<th>能力</th>
+<th>模型</th>
+<th>用途</th>
+<th>调用频率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>意图识别</strong></td>
+<td>微调分类模型</td>
+<td>判断评论借贷意向</td>
+<td>1000 次/天</td>
+</tr>
+<tr>
+<td><strong>话术生成</strong></td>
+<td>LLM（GPT-4/Claude）</td>
+<td>生成个性化回复</td>
+<td>500 次/天</td>
+</tr>
+<tr>
+<td><strong>对话管理</strong></td>
+<td>LLM + 规则引擎</td>
+<td>Messenger 多轮对话</td>
+<td>300 次/天</td>
+</tr>
+<tr>
+<td><strong>用户画像</strong></td>
+<td>规则 + NLP</td>
+<td>提取用户特征</td>
+<td>500 次/天</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>3.2 意图识别模型</h3>
+<p><strong>模型选型：</strong></p>
+<table>
+<thead>
+<tr>
+<th>方案</th>
+<th>模型</th>
+<th>准确率</th>
+<th>成本</th>
+<th>延迟</th>
+<th>推荐度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>方案 A</strong></td>
+<td>微调 BERT</td>
+<td>90%+</td>
+<td>$0（自部署）</td>
+<td>&lt;100ms</td>
+<td>⭐⭐⭐</td>
+</tr>
+<tr>
+<td><strong>方案 B</strong></td>
+<td>GPT-4 分类</td>
+<td>85%+</td>
+<td>$0.01/次</td>
+<td>1-2s</td>
+<td>⭐⭐</td>
+</tr>
+<tr>
+<td><strong>方案 C</strong></td>
+<td>规则 + 关键词</td>
+<td>75%+</td>
+<td>$0</td>
+<td>&lt;50ms</td>
+<td>⭐⭐</td>
+</tr>
+</tbody>
+</table>
+<p><strong>推荐：方案 A（微调 BERT）+ 方案 C（规则兜底）</strong></p>
+<p><strong>训练数据需求：</strong></p>
+<table>
+<thead>
+<tr>
+<th>数据类型</th>
+<th>数量</th>
+<th>来源</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>高意向评论</td>
+<td>2000 条</td>
+<td>历史数据标注</td>
+</tr>
+<tr>
+<td>中意向评论</td>
+<td>2000 条</td>
+<td>历史数据标注</td>
+</tr>
+<tr>
+<td>低意向评论</td>
+<td>2000 条</td>
+<td>历史数据标注</td>
+</tr>
+<tr>
+<td>负向评论</td>
+<td>1000 条</td>
+<td>历史数据标注</td>
+</tr>
+<tr>
+<td><strong>合计</strong></td>
+<td><strong>7000 条</strong></td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<p><strong>模型评估指标：</strong></p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>目标值</th>
+<th>验收标准</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>准确率</td>
+<td>&gt;85%</td>
+<td>测试集&gt;85%</td>
+</tr>
+<tr>
+<td>召回率</td>
+<td>&gt;80%</td>
+<td>高意向召回&gt;90%</td>
+</tr>
+<tr>
+<td>F1 分数</td>
+<td>&gt;82%</td>
+<td>-</td>
+</tr>
+<tr>
+<td>推理延迟</td>
+<td>&lt;200ms</td>
+<td>P95&lt;200ms</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>3.3 话术生成 Prompt</h3>
+<p><strong>系统 Prompt：</strong></p>
+<div class="codehilite"><pre><span></span><code>你是一位专业的菲律宾 OFW 信贷客服助手。
+
+【角色定位】
+- 友好、真诚、专业，不油腻不推销
+- 理解 OFW 的处境和需求
+- 帮助而非诱导
+
+【语言要求】
+- 使用 Taglish（Tagalog+English 混合）
+- 简单易懂，避免专业术语
+- 语气温暖，有同理心
+
+【回复结构】
+1. 表达理解（共情，1 句）
+2. 简要介绍（1-2 句）
+3. 引导行动（私信/申请，1 句）
+4. 祝福结尾（1 句）
+
+【禁止内容】
+- 不承诺&quot;一定通过&quot;
+- 不承诺&quot;秒批&quot;
+- 不隐瞒利率和费用
+- 不攻击竞品
+
+【回复长度】
+- 评论回复：50-100 字
+- 私信回复：100-200 字
+
+现在，请根据以下输入生成回复：
+</code></pre></div>
+
+<p><strong>Few-shot 示例：</strong></p>
+<div class="codehilite"><pre><span></span><code>示例<span class="w"> </span><span class="mi">1</span>：
+用户评论：<span class="s2">&quot;Need money urgently for my mom&#39;s hospital bills. Anyone know legit lender?&quot;</span>
+<span class="nv">AI</span><span class="w"> </span>回复：<span class="s2">&quot;Hi Maria, 理解你现在着急，医疗费用确实让人压力很大。我们平台专门帮助 OFW 解决紧急需求，有稳定收入的话可以申请。私信我了解更多细节，希望能帮到你。God bless!&quot;</span>
+
+示例<span class="w"> </span><span class="mi">2</span>：
+用户评论：<span class="s2">&quot;Is this legit? Scam ba?&quot;</span>
+<span class="nv">AI</span><span class="w"> </span>回复：<span class="s2">&quot;Hi John, 理解你的顾虑，网上确实有很多诈骗。我们平台合法注册，已经帮助过很多 OFW 成功借款。可以私信了解更多细节，不申请也没关系，先了解一下是否可信。Salamat!&quot;</span>
+</code></pre></div>
+
+<hr />
+<h3>3.4 降级方案</h3>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>降级策略</th>
+<th>触发条件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LLM API 故障</strong></td>
+<td>切换备用 API（GPT→Claude）</td>
+<td>连续 5 次失败</td>
+</tr>
+<tr>
+<td><strong>意图识别超时</strong></td>
+<td>使用规则引擎兜底</td>
+<td>延迟&gt;3s</td>
+</tr>
+<tr>
+<td><strong>话术生成失败</strong></td>
+<td>使用预设模板</td>
+<td>生成失败</td>
+</tr>
+<tr>
+<td><strong>对话上下文丢失</strong></td>
+<td>重置对话，引导用户重新描述</td>
+<td>上下文错误</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>3.5 话术库完整清单（新增）</h3>
+<p><strong>PRD 初版只有 4 类话术模板，实际场景至少需要 20+ 类。</strong></p>
+<h4>话术场景分类</h4>
+<table>
+<thead>
+<tr>
+<th>场景分类</th>
+<th>具体场景</th>
+<th>话术数量</th>
+<th>优先级</th>
+<th>语言版本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>首次接触</strong></td>
+<td>评论回复、私信开场白、自我介绍</td>
+<td>10 条</td>
+<td>P0</td>
+<td>Taglish/English</td>
+</tr>
+<tr>
+<td><strong>需求探索</strong></td>
+<td>询问借款用途、金额、紧急程度</td>
+<td>8 条</td>
+<td>P0</td>
+<td>Taglish</td>
+</tr>
+<tr>
+<td><strong>资质评估</strong></td>
+<td>询问工作、收入、汇款记录</td>
+<td>6 条</td>
+<td>P0</td>
+<td>Taglish</td>
+</tr>
+<tr>
+<td><strong>产品介绍</strong></td>
+<td>利率说明、放款时间、还款方式</td>
+<td>8 条</td>
+<td>P0</td>
+<td>Taglish/English</td>
+</tr>
+<tr>
+<td><strong>异议处理</strong></td>
+<td>"利率太高"、"额度太低"、"太麻烦"</td>
+<td>12 条</td>
+<td>P0</td>
+<td>Taglish</td>
+</tr>
+<tr>
+<td><strong>信任建立</strong></td>
+<td>公司信息、成功案例、合规证明</td>
+<td>6 条</td>
+<td>P1</td>
+<td>Taglish/English</td>
+</tr>
+<tr>
+<td><strong>催促进度</strong></td>
+<td>未填表跟进、材料补充提醒</td>
+<td>6 条</td>
+<td>P1</td>
+<td>Taglish</td>
+</tr>
+<tr>
+<td><strong>被拒安抚</strong></td>
+<td>温和告知、改善建议、未来再申请</td>
+<td>5 条</td>
+<td>P1</td>
+<td>Taglish</td>
+</tr>
+<tr>
+<td><strong>危机处理</strong></td>
+<td>诈骗质疑、投诉处理、举报威胁</td>
+<td>5 条</td>
+<td>P0</td>
+<td>English</td>
+</tr>
+<tr>
+<td><strong>节日问候</strong></td>
+<td>圣诞节、复活节、生日祝福</td>
+<td>10 条</td>
+<td>P2</td>
+<td>Taglish</td>
+</tr>
+<tr>
+<td><strong>复借引导</strong></td>
+<td>还款后复借、额度提升邀请</td>
+<td>5 条</td>
+<td>P2</td>
+<td>Taglish</td>
+</tr>
+<tr>
+<td><strong>推荐裂变</strong></td>
+<td>老客推荐新客、奖励说明</td>
+<td>5 条</td>
+<td>P2</td>
+<td>Taglish</td>
+</tr>
+<tr>
+<td><strong>合计</strong></td>
+<td>-</td>
+<td><strong>86 条</strong></td>
+<td>-</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<h4>话术审核流程</h4>
+<div class="codehilite"><pre><span></span><code>AI 生成 → 运营初审 → 律师合规审核 → A/B 测试 → 正式上线
+</code></pre></div>
+
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>负责人</th>
+<th>时间</th>
+<th>输出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AI 生成</td>
+<td>系统</td>
+<td>1 天</td>
+<td>初版话术 100 条</td>
+</tr>
+<tr>
+<td>运营初审</td>
+<td>运营</td>
+<td>2 天</td>
+<td>筛选 80 条，修改语气</td>
+</tr>
+<tr>
+<td>律师合规审核</td>
+<td>律师</td>
+<td>3 天</td>
+<td>合规修改，确保无法律风险</td>
+</tr>
+<tr>
+<td>A/B 测试</td>
+<td>产品+ 技术</td>
+<td>7 天</td>
+<td>测试 10 组，选出最优</td>
+</tr>
+<tr>
+<td>正式上线</td>
+<td>运营</td>
+<td>-</td>
+<td>86 条正式话术入库</td>
+</tr>
+</tbody>
+</table>
+<h4>话术红线（禁止内容）</h4>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>禁止内容</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>承诺类</strong></td>
+<td>"一定通过"、"100% 批准"、"秒批"</td>
+<td>虚假宣传，法律风险</td>
+</tr>
+<tr>
+<td><strong>隐瞒类</strong></td>
+<td>不说明利率、费用、逾期后果</td>
+<td>合规要求，用户知情权</td>
+</tr>
+<tr>
+<td><strong>攻击类</strong></td>
+<td>攻击竞品、贬低其他平台</td>
+<td>品牌形象，法律风险</td>
+</tr>
+<tr>
+<td><strong>骚扰类</strong></td>
+<td>频繁发送、夜间发送、重复发送</td>
+<td>用户体验，举报风险</td>
+</tr>
+<tr>
+<td><strong>诱导类</strong></td>
+<td>"不借白不借"、"先借再说"</td>
+<td>不负责任，坏账风险</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>4. 技术方案</h2>
+<h3>4.1 技术架构</h3>
+<div class="codehilite"><pre><span></span><code>┌─────────────────────────────────────────────────────────────┐
+│                        前端层                                │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
+│  │  管理后台   │  │  数据看板   │  │  话术管理   │         │
+│  │  (React)    │  │  (React)    │  │  (React)    │         │
+│  └─────────────┘  └─────────────┘  └─────────────┘         │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│                        后端层                                │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
+│  │  API Gateway│  │  业务服务   │  │  任务调度   │         │
+│  │  (Nginx)    │  │  (Python)   │  │  (Celery)   │         │
+│  └─────────────┘  └─────────────┘  └─────────────┘         │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│                        数据层                                │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
+│  │  PostgreSQL │  │    Redis    │  │    MongoDB  │         │
+│  │  (业务数据) │  │   (缓存)    │  │  (评论数据) │         │
+│  └─────────────┘  └─────────────┘  └─────────────┘         │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│                      外部服务                                │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
+│  │  FB Graph   │  │  LLM API    │  │  住宅代理   │         │
+│  │   API       │  │  (GPT-4)    │  │  (BrightData)│        │
+│  └─────────────┘  └─────────────┘  └─────────────┘         │
+└─────────────────────────────────────────────────────────────┘
+</code></pre></div>
+
+<hr />
+<h3>4.2 核心依赖</h3>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>选型</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>后端框架</strong></td>
+<td>FastAPI</td>
+<td>异步支持、性能好</td>
+</tr>
+<tr>
+<td><strong>前端框架</strong></td>
+<td>React + Ant Design</td>
+<td>快速开发、组件丰富</td>
+</tr>
+<tr>
+<td><strong>数据库</strong></td>
+<td>PostgreSQL</td>
+<td>关系型数据、稳定</td>
+</tr>
+<tr>
+<td><strong>缓存</strong></td>
+<td>Redis</td>
+<td>高频数据缓存</td>
+</tr>
+<tr>
+<td><strong>文档存储</strong></td>
+<td>MongoDB</td>
+<td>评论数据（非结构化）</td>
+</tr>
+<tr>
+<td><strong>任务队列</strong></td>
+<td>Celery + Redis</td>
+<td>定时任务、异步处理</td>
+</tr>
+<tr>
+<td><strong>LLM</strong></td>
+<td>GPT-4 + Claude</td>
+<td>话术生成质量高</td>
+</tr>
+<tr>
+<td><strong>代理</strong></td>
+<td>Bright Data</td>
+<td>住宅代理、稳定</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>4.3 API 设计</h3>
+<p><strong>核心 API 列表：</strong></p>
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>方法</th>
+<th>路径</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>账号管理</td>
+<td>GET</td>
+<td><code>/api/accounts</code></td>
+<td>获取账号列表</td>
+</tr>
+<tr>
+<td>账号管理</td>
+<td>POST</td>
+<td><code>/api/accounts</code></td>
+<td>新增账号</td>
+</tr>
+<tr>
+<td>账号管理</td>
+<td>PUT</td>
+<td><code>/api/accounts/{id}</code></td>
+<td>更新账号</td>
+</tr>
+<tr>
+<td>账号管理</td>
+<td>DELETE</td>
+<td><code>/api/accounts/{id}</code></td>
+<td>删除账号</td>
+</tr>
+<tr>
+<td>评论监控</td>
+<td>GET</td>
+<td><code>/api/comments</code></td>
+<td>获取评论列表</td>
+</tr>
+<tr>
+<td>评论监控</td>
+<td>POST</td>
+<td><code>/api/comments/analyze</code></td>
+<td>AI 分析评论意图</td>
+</tr>
+<tr>
+<td>话术管理</td>
+<td>GET</td>
+<td><code>/api/templates</code></td>
+<td>获取话术列表</td>
+</tr>
+<tr>
+<td>话术管理</td>
+<td>POST</td>
+<td><code>/api/templates/generate</code></td>
+<td>AI 生成话术</td>
+</tr>
+<tr>
+<td>数据看板</td>
+<td>GET</td>
+<td><code>/api/dashboard/summary</code></td>
+<td>获取概览数据</td>
+</tr>
+<tr>
+<td>数据看板</td>
+<td>GET</td>
+<td><code>/api/dashboard/funnel</code></td>
+<td>获取转化漏斗</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>4.4 数据库设计</h3>
+<p><strong>核心表结构：</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="c1">-- 账号表</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">accounts</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="nb">SERIAL</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">    </span><span class="n">account_id</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="k">UNIQUE</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">account_name</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">200</span><span class="p">),</span>
+<span class="w">    </span><span class="n">access_token</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<span class="w">    </span><span class="n">proxy_ip</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">50</span><span class="p">),</span>
+<span class="w">    </span><span class="n">status</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="s1">&#39;active&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">daily_limit</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span>
+<span class="w">    </span><span class="n">daily_usage</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">    </span><span class="n">last_active</span><span class="w"> </span><span class="k">TIMESTAMP</span><span class="p">,</span>
+<span class="w">    </span><span class="n">created_at</span><span class="w"> </span><span class="k">TIMESTAMP</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="k">CURRENT_TIMESTAMP</span>
+<span class="p">);</span>
+
+<span class="c1">-- 评论表</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">comments</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="nb">SERIAL</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">    </span><span class="n">comment_id</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="k">UNIQUE</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">post_id</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>
+<span class="w">    </span><span class="n">user_id</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>
+<span class="w">    </span><span class="n">user_name</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">200</span><span class="p">),</span>
+<span class="w">    </span><span class="n">comment_text</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<span class="w">    </span><span class="n">comment_time</span><span class="w"> </span><span class="k">TIMESTAMP</span><span class="p">,</span>
+<span class="w">    </span><span class="n">intent</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">),</span>
+<span class="w">    </span><span class="n">intent_confidence</span><span class="w"> </span><span class="nb">FLOAT</span><span class="p">,</span>
+<span class="w">    </span><span class="n">status</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="s1">&#39;pending&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">contacted_at</span><span class="w"> </span><span class="k">TIMESTAMP</span><span class="p">,</span>
+<span class="w">    </span><span class="n">created_at</span><span class="w"> </span><span class="k">TIMESTAMP</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="k">CURRENT_TIMESTAMP</span>
+<span class="p">);</span>
+
+<span class="c1">-- 对话表</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">conversations</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="nb">SERIAL</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">    </span><span class="n">user_id</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>
+<span class="w">    </span><span class="n">account_id</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">accounts</span><span class="p">(</span><span class="n">id</span><span class="p">),</span>
+<span class="w">    </span><span class="n">status</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="s1">&#39;active&#39;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">last_message_at</span><span class="w"> </span><span class="k">TIMESTAMP</span><span class="p">,</span>
+<span class="w">    </span><span class="n">message_count</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">    </span><span class="n">application_submitted</span><span class="w"> </span><span class="nb">BOOLEAN</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="k">FALSE</span><span class="p">,</span>
+<span class="w">    </span><span class="n">created_at</span><span class="w"> </span><span class="k">TIMESTAMP</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="k">CURRENT_TIMESTAMP</span>
+<span class="p">);</span>
+
+<span class="c1">-- 话术模板表</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">templates</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="nb">SERIAL</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">    </span><span class="n">template_name</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">200</span><span class="p">),</span>
+<span class="w">    </span><span class="n">category</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">50</span><span class="p">),</span>
+<span class="w">    </span><span class="n">intent_type</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">),</span>
+<span class="w">    </span><span class="n">content</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<span class="w">    </span><span class="n">usage_count</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">    </span><span class="n">conversion_rate</span><span class="w"> </span><span class="nb">FLOAT</span><span class="p">,</span>
+<span class="w">    </span><span class="n">is_active</span><span class="w"> </span><span class="nb">BOOLEAN</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="k">TRUE</span><span class="p">,</span>
+<span class="w">    </span><span class="n">created_at</span><span class="w"> </span><span class="k">TIMESTAMP</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="k">CURRENT_TIMESTAMP</span>
+<span class="p">);</span>
+</code></pre></div>
+
+<hr />
+<h2>5. 风险与应对</h2>
+<h3>5.1 风险矩阵</h3>
+<table>
+<thead>
+<tr>
+<th>风险</th>
+<th>概率</th>
+<th>影响</th>
+<th>等级</th>
+<th>应对策略</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>FB 账号封禁</strong></td>
+<td>高 (80%)</td>
+<td>致命</td>
+<td>🔴</td>
+<td>账号矩阵 + 频率控制</td>
+</tr>
+<tr>
+<td><strong>API 限流</strong></td>
+<td>中 (50%)</td>
+<td>高</td>
+<td>🟡</td>
+<td>多 Token 轮换</td>
+</tr>
+<tr>
+<td><strong>用户举报</strong></td>
+<td>中 (40%)</td>
+<td>高</td>
+<td>🟡</td>
+<td>话术优化 + 降低频率</td>
+</tr>
+<tr>
+<td><strong>LLM 服务故障</strong></td>
+<td>低 (20%)</td>
+<td>中</td>
+<td>🟢</td>
+<td>多供应商 + 降级方案</td>
+</tr>
+<tr>
+<td><strong>数据泄露</strong></td>
+<td>低 (10%)</td>
+<td>致命</td>
+<td>🔴</td>
+<td>数据加密 + 访问控制</td>
+</tr>
+<tr>
+<td><strong>法律合规</strong></td>
+<td>中 (30%)</td>
+<td>致命</td>
+<td>🔴</td>
+<td>只抓公开数据 + 律师咨询</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>5.2 详细应对方案</h3>
+<h4>风险 1：FB 账号封禁</h4>
+<p><strong>应对策略：</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="mf">1.</span><span class="w"> </span><span class="n">账号矩阵</span><span class="err">：</span><span class="mf">5</span><span class="o">-</span><span class="mf">10</span><span class="w"> </span><span class="n">个账号</span><span class="err">，</span><span class="n">分散风险</span>
+<span class="mf">2.</span><span class="w"> </span><span class="n">频率控制</span><span class="err">：</span><span class="n">单账号</span><span class="o">&lt;</span><span class="mf">30</span><span class="w"> </span><span class="n">次</span><span class="o">/</span><span class="n">天</span>
+<span class="mf">3.</span><span class="w"> </span><span class="n">行为模拟</span><span class="err">：</span><span class="n">随机延迟</span><span class="err">、</span><span class="n">模拟人工操作</span>
+<span class="mf">4.</span><span class="w"> </span><span class="n">快速检测</span><span class="err">：</span><span class="n">封号后</span><span class="w"> </span><span class="mf">5</span><span class="w"> </span><span class="n">分钟内告警</span>
+<span class="mf">5.</span><span class="w"> </span><span class="n">备用账号</span><span class="err">：</span><span class="n">随时可启用新账号</span>
+</code></pre></div>
+
+<p><strong>监控指标：</strong>
+- 账号状态（每小时检测）
+- 操作频率（实时统计）
+- 封号率（每日统计）</p>
+<hr />
+<h4>风险 2：用户举报</h4>
+<p><strong>应对策略：</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="mf">1.</span><span class="w"> </span><span class="n">话术优化</span><span class="err">：</span><span class="n">不推销</span><span class="err">、</span><span class="n">不骚扰</span><span class="err">、</span><span class="n">真诚回复</span>
+<span class="mf">2.</span><span class="w"> </span><span class="n">频率控制</span><span class="err">：</span><span class="n">同一用户不重复触达</span>
+<span class="mf">3.</span><span class="w"> </span><span class="n">举报监控</span><span class="err">：</span><span class="n">监控账号是否被举报</span>
+<span class="mf">4.</span><span class="w"> </span><span class="n">快速响应</span><span class="err">：</span><span class="n">收到举报立即停止该账号操作</span>
+</code></pre></div>
+
+<p><strong>话术红线：</strong>
+- ❌ 不承诺"一定通过"
+- ❌ 不承诺"秒批"
+- ❌ 不频繁发送
+- ❌ 不骚扰用户</p>
+<hr />
+<h4>风险 3：法律合规</h4>
+<p><strong>应对策略：</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="mf">1.</span><span class="w"> </span><span class="n">只抓取公开数据</span><span class="err">（</span><span class="n">不爬非公开信息</span><span class="err">）</span>
+<span class="mf">2.</span><span class="w"> </span><span class="n">遵守菲律宾</span><span class="w"> </span><span class="kd">Data</span><span class="w"> </span><span class="n">Privacy</span><span class="w"> </span><span class="n">Act</span><span class="w"> </span><span class="mf">2012</span>
+<span class="mf">3.</span><span class="w"> </span><span class="n">用户数据加密存储</span>
+<span class="mf">4.</span><span class="w"> </span><span class="n">定期删除过期数据</span>
+<span class="mf">5.</span><span class="w"> </span><span class="n">咨询律师</span><span class="err">，</span><span class="n">确保合规</span>
+</code></pre></div>
+
+<hr />
+<h3>5.3 合规操作清单（新增）</h3>
+<h4>数据收集合规</h4>
+<p><strong>必须告知用户（私信开场白包含）：</strong></p>
+<div class="codehilite"><pre><span></span><code>Hi [名字]，我是 [平台名] 助手。我们是一家合法注册的菲律宾信贷公司
+（SEC 注册号：xxxxxxx）。对话中收集的信息仅用于贷款评估，不会分享给第三方。
+继续对话即表示你同意我们的隐私政策 [链接]。
+</code></pre></div>
+
+<p><strong>隐私政策必须包含：</strong>
+- 收集哪些数据（姓名、联系方式、工作信息、收入信息）
+- 数据用途（贷款评估、风控审核）
+- 数据保留期限（90 天 -2 年）
+- 用户权利（查看、更正、删除）
+- 数据安全保护措施</p>
+<hr />
+<h4>数据保留政策</h4>
+<table>
+<thead>
+<tr>
+<th>数据类型</th>
+<th>保留期限</th>
+<th>到期处理</th>
+<th>法律依据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>对话记录</td>
+<td>90 天</td>
+<td>自动匿名化</td>
+<td>业务需要</td>
+</tr>
+<tr>
+<td>申请信息</td>
+<td>2 年</td>
+<td>加密存储</td>
+<td>SEC 监管要求</td>
+</tr>
+<tr>
+<td>用户画像</td>
+<td>180 天无活动后删除</td>
+<td>自动删除</td>
+<td>数据最小化</td>
+</tr>
+<tr>
+<td>放款记录</td>
+<td>5 年</td>
+<td>加密归档</td>
+<td>金融监管要求</td>
+</tr>
+<tr>
+<td>投诉记录</td>
+<td>3 年</td>
+<td>加密存储</td>
+<td>消保要求</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4>用户权利</h4>
+<p>用户可要求：</p>
+<table>
+<thead>
+<tr>
+<th>权利</th>
+<th>响应时间</th>
+<th>实现方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>查看个人数据</td>
+<td>7 天内提供</td>
+<td>导出 PDF/Excel</td>
+</tr>
+<tr>
+<td>更正错误数据</td>
+<td>3 天内完成</td>
+<td>后台修改</td>
+</tr>
+<tr>
+<td>删除个人数据</td>
+<td>14 天内完成</td>
+<td>数据库删除（监管要求除外）</td>
+</tr>
+<tr>
+<td>撤回同意</td>
+<td>即时生效</td>
+<td>停止数据处理</td>
+</tr>
+<tr>
+<td>数据可携带</td>
+<td>7 天内提供</td>
+<td>标准格式导出</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4>数据安全措施</h4>
+<table>
+<thead>
+<tr>
+<th>措施</th>
+<th>实现方式</th>
+<th>负责人</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>数据加密</td>
+<td>AES-256 加密存储</td>
+<td>技术</td>
+</tr>
+<tr>
+<td>传输加密</td>
+<td>HTTPS/TLS 1.3</td>
+<td>技术</td>
+</tr>
+<tr>
+<td>访问控制</td>
+<td>RBAC 权限管理</td>
+<td>技术</td>
+</tr>
+<tr>
+<td>操作日志</td>
+<td>所有数据访问记录日志</td>
+<td>技术</td>
+</tr>
+<tr>
+<td>定期审计</td>
+<td>每季度安全审计</td>
+<td>合规</td>
+</tr>
+<tr>
+<td>员工培训</td>
+<td>每半年数据隐私培训</td>
+<td>合规</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4>合规检查清单</h4>
+<p><strong>上线前必须完成：</strong></p>
+<ul>
+<li>[ ] 隐私政策文档完成（律师审核）</li>
+<li>[ ] 用户同意流程实现（开场白 + 链接）</li>
+<li>[ ] 数据加密存储实现</li>
+<li>[ ] 数据删除功能实现</li>
+<li>[ ] 数据导出功能实现</li>
+<li>[ ] 访问控制权限配置</li>
+<li>[ ] 员工隐私培训完成</li>
+<li>[ ] 合规顾问聘请</li>
+</ul>
+<p><strong>每月检查：</strong></p>
+<ul>
+<li>[ ] 数据保留期限检查</li>
+<li>[ ] 用户请求响应检查</li>
+<li>[ ] 安全日志审计</li>
+<li>[ ] 合规政策更新</li>
+</ul>
+<hr />
+<h2>6. 数据指标</h2>
+<h3>6.1 核心指标体系</h3>
+<div class="codehilite"><pre><span></span><code>┌─────────────────────────────────────────────────────────────┐
+│                    指标体系金字塔                            │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│                    ┌─────────────┐                          │
+│                    │  北极星指标  │                          │
+│                    │ 获客成本&lt;$2 │                          │
+│                    └─────────────┘                          │
+│                           ↓                                 │
+│         ┌─────────────────┴─────────────────┐              │
+│         ↓                                   ↓              │
+│  ┌─────────────┐                     ┌─────────────┐       │
+│  │  效率指标   │                     │  质量指标   │       │
+│  │ 触达效率    │                     │ 转化率      │       │
+│  │ 对话效率    │                     │ 通过率      │       │
+│  └─────────────┘                     └─────────────┘       │
+│         ↓                                   ↓              │
+│  ┌─────────────┐                     ┌─────────────┐       │
+│  │  过程指标   │                     │  结果指标   │       │
+│  │ 监控评论数  │                     │ 申请数      │       │
+│  │ 回复评论数  │                     │ 放款数      │       │
+│  │ 私信触达数  │                     │ 坏账率      │       │
+│  └─────────────┘                     └─────────────┘       │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+</code></pre></div>
+
+<hr />
+<h3>6.2 指标定义</h3>
+<table>
+<thead>
+<tr>
+<th>指标层级</th>
+<th>指标名称</th>
+<th>定义</th>
+<th>目标值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>北极星</strong></td>
+<td>获客成本</td>
+<td>总成本/申请数</td>
+<td>&lt;$2</td>
+</tr>
+<tr>
+<td><strong>效率</strong></td>
+<td>触达效率</td>
+<td>回复评论数/监控评论数</td>
+<td>&gt;5%</td>
+</tr>
+<tr>
+<td><strong>效率</strong></td>
+<td>对话效率</td>
+<td>对话数/触达用户数</td>
+<td>&gt;30%</td>
+</tr>
+<tr>
+<td><strong>质量</strong></td>
+<td>转化率</td>
+<td>申请数/对话数</td>
+<td>&gt;15%</td>
+</tr>
+<tr>
+<td><strong>质量</strong></td>
+<td>通过率</td>
+<td>通过数/申请数</td>
+<td>&gt;40%</td>
+</tr>
+<tr>
+<td><strong>结果</strong></td>
+<td>申请数</td>
+<td>每日申请提交数</td>
+<td>50+/天</td>
+</tr>
+<tr>
+<td><strong>结果</strong></td>
+<td>放款数</td>
+<td>每日放款数</td>
+<td>20+/天</td>
+</tr>
+<tr>
+<td><strong>风险</strong></td>
+<td>封号率</td>
+<td>封号数/总账号数</td>
+<td>&lt;50%/月</td>
+</tr>
+<tr>
+<td><strong>风险</strong></td>
+<td>举报率</td>
+<td>举报数/触达数</td>
+<td>&lt;1%</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>6.3 数据埋点</h3>
+<p><strong>关键事件埋点：</strong></p>
+<table>
+<thead>
+<tr>
+<th>事件</th>
+<th>触发时机</th>
+<th>数据字段</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>comment_monitored</code></td>
+<td>抓取到新评论</td>
+<td>comment_id, post_id, user_id</td>
+</tr>
+<tr>
+<td><code>comment_replied</code></td>
+<td>回复评论</td>
+<td>comment_id, template_id, account_id</td>
+</tr>
+<tr>
+<td><code>user_contacted</code></td>
+<td>私信触达用户</td>
+<td>user_id, account_id, channel</td>
+</tr>
+<tr>
+<td><code>conversation_started</code></td>
+<td>用户回复私信</td>
+<td>conversation_id, user_id</td>
+</tr>
+<tr>
+<td><code>application_submitted</code></td>
+<td>用户提交申请</td>
+<td>application_id, user_id, amount</td>
+</tr>
+<tr>
+<td><code>account_banned</code></td>
+<td>账号被封禁</td>
+<td>account_id, ban_reason, timestamp</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>6.4 体验质量指标（新增）</h3>
+<p><strong>PRD 初版只有转化指标，没有体验指标，可能导致"为转化牺牲体验"。</strong></p>
+<h4>用户满意度追踪</h4>
+<p>每段对话结束后，随机抽样 10% 用户发送满意度调查：</p>
+<div class="codehilite"><pre><span></span><code>Hi [名字]，感谢刚才的交流！能否花 10 秒帮我们评分？
+⭐⭐⭐⭐⭐ 非常满意
+⭐⭐⭐⭐ 满意
+⭐⭐⭐ 一般
+⭐⭐ 不满意
+⭐ 非常不满意
+
+有任何建议也欢迎告诉我们~
+</code></pre></div>
+
+<h4>体验指标定义</h4>
+<table>
+<thead>
+<tr>
+<th>指标类型</th>
+<th>指标名称</th>
+<th>定义</th>
+<th>目标值</th>
+<th>警戒值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>体验</strong></td>
+<td>用户满意度</td>
+<td>对话后评分（1-5 星）</td>
+<td>&gt;4.0</td>
+<td>&lt;3.5</td>
+</tr>
+<tr>
+<td><strong>体验</strong></td>
+<td>负面反馈率</td>
+<td>投诉/举报数/对话数</td>
+<td>&lt;1%</td>
+<td>&gt;2%</td>
+</tr>
+<tr>
+<td><strong>体验</strong></td>
+<td>对话完成率</td>
+<td>完成全流程对话占比</td>
+<td>&gt;60%</td>
+<td>&lt;50%</td>
+</tr>
+<tr>
+<td><strong>质量</strong></td>
+<td>信息准确率</td>
+<td>AI 收集信息准确率</td>
+<td>&gt;90%</td>
+<td>&lt;85%</td>
+</tr>
+<tr>
+<td><strong>质量</strong></td>
+<td>人工接管率</td>
+<td>转人工对话占比</td>
+<td>&lt;20%</td>
+<td>&gt;30%</td>
+</tr>
+<tr>
+<td><strong>效率</strong></td>
+<td>首响时间</td>
+<td>用户消息到首次回复时间</td>
+<td>&lt;10 秒</td>
+<td>&gt;30 秒</td>
+</tr>
+</tbody>
+</table>
+<h4>指标警戒线</h4>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>健康值</th>
+<th>警戒值</th>
+<th>行动</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>满意度</td>
+<td>&gt;4.0</td>
+<td>&lt;3.5</td>
+<td>话术重新审核</td>
+</tr>
+<tr>
+<td>负面反馈率</td>
+<td>&lt;1%</td>
+<td>&gt;2%</td>
+<td>立即停止该话术</td>
+</tr>
+<tr>
+<td>人工接管率</td>
+<td>&lt;20%</td>
+<td>&gt;30%</td>
+<td>AI 能力需优化</td>
+</tr>
+<tr>
+<td>首响时间</td>
+<td>&lt;10 秒</td>
+<td>&gt;30 秒</td>
+<td>检查系统性能</td>
+</tr>
+</tbody>
+</table>
+<h4>体验数据采集方式</h4>
+<table>
+<thead>
+<tr>
+<th>方式</th>
+<th>频率</th>
+<th>样本量</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>满意度调查</td>
+<td>每对话后 10% 抽样</td>
+<td>50 份/周</td>
+<td>对话结束后立即发送</td>
+</tr>
+<tr>
+<td>负面反馈监控</td>
+<td>实时</td>
+<td>100%</td>
+<td>投诉/举报自动记录</td>
+</tr>
+<tr>
+<td>对话质量抽检</td>
+<td>每周</td>
+<td>100 条</td>
+<td>人工审核对话记录</td>
+</tr>
+<tr>
+<td>NPS 调研</td>
+<td>每月</td>
+<td>200 份</td>
+<td>净推荐值调研</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>7. 执行计划</h2>
+<h3>7.1 Phase 划分</h3>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>时间</th>
+<th>目标</th>
+<th>交付物</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Phase 0：准备</strong></td>
+<td>Week 1</td>
+<td>账号/代理/API 准备</td>
+<td>5 个账号、代理配置、API Token</td>
+</tr>
+<tr>
+<td><strong>Phase 1：MVP</strong></td>
+<td>Week 2-4</td>
+<td>核心功能开发</td>
+<td>评论监控 + 私信对话 + 数据看板</td>
+</tr>
+<tr>
+<td><strong>Phase 2：测试</strong></td>
+<td>Week 5-6</td>
+<td>小规模测试验证</td>
+<td>测试报告、数据反馈</td>
+</tr>
+<tr>
+<td><strong>Phase 3：优化</strong></td>
+<td>Week 7-8</td>
+<td>根据数据优化</td>
+<td>话术 2.0、流程优化</td>
+</tr>
+<tr>
+<td><strong>Phase 4：扩展</strong></td>
+<td>Week 9-12</td>
+<td>扩大规模</td>
+<td>10 个账号、自动化提升</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>7.2 Week 1-4 详细计划</h3>
+<p><strong>Week 1：基础设施</strong>
+| 任务 | 负责人 | 输出 |
+|------|--------|------|
+| 注册 5 个 FB 账号 | 运营 | 账号列表 |
+| 配置住宅代理 | 技术 | 代理配置文档 |
+| 申请 Business API | 技术 | API Token |
+| 搭建开发环境 | 技术 | 代码仓库、CI/CD |</p>
+<p><strong>Week 2：核心功能开发</strong>
+| 任务 | 负责人 | 输出 |
+|------|--------|------|
+| 账号管理模块 | 技术 | 账号 CRUD API |
+| 评论抓取模块 | 技术 | 评论抓取脚本 |
+| 数据库设计 | 技术 | 数据库 Schema |</p>
+<p><strong>Week 3：AI 能力集成</strong>
+| 任务 | 负责人 | 输出 |
+|------|--------|------|
+| 意图识别模型 | 技术 | 模型 API |
+| 话术生成 Prompt | 产品+ 技术 | Prompt 文档 |
+| Messenger 接入 | 技术 | Webhook 配置 |</p>
+<p><strong>Week 4：数据看板与测试</strong>
+| 任务 | 负责人 | 输出 |
+|------|--------|------|
+| 数据看板开发 | 技术 | 看板页面 |
+| 数据埋点 | 技术 | 埋点文档 |
+| 内部测试 | 产品+ 技术 | 测试报告 |</p>
+<hr />
+<h3>7.3 资源需求</h3>
+<table>
+<thead>
+<tr>
+<th>资源</th>
+<th>数量</th>
+<th>成本</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>FB 账号</strong></td>
+<td>5-10 个</td>
+<td>$200-500/月</td>
+<td>接受封号损失</td>
+</tr>
+<tr>
+<td><strong>住宅代理</strong></td>
+<td>5-10 个 IP</td>
+<td>$200/月</td>
+<td>Bright Data</td>
+</tr>
+<tr>
+<td><strong>LLM API</strong></td>
+<td>-</td>
+<td>$300/月</td>
+<td>GPT-4 + Claude</td>
+</tr>
+<tr>
+<td><strong>服务器</strong></td>
+<td>1 台</td>
+<td>$100/月</td>
+<td>4 核 8G</td>
+</tr>
+<tr>
+<td><strong>开发人力</strong></td>
+<td>2 人</td>
+<td>$10000</td>
+<td>4 周开发</td>
+</tr>
+<tr>
+<td><strong>产品人力</strong></td>
+<td>1 人</td>
+<td>$3000</td>
+<td>4 周</td>
+</tr>
+<tr>
+<td><strong>运营人力</strong></td>
+<td>1 人</td>
+<td>$2000</td>
+<td>持续</td>
+</tr>
+<tr>
+<td><strong>合计</strong></td>
+<td>-</td>
+<td>$18000-20000</td>
+<td>首月投入</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>8. 验收标准</h2>
+<h3>8.1 功能验收</h3>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>验收标准</th>
+<th>验证方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>账号管理</strong></td>
+<td>可添加/编辑/删除账号，状态监控准确</td>
+<td>手动测试</td>
+</tr>
+<tr>
+<td><strong>评论监控</strong></td>
+<td>评论抓取延迟&lt;5 分钟，意图识别&gt;85%</td>
+<td>数据验证</td>
+</tr>
+<tr>
+<td><strong>智能互动</strong></td>
+<td>话术生成&lt;3 秒，频率控制 100% 准确</td>
+<td>手动测试</td>
+</tr>
+<tr>
+<td><strong>私信对话</strong></td>
+<td>回复延迟&lt;5 秒，多轮对话准确&gt;90%</td>
+<td>手动测试</td>
+</tr>
+<tr>
+<td><strong>数据看板</strong></td>
+<td>数据延迟&lt;5 分钟，指标计算准确</td>
+<td>数据验证</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>8.2 性能验收</h3>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>目标值</th>
+<th>验证方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>API 响应时间</td>
+<td>P95&lt;500ms</td>
+<td>压测</td>
+</tr>
+<tr>
+<td>评论抓取延迟</td>
+<td>&lt;5 分钟</td>
+<td>监控</td>
+</tr>
+<tr>
+<td>话术生成时间</td>
+<td>&lt;3 秒</td>
+<td>监控</td>
+</tr>
+<tr>
+<td>系统可用性</td>
+<td>&gt;99%</td>
+<td>监控</td>
+</tr>
+<tr>
+<td>并发支持</td>
+<td>1000 次/分钟</td>
+<td>压测</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>8.3 业务验收</h3>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>目标值</th>
+<th>验证周期</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>获客成本</td>
+<td>&lt;$2/申请</td>
+<td>4 周</td>
+</tr>
+<tr>
+<td>转化率</td>
+<td>&gt;3%</td>
+<td>4 周</td>
+</tr>
+<tr>
+<td>封号率</td>
+<td>&lt;50%/月</td>
+<td>4 周</td>
+</tr>
+<tr>
+<td>账号存活周期</td>
+<td>&gt;14 天</td>
+<td>4 周</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>8.4 成功/失败标准（新增）</h3>
+<h4>Phase 1 成功标准（4 周后评估）</h4>
+<p><strong>必须满足（全部）：</strong>
+- [ ] 获客成本 &lt; $3/申请（放宽版）
+- [ ] 转化率 &gt; 2%（放宽版）
+- [ ] 账号平均存活 &gt; 10 天
+- [ ] 无重大合规问题</p>
+<p><strong>满足则进入 Phase 2，否则：</strong></p>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>应对</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>获客成本 &gt; $5</td>
+<td>优化话术/渠道</td>
+</tr>
+<tr>
+<td>转化率 &lt; 1%</td>
+<td>重新设计对话流程</td>
+</tr>
+<tr>
+<td>账号存活 &lt; 5 天</td>
+<td>降低频率/更换策略</td>
+</tr>
+<tr>
+<td>重大合规问题</td>
+<td>立即停止，咨询律师</td>
+</tr>
+</tbody>
+</table>
+<h4>项目终止条件</h4>
+<p>满足以下任一条件，建议终止项目：</p>
+<table>
+<thead>
+<tr>
+<th>条件</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>连续 4 周获客成本 &gt; $5/申请</td>
+<td>模式不成立</td>
+</tr>
+<tr>
+<td>账号封号率 &gt; 80%/月</td>
+<td>渠道不可持续</td>
+</tr>
+<tr>
+<td>收到律师函/监管警告</td>
+<td>法律风险过高</td>
+</tr>
+<tr>
+<td>用户投诉率 &gt; 5%</td>
+<td>体验太差，品牌风险</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>9. 附录</h2>
+<h3>9.1 术语表</h3>
+<table>
+<thead>
+<tr>
+<th>术语</th>
+<th>定义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>OFW</strong></td>
+<td>Overseas Filipino Worker（海外菲律宾劳工）</td>
+</tr>
+<tr>
+<td><strong>Taglish</strong></td>
+<td>Tagalog + English 混合语言</td>
+</tr>
+<tr>
+<td><strong>Messenger API</strong></td>
+<td>Meta 官方提供的 Messenger 开发接口</td>
+</tr>
+<tr>
+<td><strong>24 小时窗口</strong></td>
+<td>用户主动联系后 24 小时内可自由回复</td>
+</tr>
+<tr>
+<td><strong>住宅代理</strong></td>
+<td>使用真实家庭 IP 的代理服务</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>9.2 参考资料</h3>
+<ul>
+<li><a href="https://developers.facebook.com/docs/graph-api">Meta Graph API 文档</a></li>
+<li><a href="https://developers.facebook.com/docs/messenger-platform">Messenger Platform 文档</a></li>
+<li><a href="https://brightdata.com/">Bright Data 代理服务</a></li>
+<li><a href="https://privacy.gov.ph/data-privacy-act/">菲律宾 Data Privacy Act 2012</a></li>
+</ul>
+<hr />
+<h3>9.3 运营手册（新增）</h3>
+<h4>9.3.1 日常运营流程</h4>
+<p><strong>每日工作（运营）：</strong></p>
+<table>
+<thead>
+<tr>
+<th>时间</th>
+<th>任务</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>9:00 AM</td>
+<td>查看数据看板</td>
+<td>检查昨日数据，识别异常</td>
+</tr>
+<tr>
+<td>9:30 AM</td>
+<td>检查账号状态</td>
+<td>确认所有账号正常，处理封号告警</td>
+</tr>
+<tr>
+<td>10:00 AM</td>
+<td>审核 AI 话术</td>
+<td>审核昨日 AI 生成的话术</td>
+</tr>
+<tr>
+<td>2:00 PM</td>
+<td>处理用户投诉</td>
+<td>即时响应，5 分钟内</td>
+</tr>
+<tr>
+<td>4:00 PM</td>
+<td>话术优化</td>
+<td>根据数据调整话术</td>
+</tr>
+<tr>
+<td>6:00 PM</td>
+<td>填写运营日志</td>
+<td>记录当日问题与发现</td>
+</tr>
+</tbody>
+</table>
+<p><strong>每周工作（产品 + 运营）：</strong></p>
+<table>
+<thead>
+<tr>
+<th>时间</th>
+<th>任务</th>
+<th>输出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>周一 10:00 AM</td>
+<td>周数据复盘</td>
+<td>周报、问题清单</td>
+</tr>
+<tr>
+<td>周二</td>
+<td>话术 A/B 测试分析</td>
+<td>测试报告</td>
+</tr>
+<tr>
+<td>周三</td>
+<td>话术优化迭代</td>
+<td>新版话术</td>
+</tr>
+<tr>
+<td>周四</td>
+<td>竞品分析</td>
+<td>竞品动态报告</td>
+</tr>
+<tr>
+<td>周五</td>
+<td>下周计划</td>
+<td>下周目标与任务</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4>9.3.2 封号应对 SOP</h4>
+<div class="codehilite"><pre><span></span><code>发现封号 → 立即停止该账号所有操作 → 
+检查进行中的对话 → 切换备用账号继续 → 
+发送通知：&quot;Hi，刚才系统维护，现在继续为你服务~&quot; → 
+记录封号日志 → 分析封号原因 → 
+7 天后尝试重新注册
+</code></pre></div>
+
+<p><strong>封号日志模板：</strong></p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>封号时间</td>
+<td>YYYY-MM-DD HH:MM</td>
+</tr>
+<tr>
+<td>账号 ID</td>
+<td>FB-A001</td>
+</tr>
+<tr>
+<td>封号前操作</td>
+<td>评论回复 28 条/天</td>
+</tr>
+<tr>
+<td>可能原因</td>
+<td>频率过高/用户举报/系统检测</td>
+</tr>
+<tr>
+<td>影响对话数</td>
+<td>12 个进行中对话</td>
+</tr>
+<tr>
+<td>应对措施</td>
+<td>切换备用账号，通知用户</td>
+</tr>
+<tr>
+<td>后续计划</td>
+<td>降低频率至 20 条/天</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4>9.3.3 用户投诉处理 SOP</h4>
+<div class="codehilite"><pre><span></span><code>收到投诉 → 5 分钟内响应 → 
+了解问题 → 道歉 + 解决 → 
+记录投诉原因 → 分析是否系统性问题 → 
+如需，优化话术/流程 → 7 天内回访用户
+</code></pre></div>
+
+<p><strong>投诉分级：</strong></p>
+<table>
+<thead>
+<tr>
+<th>等级</th>
+<th>类型</th>
+<th>响应时间</th>
+<th>处理人</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0</td>
+<td>法律威胁、监管举报</td>
+<td>5 分钟</td>
+<td>负责人</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>严重不满、要求退款</td>
+<td>30 分钟</td>
+<td>高级客服</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>一般投诉、建议</td>
+<td>2 小时</td>
+<td>客服</td>
+</tr>
+</tbody>
+</table>
+<p><strong>投诉记录模板：</strong></p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>投诉时间</td>
+<td>YYYY-MM-DD HH:MM</td>
+</tr>
+<tr>
+<td>用户 ID</td>
+<td>user_xxx</td>
+</tr>
+<tr>
+<td>投诉类型</td>
+<td>诈骗质疑/骚扰/服务态度/其他</td>
+</tr>
+<tr>
+<td>投诉内容</td>
+<td>用户原话</td>
+</tr>
+<tr>
+<td>处理方案</td>
+<td>道歉/解释/补偿/其他</td>
+</tr>
+<tr>
+<td>处理结果</td>
+<td>用户满意/不满意/失联</td>
+</tr>
+<tr>
+<td>根本原因</td>
+<td>话术问题/流程问题/系统问题</td>
+</tr>
+<tr>
+<td>改进措施</td>
+<td>修改话术/优化流程/修复系统</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4>9.3.4 话术优化流程</h4>
+<div class="codehilite"><pre><span></span><code>数据发现问题 → 分析原因 → 
+AI 生成新话术 → 运营初审 → 
+律师合规审核 → 小流量 A/B 测试 → 
+效果验证 → 全量上线
+</code></pre></div>
+
+<p><strong>话术迭代周期：</strong></p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>时间</th>
+<th>负责人</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>问题分析</td>
+<td>1 天</td>
+<td>运营</td>
+</tr>
+<tr>
+<td>AI 生成</td>
+<td>1 天</td>
+<td>系统</td>
+</tr>
+<tr>
+<td>运营初审</td>
+<td>1 天</td>
+<td>运营</td>
+</tr>
+<tr>
+<td>律师审核</td>
+<td>2 天</td>
+<td>律师</td>
+</tr>
+<tr>
+<td>A/B 测试</td>
+<td>7 天</td>
+<td>产品</td>
+</tr>
+<tr>
+<td>全量上线</td>
+<td>-</td>
+<td>运营</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4>9.3.5 数据复盘模板</h4>
+<p><strong>周报复盘：</strong></p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>本周</th>
+<th>上周</th>
+<th>环比</th>
+<th>目标</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>获客成本</td>
+<td>$2.5</td>
+<td>$2.8</td>
+<td>-10%</td>
+<td>&lt;$3</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>转化率</td>
+<td>2.5%</td>
+<td>2.2%</td>
+<td>+14%</td>
+<td>&gt;2%</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>封号率</td>
+<td>40%</td>
+<td>50%</td>
+<td>-20%</td>
+<td>&lt;50%</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>满意度</td>
+<td>4.2</td>
+<td>4.0</td>
+<td>+5%</td>
+<td>&gt;4.0</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<p><strong>问题清单：</strong></p>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>优先级</th>
+<th>负责人</th>
+<th>解决时间</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>话术 A 转化率下降</td>
+<td>P1</td>
+<td>运营</td>
+<td>下周三</td>
+</tr>
+<tr>
+<td>账号 B 被封</td>
+<td>P0</td>
+<td>技术</td>
+<td>已完成</td>
+</tr>
+<tr>
+<td>用户投诉增加</td>
+<td>P1</td>
+<td>客服</td>
+<td>下周五</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>9.3 变更记录</h3>
+<table>
+<thead>
+<tr>
+<th>版本</th>
+<th>日期</th>
+<th>变更内容</th>
+<th>变更人</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v1.0</td>
+<td>2026-04-15</td>
+<td>初始版本</td>
+<td>小宁</td>
+</tr>
+<tr>
+<td>v1.1</td>
+<td>2026-04-15</td>
+<td>补充异常流程设计、话术库完整清单、合规操作清单、体验质量指标、成功/失败标准、运营手册</td>
+<td>小宁</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>9.4 待办事项</h3>
+<p><strong>开发前必须完成：</strong></p>
+<ul>
+<li>[ ] 运营团队审核话术库（86 条）</li>
+<li>[ ] 律师审核隐私政策和合规操作清单</li>
+<li>[ ] 技术团队评估技术风险</li>
+<li>[ ] 确认成功/失败标准</li>
+<li>[ ] 准备训练数据（7000 条标注评论）</li>
+</ul>
+<p><strong>上线前必须完成：</strong></p>
+<ul>
+<li>[ ] 所有 P0 功能开发完成</li>
+<li>[ ] 话术 A/B 测试完成</li>
+<li>[ ] 系统性能压测完成</li>
+<li>[ ] 运营团队培训完成</li>
+<li>[ ] 应急预案演练完成</li>
+</ul>
+<hr />
+<p><strong>文档版本：v1.1</strong><br />
+<strong>最后更新：2026-04-15</strong><br />
+<strong>文档状态：待评审</strong></p>
+<hr />
+<p><strong>文档结束</strong></p>
+        </div>
+        
+        <div class="footer">
+            <p>OFW FB 流量获取 Agent · 产品需求文档（PRD）v1.1</p>
+            <p>生成时间：2026-04-15 11:41:21 UTC</p>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const headings = document.querySelectorAll('h2, h3');
+            if (headings.length > 0) {
+                let tocHTML = '<div class="toc"><h3>📑 目录</h3><ul>';
+                headings.forEach((h, index) => {
+                    const id = 'heading-' + index;
+                    h.id = id;
+                    const level = h.tagName === 'H3' ? 'style="margin-left: 1.5rem; font-weight: normal;"' : '';
+                    const prefix = h.tagName === 'H2' ? '▸ ' : '  - ';
+                    tocHTML += '<li ' + level + '><a href="#' + id + '">' + prefix + h.textContent + '</a></li>';
+                });
+                tocHTML += '</ul></div>';
+                document.querySelector('.card').insertAdjacentHTML('afterbegin', tocHTML);
+            }
+            
+            document.querySelectorAll('table').forEach(table => {
+                table.classList.add('table');
+            });
+        });
+    </script>
+</body>
+</html>

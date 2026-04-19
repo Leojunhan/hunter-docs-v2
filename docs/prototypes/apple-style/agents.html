@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent 管理 - Hunter Agent 管理系统</title>
+    <link rel="stylesheet" href="apple-design-system.css">
+    <style>
+        /* Agent Card - Simplified Structure */
+        .agent-card {
+            background: var(--system-background);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+        
+        .agent-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+        
+        .agent-card-header {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing-md);
+        }
+        
+        .agent-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+        
+        .agent-icon.online { background: var(--system-green-light); }
+        .agent-icon.running { background: var(--system-blue-light); }
+        .agent-icon.warning { background: var(--system-orange-light); }
+        .agent-icon.offline { background: var(--system-fill); }
+        
+        .agent-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .agent-name {
+            font-size: var(--font-headline);
+            font-weight: var(--weight-semibold);
+            color: var(--label-color);
+            margin-bottom: 4px;
+        }
+        
+        .agent-desc {
+            font-size: var(--font-footnote);
+            color: var(--secondary-label);
+            line-height: 1.4;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .agent-card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: var(--spacing-sm);
+            border-top: 0.5px solid var(--separator);
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            font-size: var(--font-caption-1);
+            font-weight: var(--weight-medium);
+        }
+        
+        .status-badge.online {
+            background: var(--system-green-light);
+            color: var(--system-green);
+        }
+        
+        .status-badge.running {
+            background: var(--system-blue-light);
+            color: var(--system-blue);
+        }
+        
+        .status-badge.warning {
+            background: var(--system-orange-light);
+            color: var(--system-orange);
+        }
+        
+        .status-badge.offline {
+            background: var(--system-fill);
+            color: var(--secondary-label);
+        }
+        
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+        
+        .status-badge.running .status-dot {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+        
+        .agent-time {
+            font-size: var(--font-caption-1);
+            color: var(--tertiary-label);
+        }
+        
+        /* Grid Layout */
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: var(--spacing-md);
+        }
+        
+        /* Filter Bar */
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: var(--secondary-system-background);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .filter-search {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: 8px 12px;
+            background: var(--system-background);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--separator);
+        }
+        
+        .filter-search:focus-within {
+            border-color: var(--system-blue);
+            box-shadow: 0 0 0 3px var(--system-blue-light);
+        }
+        
+        .filter-search-icon {
+            color: var(--tertiary-label);
+        }
+        
+        .filter-search-input {
+            border: none;
+            background: transparent;
+            font-size: var(--font-subhead);
+            color: var(--label-color);
+            width: 100%;
+            outline: none;
+        }
+        
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+        
+        .filter-btn {
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            font-size: var(--font-footnote);
+            font-weight: var(--weight-medium);
+            background: var(--system-fill);
+            color: var(--secondary-label);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .filter-btn:hover {
+            background: var(--system-blue-light);
+            color: var(--system-blue);
+        }
+        
+        .filter-btn.active {
+            background: var(--system-blue);
+            color: white;
+        }
+        
+        /* Stats Summary */
+        .stats-summary {
+            display: flex;
+            gap: var(--spacing-md);
+            padding: var(--spacing-lg);
+            background: var(--system-background);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--secondary-system-background);
+            border-radius: var(--radius-sm);
+        }
+        
+        .stat-icon {
+            font-size: var(--font-title-3);
+        }
+        
+        .stat-value {
+            font-size: var(--font-headline);
+            font-weight: var(--weight-semibold);
+            color: var(--label-color);
+        }
+        
+        .stat-label {
+            font-size: var(--font-caption-1);
+            color: var(--tertiary-label);
+        }
+        
+        /* Detail Drawer */
+        .drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .drawer-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 420px;
+            max-width: 100%;
+            height: 100%;
+            background: var(--system-background);
+            z-index: 1001;
+            transform: translateX(100%);
+            transition: transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .drawer.active {
+            transform: translateX(0);
+        }
+        
+        .drawer-header {
+            padding: var(--spacing-lg);
+            border-bottom: 0.5px solid var(--separator);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .drawer-title {
+            font-size: var(--font-title-3);
+            font-weight: var(--weight-semibold);
+            color: var(--label-color);
+        }
+        
+        .drawer-close {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            background: var(--system-fill);
+            border: none;
+            font-size: var(--font-title-3);
+            color: var(--secondary-label);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .drawer-close:hover {
+            background: var(--system-red-light);
+            color: var(--system-red);
+        }
+        
+        .drawer-body {
+            padding: var(--spacing-lg);
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .drawer-actions {
+            padding: var(--spacing-lg);
+            border-top: 0.5px solid var(--separator);
+            background: var(--secondary-system-background);
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+        
+        .action-row {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            font-size: var(--font-subhead);
+            font-weight: var(--weight-medium);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        
+        .action-btn-primary {
+            background: var(--system-blue);
+            color: white;
+        }
+        
+        .action-btn-primary:hover {
+            background: var(--system-blue-hover);
+        }
+        
+        .action-btn-secondary {
+            background: var(--system-fill);
+            color: var(--secondary-label);
+        }
+        
+        .action-btn-secondary:hover {
+            background: var(--system-blue-light);
+            color: var(--system-blue);
+        }
+        
+        .action-btn-warning {
+            background: var(--system-orange-light);
+            color: var(--system-orange);
+        }
+        
+        .action-btn-warning:hover {
+            background: var(--system-orange);
+            color: white;
+        }
+        
+        .action-btn-danger {
+            background: var(--system-red-light);
+            color: var(--system-red);
+        }
+        
+        .action-btn-danger:hover {
+            background: var(--system-red);
+            color: white;
+        }
+        
+        /* Form Inputs */
+        .settings-input {
+            padding: 10px 14px;
+            border: 1px solid var(--separator);
+            border-radius: var(--radius-sm);
+            background: var(--system-background);
+            font-size: var(--font-subhead);
+            color: var(--label-color);
+            transition: all 0.2s ease;
+            width: 100px;
+        }
+        
+        .settings-input:focus {
+            outline: none;
+            border-color: var(--system-blue);
+            box-shadow: 0 0 0 3px var(--system-blue-light);
+        }
+        
+        .settings-select {
+            padding: 10px 14px;
+            border: 1px solid var(--separator);
+            border-radius: var(--radius-sm);
+            background: var(--system-background);
+            font-size: var(--font-subhead);
+            color: var(--label-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .settings-select:focus {
+            outline: none;
+            border-color: var(--system-blue);
+            box-shadow: 0 0 0 3px var(--system-blue-light);
+        }
+        
+        .detail-section {
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .detail-section-title {
+            font-size: var(--font-subhead);
+            font-weight: var(--weight-semibold);
+            color: var(--label-color);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--spacing-sm) 0;
+            border-bottom: 0.5px solid var(--separator);
+        }
+        
+        .detail-label {
+            font-size: var(--font-subhead);
+            color: var(--secondary-label);
+        }
+        
+        .detail-value {
+            font-size: var(--font-subhead);
+            font-weight: var(--weight-medium);
+            color: var(--label-color);
+        }
+        
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-xs);
+        }
+        
+        .skill-tag {
+            padding: 6px 12px;
+            background: var(--system-purple-light);
+            border-radius: var(--radius-sm);
+            font-size: var(--font-caption-1);
+            color: var(--system-purple);
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .agents-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-summary {
+                flex-wrap: wrap;
+            }
+            
+            .filter-bar {
+                flex-wrap: wrap;
+            }
+            
+            .drawer {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-group">
+                    <div class="logo-icon">H</div>
+                    <div class="logo-text">
+                        <div class="logo">Hunter</div>
+                    </div>
+                </div>
+                <button class="sidebar-toggle" onclick="toggleSidebar()">◀</button>
+            </div>
+            <nav class="nav-section">
+                <a href="dashboard.html" class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">Dashboard</span>
+                </a>
+                <a href="agents.html" class="nav-item active">
+                    <span class="nav-icon">🤖</span>
+                    <span class="nav-label">Agent 管理</span>
+                </a>
+                <a href="skills.html" class="nav-item">
+                    <span class="nav-icon">⚡</span>
+                    <span class="nav-label">Skill 管理</span>
+                </a>
+                <a href="executions.html" class="nav-item">
+                    <span class="nav-icon">📝</span>
+                    <span class="nav-label">执行记录</span>
+                </a>
+                <a href="settings.html" class="nav-item">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-label">系统设置</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <h1 class="page-title">Agent 管理</h1>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-primary" onclick="showCreateDrawer()">
+                    <span>＋</span>
+                    <span>创建 Agent</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Stats Summary -->
+            <div class="stats-summary">
+                <div class="stat-item">
+                    <span class="stat-icon">🤖</span>
+                    <div>
+                        <div class="stat-value">12</div>
+                        <div class="stat-label">全部 Agents</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon" style="color: var(--system-green);">●</span>
+                    <div>
+                        <div class="stat-value">10</div>
+                        <div class="stat-label">在线</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon" style="color: var(--system-blue);">●</span>
+                    <div>
+                        <div class="stat-value">2</div>
+                        <div class="stat-label">运行中</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon" style="color: var(--system-orange);">●</span>
+                    <div>
+                        <div class="stat-value">0</div>
+                        <div class="stat-label">警告</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon" style="color: var(--tertiary-label);">●</span>
+                    <div>
+                        <div class="stat-value">0</div>
+                        <div class="stat-label">离线</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <div class="filter-search">
+                    <span class="filter-search-icon">🔍</span>
+                    <input type="text" class="filter-search-input" placeholder="搜索 Agent..." id="searchInput" onkeyup="filterAgents()">
+                </div>
+                <div class="filter-group">
+                    <button class="filter-btn active" onclick="filterByStatus('all')">全部</button>
+                    <button class="filter-btn" onclick="filterByStatus('online')">在线</button>
+                    <button class="filter-btn" onclick="filterByStatus('running')">运行中</button>
+                    <button class="filter-btn" onclick="filterByStatus('warning')">警告</button>
+                    <button class="filter-btn" onclick="filterByStatus('offline')">离线</button>
+                </div>
+            </div>
+
+            <!-- Agents Grid -->
+            <div class="agents-grid" id="agentsGrid">
+                <!-- SEO内容Agent -->
+                <div class="agent-card" onclick="openDetailDrawer('SEO-001')">
+                    <div class="agent-card-header">
+                        <div class="agent-icon online">📝</div>
+                        <div class="agent-info">
+                            <div class="agent-name">SEO内容Agent</div>
+                            <div class="agent-desc">生成SEO优化内容，提升搜索引擎排名</div>
+                        </div>
+                    </div>
+                    <div class="agent-card-footer">
+                        <span class="status-badge online">
+                            <span class="status-dot"></span>
+                            Online
+                        </span>
+                        <span class="agent-time">2 小时前</span>
+                    </div>
+                </div>
+
+                <!-- FB社群Agent -->
+                <div class="agent-card" onclick="openDetailDrawer('FB-001')">
+                    <div class="agent-card-header">
+                        <div class="agent-icon running">👥</div>
+                        <div class="agent-info">
+                            <div class="agent-name">FB社群Agent</div>
+                            <div class="agent-desc">监控社群动态，自动互动引流</div>
+                        </div>
+                    </div>
+                    <div class="agent-card-footer">
+                        <span class="status-badge running">
+                            <span class="status-dot"></span>
+                            Running
+                        </span>
+                        <span class="agent-time">进行中</span>
+                    </div>
+                </div>
+
+                <!-- WhatsApp裂变Agent -->
+                <div class="agent-card" onclick="openDetailDrawer('WA-001')">
+                    <div class="agent-card-header">
+                        <div class="agent-icon online">💬</div>
+                        <div class="agent-info">
+                            <div class="agent-name">WhatsApp裂变Agent</div>
+                            <div class="agent-desc">老客邀请裂变，扩大用户基数</div>
+                        </div>
+                    </div>
+                    <div class="agent-card-footer">
+                        <span class="status-badge online">
+                            <span class="status-dot"></span>
+                            Online
+                        </span>
+                        <span class="agent-time">15 分钟前</span>
+                    </div>
+                </div>
+
+                <!-- 风控预审Agent -->
+                <div class="agent-card" onclick="openDetailDrawer('RK-001')">
+                    <div class="agent-card-header">
+                        <div class="agent-icon online">🛡️</div>
+                        <div class="agent-info">
+                            <div class="agent-name">风控预审Agent</div>
+                            <div class="agent-desc">反欺诈检测、信用评分、秒级决策</div>
+                        </div>
+                    </div>
+                    <div class="agent-card-footer">
+                        <span class="status-badge online">
+                            <span class="status-dot"></span>
+                            Online
+                        </span>
+                        <span class="agent-time">1 小时前</span>
+                    </div>
+                </div>
+
+                <!-- TikTok内容Agent -->
+                <div class="agent-card" onclick="openDetailDrawer('TT-001')">
+                    <div class="agent-card-header">
+                        <div class="agent-icon online">🎬</div>
+                        <div class="agent-info">
+                            <div class="agent-name">TikTok内容Agent</div>
+                            <div class="agent-desc">短视频内容生成，软性引流获客</div>
+                        </div>
+                    </div>
+                    <div class="agent-card-footer">
+                        <span class="status-badge online">
+                            <span class="status-dot"></span>
+                            Online
+                        </span>
+                        <span class="agent-time">3 小时前</span>
+                    </div>
+                </div>
+
+                <!-- KOL协作Agent -->
+                <div class="agent-card" onclick="openDetailDrawer('KL-001')">
+                    <div class="agent-card-header">
+                        <div class="agent-icon online">🌟</div>
+                        <div class="agent-info">
+                            <div class="agent-name">KOL协作Agent</div>
+                            <div class="agent-desc">网红发现、合作洽谈、效果追踪</div>
+                        </div>
+                    </div>
+                    <div class="agent-card-footer">
+                        <span class="status-badge online">
+                            <span class="status-dot"></span>
+                            Online
+                        </span>
+                        <span class="agent-time">昨天</span>
+                    </div>
+                </div>
+
+                <!-- 被拒留存Agent -->
+                <div class="agent-card" onclick="openDetailDrawer('BJ-001')">
+                    <div class="agent-card-header">
+                        <div class="agent-icon online">💌</div>
+                        <div class="agent-info">
+                            <div class="agent-name">被拒留存Agent</div>
+                            <div class="agent-desc">温暖告知、改善建议、90天培育</div>
+                        </div>
+                    </div>
+                    <div class="agent-card-footer">
+                        <span class="status-badge online">
+                            <span class="status-dot"></span>
+                            Online
+                        </span>
+                        <span class="agent-time">2 小时前</span>
+                    </div>
+                </div>
+
+                <!-- 贷后管理Agent -->
+                <div class="agent-card" onclick="openDetailDrawer('DH-001')">
+                    <div class="agent-card-header">
+                        <div class="agent-icon running">💰</div>
+                        <div class="agent-info">
+                            <div class="agent-name">贷后管理Agent</div>
+                            <div class="agent-desc">还款提醒、逾期预警、复借引导</div>
+                        </div>
+                    </div>
+                    <div class="agent-card-footer">
+                        <span class="status-badge running">
+                            <span class="status-dot"></span>
+                            Running
+                        </span>
+                        <span class="agent-time">进行中</span>
+                    </div>
+                </div>
+
+                <!-- 意图分类Agent -->
+                <div class="agent-card" onclick="openDetailDrawer('YT-001')">
+                    <div class="agent-card-header">
+                        <div class="agent-icon online">🎯</div>
+                        <div class="agent-info">
+                            <div class="agent-name">意图分类Agent</div>
+                            <div class="agent-desc">用户需求意图识别，精准匹配</div>
+                        </div>
+                    </div>
+                    <div class="agent-card-footer">
+                        <span class="status-badge online">
+                            <span class="status-dot"></span>
+                            Online
+                        </span>
+                        <span class="agent-time">30 分钟前</span>
+                    </div>
+                </div>
+
+                <!-- 知识库Agent -->
+                <div class="agent-card" onclick="openDetailDrawer('ZS-001')">
+                    <div class="agent-card-header">
+                        <div class="agent-icon online">📚</div>
+                        <div class="agent-info">
+                            <div class="agent-name">知识库Agent</div>
+                            <div class="agent-desc">产品FAQ解答，RAG架构智能问答</div>
+                        </div>
+                    </div>
+                    <div class="agent-card-footer">
+                        <span class="status-badge online">
+                            <span class="status-dot"></span>
+                            Online
+                        </span>
+                        <span class="agent-time">1 小时前</span>
+                    </div>
+                </div>
+
+                <!-- 数据回流Agent -->
+                <div class="agent-card" onclick="openDetailDrawer('SJ-001')">
+                    <div class="agent-card-header">
+                        <div class="agent-icon online">🔄</div>
+                        <div class="agent-info">
+                            <div class="agent-name">数据回流Agent</div>
+                            <div class="agent-desc">数据回流优化模型，飞轮加速</div>
+                        </div>
+                    </div>
+                    <div class="agent-card-footer">
+                        <span class="status-badge online">
+                            <span class="status-dot"></span>
+                            Online
+                        </span>
+                        <span class="agent-time">4 小时前</span>
+                    </div>
+                </div>
+
+                <!-- Agent Manager -->
+                <div class="agent-card" onclick="openDetailDrawer('MG-001')">
+                    <div class="agent-card-header">
+                        <div class="agent-icon online">🎛️</div>
+                        <div class="agent-info">
+                            <div class="agent-name">Agent Manager</div>
+                            <div class="agent-desc">全局调度、定时汇报、策略迭代</div>
+                        </div>
+                    </div>
+                    <div class="agent-card-footer">
+                        <span class="status-badge online">
+                            <span class="status-dot"></span>
+                            Online
+                        </span>
+                        <span class="agent-time">5 分钟前</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Detail Drawer -->
+    <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+    <div class="drawer" id="detailDrawer">
+        <div class="drawer-header">
+            <div class="drawer-title" id="drawerTitle">Agent 详情</div>
+            <button class="drawer-close" onclick="closeDrawer()">✕</button>
+        </div>
+        <div class="drawer-body" id="drawerBody">
+            <!-- Dynamic content will be loaded here -->
+        </div>
+        <div class="drawer-actions" id="drawerActions">
+            <!-- Dynamic actions will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // Agent Detail Data
+        const agentDetails = {
+            'SEO-001': {
+                name: 'SEO内容Agent',
+                desc: '生成SEO优化内容，提升搜索引擎排名',
+                status: 'online',
+                icon: '📝',
+                skills: ['xlsx', 'docx', 'pdf'],
+                executions: 156,
+                successRate: 98.5,
+                lastRun: '2 小时前',
+                created: '2024-01-15',
+                config: { heartbeat: 30, timeout: 90, retries: 3 }
+            },
+            'FB-001': {
+                name: 'FB社群Agent',
+                desc: '监控社群动态，自动互动引流',
+                status: 'running',
+                icon: '👥',
+                skills: ['browser_visible', 'trend-tracking'],
+                executions: 89,
+                successRate: 94.2,
+                lastRun: '进行中',
+                created: '2024-02-10',
+                config: { heartbeat: 30, timeout: 120, retries: 2 }
+            },
+            'WA-001': {
+                name: 'WhatsApp裂变Agent',
+                desc: '老客邀请裂变，扩大用户基数',
+                status: 'online',
+                icon: '💬',
+                skills: ['dingtalk_channel_connect', 'himalaya'],
+                executions: 45,
+                successRate: 88.9,
+                lastRun: '15 分钟前',
+                created: '2024-03-01',
+                config: { heartbeat: 60, timeout: 90, retries: 3 }
+            },
+            'RK-001': {
+                name: '风控预审Agent',
+                desc: '反欺诈检测、信用评分、秒级决策',
+                status: 'online',
+                icon: '🛡️',
+                skills: ['xlsx', 'file_reader'],
+                executions: 234,
+                successRate: 96.8,
+                lastRun: '1 小时前',
+                created: '2024-01-20',
+                config: { heartbeat: 15, timeout: 60, retries: 1 }
+            },
+            'TT-001': {
+                name: 'TikTok内容Agent',
+                desc: '短视频内容生成，软性引流获客',
+                status: 'online',
+                icon: '🎬',
+                skills: ['pptx', 'docx'],
+                executions: 67,
+                successRate: 92.1,
+                lastRun: '3 小时前',
+                created: '2024-02-28',
+                config: { heartbeat: 30, timeout: 90, retries: 2 }
+            },
+            'KL-001': {
+                name: 'KOL协作Agent',
+                desc: '网红发现、合作洽谈、效果追踪',
+                status: 'online',
+                icon: '🌟',
+                skills: ['browser_visible', 'xlsx'],
+                executions: 34,
+                successRate: 91.2,
+                lastRun: '昨天',
+                created: '2024-03-05',
+                config: { heartbeat: 60, timeout: 120, retries: 3 }
+            },
+            'BJ-001': {
+                name: '被拒留存Agent',
+                desc: '温暖告知、改善建议、90天培育',
+                status: 'online',
+                icon: '💌',
+                skills: ['himalaya', 'docx'],
+                executions: 78,
+                successRate: 95.4,
+                lastRun: '2 小时前',
+                created: '2024-02-15',
+                config: { heartbeat: 30, timeout: 90, retries: 2 }
+            },
+            'DH-001': {
+                name: '贷后管理Agent',
+                desc: '还款提醒、逾期预警、复借引导',
+                status: 'running',
+                icon: '💰',
+                skills: ['cron', 'himalaya'],
+                executions: 189,
+                successRate: 97.3,
+                lastRun: '进行中',
+                created: '2024-01-10',
+                config: { heartbeat: 10, timeout: 60, retries: 1 }
+            },
+            'YT-001': {
+                name: '意图分类Agent',
+                desc: '用户需求意图识别，精准匹配',
+                status: 'online',
+                icon: '🎯',
+                skills: ['file_reader'],
+                executions: 267,
+                successRate: 98.1,
+                lastRun: '30 分钟前',
+                created: '2024-01-18',
+                config: { heartbeat: 15, timeout: 30, retries: 1 }
+            },
+            'ZS-001': {
+                name: '知识库Agent',
+                desc: '产品FAQ解答，RAG架构智能问答',
+                status: 'online',
+                icon: '📚',
+                skills: ['file_reader', 'pdf'],
+                executions: 145,
+                successRate: 96.5,
+                lastRun: '1 小时前',
+                created: '2024-02-20',
+                config: { heartbeat: 30, timeout: 60, retries: 2 }
+            },
+            'SJ-001': {
+                name: '数据回流Agent',
+                desc: '数据回流优化模型，飞轮加速',
+                status: 'online',
+                icon: '🔄',
+                skills: ['xlsx', 'cron'],
+                executions: 98,
+                successRate: 99.2,
+                lastRun: '4 小时前',
+                created: '2024-03-10',
+                config: { heartbeat: 60, timeout: 90, retries: 3 }
+            },
+            'MG-001': {
+                name: 'Agent Manager',
+                desc: '全局调度、定时汇报、策略迭代',
+                status: 'online',
+                icon: '🎛️',
+                skills: ['cron', 'guidance'],
+                executions: 324,
+                successRate: 99.8,
+                lastRun: '5 分钟前',
+                created: '2024-01-01',
+                config: { heartbeat: 5, timeout: 30, retries: 1 }
+            }
+        };
+
+        // Open Detail Drawer
+        function openDetailDrawer(agentId) {
+            const agent = agentDetails[agentId];
+            if (!agent) return;
+
+            document.getElementById('drawerTitle').textContent = agent.name;
+            
+            const statusClass = agent.status === 'running' ? 'running' : 'online';
+            const statusText = agent.status === 'running' ? 'Running' : 'Online';
+            
+            document.getElementById('drawerBody').innerHTML = `
+                <div class="detail-section">
+                    <div class="detail-section-title">基本信息</div>
+                    <div class="detail-row">
+                        <span class="detail-label">状态</span>
+                        <span class="status-badge ${statusClass}">
+                            <span class="status-dot"></span>
+                            ${statusText}
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">ID</span>
+                        <span class="detail-value">${agentId}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">描述</span>
+                        <span class="detail-value">${agent.desc}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">创建时间</span>
+                        <span class="detail-value">${agent.created}</span>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-section-title">运行统计</div>
+                    <div class="detail-row">
+                        <span class="detail-label">执行次数</span>
+                        <span class="detail-value">${agent.executions}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">成功率</span>
+                        <span class="detail-value">${agent.successRate}%</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">最后执行</span>
+                        <span class="detail-value">${agent.lastRun}</span>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-section-title">绑定 Skills</div>
+                    <div class="skills-list">
+                        ${agent.skills.map(s => `<span class="skill-tag">${s}</span>`).join('')}
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-section-title">配置参数</div>
+                    <div class="detail-row">
+                        <span class="detail-label">Heartbeat</span>
+                        <span class="detail-value">${agent.config.heartbeat}s</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Timeout</span>
+                        <span class="detail-value">${agent.config.timeout}s</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Max Retries</span>
+                        <span class="detail-value">${agent.config.retries}</span>
+                    </div>
+                </div>
+            `;
+            
+            // Render actions based on status
+            const isRunning = agent.status === 'running';
+            const isOnline = agent.status === 'online';
+            
+            document.getElementById('drawerActions').innerHTML = `
+                <div class="action-row">
+                    ${isRunning || isOnline ? `
+                        <button class="action-btn action-btn-warning" onclick="restartAgent('${agentId}')">🔄 重启</button>
+                        <button class="action-btn action-btn-secondary" onclick="stopAgent('${agentId}')">⏹ 停止</button>
+                    ` : `
+                        <button class="action-btn action-btn-primary" onclick="startAgent('${agentId}')">▶ 启动</button>
+                    `}
+                    <button class="action-btn action-btn-secondary" onclick="editAgent('${agentId}')">✏ 编辑</button>
+                </div>
+                <div class="action-row">
+                    <button class="action-btn action-btn-secondary" onclick="viewLogs('${agentId}')">📋 查看日志</button>
+                    <button class="action-btn action-btn-danger" onclick="deleteAgent('${agentId}')">🗑 删除</button>
+                </div>
+            `;
+            
+            document.getElementById('drawerOverlay').classList.add('active');
+            document.getElementById('detailDrawer').classList.add('active');
+        }
+
+        // Close Drawer
+        function closeDrawer() {
+            document.getElementById('drawerOverlay').classList.remove('active');
+            document.getElementById('detailDrawer').classList.remove('active');
+        }
+
+        // Show Create Drawer
+        function showCreateDrawer() {
+            document.getElementById('drawerTitle').textContent = '创建新 Agent';
+            
+            document.getElementById('drawerBody').innerHTML = `
+                <div class="detail-section">
+                    <div class="detail-section-title">基本信息</div>
+                    <div class="detail-row" style="flex-direction: column; gap: 8px;">
+                        <span class="detail-label">名称</span>
+                        <input type="text" class="settings-input" style="width: 100%; text-align: left;" placeholder="例如：SEO内容Agent" id="createName">
+                    </div>
+                    <div class="detail-row" style="flex-direction: column; gap: 8px;">
+                        <span class="detail-label">描述</span>
+                        <textarea class="settings-input" style="width: 100%; text-align: left; height: 60px; resize: none;" placeholder="描述 Agent 的主要功能..." id="createDesc"></textarea>
+                    </div>
+                    <div class="detail-row" style="flex-direction: column; gap: 8px;">
+                        <span class="detail-label">图标</span>
+                        <select class="settings-select" style="width: 100%;" id="createIcon">
+                            <option value="🤖">🤖 机器人</option>
+                            <option value="📝">📝 文档</option>
+                            <option value="💬">💬 消息</option>
+                            <option value="🛡️">🛡️ 防护</option>
+                            <option value="🎬">🎬 视频</option>
+                            <option value="🌟">🌟 推荐</option>
+                            <option value="💰">💰 金融</option>
+                            <option value="🎯">🎯 目标</option>
+                            <option value="📚">📚 知识</option>
+                            <option value="🔄">🔄 数据</option>
+                            <option value="🎛️">🎛️ 管理</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-section-title">绑定 Skills</div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                        <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                            <input type="checkbox" value="xlsx"> <span style="font-size: 14px;">xlsx</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                            <input type="checkbox" value="docx"> <span style="font-size: 14px;">docx</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                            <input type="checkbox" value="pdf"> <span style="font-size: 14px;">pdf</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                            <input type="checkbox" value="browser_visible"> <span style="font-size: 14px;">browser_visible</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                            <input type="checkbox" value="file_reader"> <span style="font-size: 14px;">file_reader</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                            <input type="checkbox" value="cron"> <span style="font-size: 14px;">cron</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                            <input type="checkbox" value="himalaya"> <span style="font-size: 14px;">himalaya</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                            <input type="checkbox" value="pptx"> <span style="font-size: 14px;">pptx</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                            <input type="checkbox" value="trend-tracking"> <span style="font-size: 14px;">trend-tracking</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                            <input type="checkbox" value="guidance"> <span style="font-size: 14px;">guidance</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-section-title">运行配置</div>
+                    <div class="detail-row">
+                        <span class="detail-label">Heartbeat (秒)</span>
+                        <input type="number" class="settings-input" value="30" id="createHeartbeat">
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Timeout (秒)</span>
+                        <input type="number" class="settings-input" value="90" id="createTimeout">
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Max Retries</span>
+                        <input type="number" class="settings-input" value="3" id="createRetries">
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('drawerActions').innerHTML = `
+                <div class="action-row">
+                    <button class="action-btn action-btn-primary" onclick="createAgent()">✓ 创建 Agent</button>
+                    <button class="action-btn action-btn-secondary" onclick="closeDrawer()">取消</button>
+                </div>
+            `;
+            
+            document.getElementById('drawerOverlay').classList.add('active');
+            document.getElementById('detailDrawer').classList.add('active');
+        }
+        
+        // Create Agent
+        function createAgent() {
+            const name = document.getElementById('createName').value;
+            const desc = document.getElementById('createDesc').value;
+            const icon = document.getElementById('createIcon').value;
+            
+            if (!name) {
+                showToast('请输入 Agent 名称', 'error');
+                return;
+            }
+            
+            showToast(`${name} 创建成功！`);
+            closeDrawer();
+        }
+
+        // Filter Agents
+        function filterAgents() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.agent-card');
+            
+            cards.forEach(card => {
+                const name = card.querySelector('.agent-name').textContent.toLowerCase();
+                const desc = card.querySelector('.agent-desc').textContent.toLowerCase();
+                if (name.includes(search) || desc.includes(search)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Filter by Status
+        function filterByStatus(status) {
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // In real app, would filter by status
+            showToast(`筛选: ${status}`);
+        }
+
+        // Sidebar Toggle
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        }
+
+        // Toast
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <span class="toast-icon">${type === 'success' ? '✓' : '✕'}</span>
+                <span class="toast-message">${message}</span>
+                <span class="toast-close" onclick="this.parentElement.remove()">✕</span>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        // Agent Actions
+        function startAgent(agentId) {
+            const agent = agentDetails[agentId];
+            if (agent) {
+                agent.status = 'online';
+                showToast(`${agent.name} 已启动`);
+                closeDrawer();
+            }
+        }
+        
+        function stopAgent(agentId) {
+            const agent = agentDetails[agentId];
+            if (agent) {
+                agent.status = 'offline';
+                showToast(`${agent.name} 已停止`);
+                closeDrawer();
+            }
+        }
+        
+        function restartAgent(agentId) {
+            const agent = agentDetails[agentId];
+            if (agent) {
+                showToast(`${agent.name} 正在重启...`);
+            }
+        }
+        
+        function editAgent(agentId) {
+            showToast(`编辑配置开发中...`);
+        }
+        
+        function viewLogs(agentId) {
+            showToast(`跳转到执行记录页面`);
+            // In real app: window.location.href = `executions.html?agent=${agentId}`;
+        }
+        
+        function deleteAgent(agentId) {
+            const agent = agentDetails[agentId];
+            if (agent && confirm(`确定删除 ${agent.name}？此操作不可恢复。`)) {
+                showToast(`${agent.name} 已删除`);
+                closeDrawer();
+            }
+        }
+    </script>
+</body>
+</html>

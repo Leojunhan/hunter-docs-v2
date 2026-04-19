@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hunter Agent PRD 评审材料</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.6; color: #333; max-width: 1200px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
+        .container { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        h1 { color: #1a73e8; border-bottom: 3px solid #1a73e8; padding-bottom: 10px; margin-bottom: 20px; font-size: 28px; }
+        h2 { color: #202124; border-left: 4px solid #1a73e8; padding-left: 12px; margin: 30px 0 15px; font-size: 22px; }
+        h3 { color: #3c4043; margin: 20px 0 10px; font-size: 18px; }
+        p { margin: 10px 0; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th, td { border: 1px solid #dadce0; padding: 12px; text-align: left; }
+        th { background: #f8f9fa; font-weight: 600; color: #202124; }
+        tr:nth-child(even) { background: #f8f9fa; }
+        tr:hover { background: #e8f0fe; }
+        ul, ol { margin: 10px 0 10px 25px; }
+        li { margin: 5px 0; }
+        .meta { background: #e8f0fe; padding: 15px; border-radius: 4px; margin: 20px 0; }
+        .decision { background: #d1ecf1; border-left: 4px solid #17a2b8; padding: 15px; margin: 15px 0; }
+        .warning { background: #f8d7da; border-left: 4px solid #dc3545; padding: 15px; margin: 15px 0; }
+        .info { background: #d4edda; border-left: 4px solid #28a745; padding: 15px; margin: 15px 0; }
+        .risk { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 15px 0; }
+        .toc { background: #f8f9fa; padding: 20px; border-radius: 4px; margin: 20px 0; }
+        .toc a { color: #1a73e8; text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+        .header-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #dadce0; }
+        .status { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 14px; font-weight: bold; }
+        .status-review { background: #1a73e8; color: white; }
+        .priority-high { color: #d93025; font-weight: bold; }
+        .priority-medium { color: #f9ab00; font-weight: bold; }
+        .priority-low { color: #188038; font-weight: bold; }
+        code { background: #f8f9fa; padding: 2px 6px; border-radius: 3px; font-family: "Courier New", monospace; }
+        pre { background: #282c34; color: #abb2bf; padding: 20px; border-radius: 4px; overflow-x: auto; margin: 15px 0; }
+        pre code { background: none; padding: 0; }
+        .timeline { border-left: 3px solid #1a73e8; padding-left: 20px; margin: 20px 0; }
+        .timeline-item { margin-bottom: 20px; position: relative; }
+        .timeline-item:before { content: ""; position: absolute; left: -26px; top: 5px; width: 10px; height: 10px; border-radius: 50%; background: #1a73e8; }
+        .timeline-date { font-size: 14px; color: #5f6368; }
+        .timeline-title { font-weight: bold; color: #202124; }
+        .timeline-desc { margin-top: 5px; }
+        .checklist li { list-style: none; }
+        .checklist li:before { content: "☐ "; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-info">
+            <div>
+                <h1>Hunter Agent 管理模块 PRD 评审材料</h1>
+                <p><strong>评审日期：</strong>待定 | <strong>状态：</strong><span class="status status-review">待评审</span></p>
+            </div>
+            <div style="text-align: right;">
+                <p><strong>PM：</strong>Diwei</p>
+                <p><strong>PM-Agent：</strong>小宁（RAKkDm）</p>
+                <p><strong>CTO：</strong>待定</p>
+            </div>
+        </div>
+
+        <div class="toc">
+            <h3 style="margin-top: 0;">📑 评审议程</h3>
+            <ul>
+                <li><a href="#section1">1. 评审目标</a>（5 分钟）</li>
+                <li><a href="#section2">2. 方案概述</a>（10 分钟）</li>
+                <li><a href="#section3">3. 核心决策点</a>（15 分钟）</li>
+                <li><a href="#section4">4. 风险评估</a>（5 分钟）</li>
+                <li><a href="#section5">5. 问题讨论</a>（10 分钟）</li>
+            </ul>
+        </div>
+
+        <h2 id="section1">1. 评审目标</h2>
+
+        <div class="meta">
+            <strong>目标：</strong>确认 Hunter Agent 管理模块的需求范围、技术方案、开发计划，获得 CTO 批准进入开发阶段。
+        </div>
+
+        <h3>需要决策的关键问题</h3>
+        <table>
+            <tr><th>序号</th><th>决策项</th><th>建议方案</th><th>优先级</th></tr>
+            <tr><td>1</td><td>MVP 范围确认</td><td>Phase 1+2（不含业务集成）</td><td><span class="priority-high">高</span></td></tr>
+            <tr><td>2</td><td>技术栈确认</td><td>FastAPI + PostgreSQL + asyncio</td><td><span class="priority-high">高</span></td></tr>
+            <tr><td>3</td><td>开发模式</td><td>混合模式（小宁 + code agent）</td><td><span class="priority-high">高</span></td></tr>
+            <tr><td>4</td><td>开发周期</td><td>~4 周（MVP）</td><td><span class="priority-medium">中</span></td></tr>
+            <tr><td>5</td><td>资源投入</td><td>小宁（设计）+ code agent（开发）</td><td><span class="priority-medium">中</span></td></tr>
+        </table>
+
+        <h2 id="section2">2. 方案概述</h2>
+
+        <h3>2.1 业务背景</h3>
+        <div class="info">
+            <strong>问题：</strong>Hunter 系统需要管理多个 AI Agent 协同完成获客、风控、贷后等业务流程，当前缺乏统一的 Agent 管理平台。
+        </div>
+
+        <h3>2.2 解决方案</h3>
+        <pre><code>┌─────────────────────────────────────────────────────────┐
+│              Hunter Agent 管理模块                       │
+├─────────────────────────────────────────────────────────┤
+│  ① Agent 注册中心    支持 A2A/MCP/Local 三种类型         │
+│  ② 状态监控          30 秒心跳，90 秒超时下线             │
+│  ③ 工作流编排        YAML 配置，顺序/条件/并行执行       │
+│  ④ 执行管理          异步执行，状态查询，日志记录        │
+│  ⑤ 数据看板          Agent 统计，效能分析                │
+└─────────────────────────────────────────────────────────┘</code></pre>
+
+        <h3>2.3 预期收益</h3>
+        <table>
+            <tr><th>维度</th><th>当前状态</th><th>目标状态</th><th>提升</th></tr>
+            <tr><td>Agent 接入时间</td><td>3 天</td><td>1 小时</td><td>99%↓</td></tr>
+            <tr><td>故障发现时间</td><td>小时级</td><td>秒级</td><td>99%↓</td></tr>
+            <tr><td>业务流程编排</td><td>周级</td><td>天级</td><td>85%↓</td></tr>
+            <tr><td>Agent 利用率</td><td>未知</td><td>可视化</td><td>30%↑</td></tr>
+        </table>
+
+        <h3>2.4 MVP 范围</h3>
+        <div class="decision">
+            <strong>MVP = Phase 1 + Phase 2（~4 周）</strong>
+            <ul>
+                <li>✅ Phase 1：Agent 注册 + 心跳检测 + 状态监控</li>
+                <li>✅ Phase 2：工作流编排 + 执行管理 + 日志记录</li>
+                <li>❌ Phase 3：Hunter 业务集成（后续迭代）</li>
+            </ul>
+        </div>
+
+        <h2 id="section3">3. 核心决策点</h2>
+
+        <h3>3.1 技术选型</h3>
+        <table>
+            <tr><th>组件</th><th>选型</th><th>理由</th><th>备选</th></tr>
+            <tr><td>后端框架</td><td>FastAPI</td><td>异步支持好，OpenAPI 自动生成</td><td>Flask</td></tr>
+            <tr><td>数据库</td><td>PostgreSQL</td><td>生产级，支持 JSON 字段</td><td>SQLite（开发）</td></tr>
+            <tr><td>ORM</td><td>SQLAlchemy 2.0</td><td>成熟稳定，异步支持</td><td>Tortoise ORM</td></tr>
+            <tr><td>异步</td><td>asyncio</td><td>Python 原生，生态好</td><td>trio</td></tr>
+            <tr><td>测试</td><td>pytest</td><td>事实标准，插件丰富</td><td>unittest</td></tr>
+        </table>
+
+        <h3>3.2 开发模式</h3>
+        <div class="decision">
+            <strong>推荐：混合开发模式</strong>
+            <ul>
+                <li><strong>小宁（RAKkDm）：</strong>架构设计、代码审查、关键技术决策</li>
+                <li><strong>Code Agent：</strong>具体实现、单元测试、文档编写</li>
+                <li><strong>Diwei：</strong>需求评审、关键决策、进度把控</li>
+                <li><strong>CTO：</strong>技术评审、架构把关</li>
+            </ul>
+        </div>
+
+        <h3>3.3 项目计划</h3>
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-date">Week 1-2</div>
+                <div class="timeline-title">Phase 1：Agent 注册 + 心跳</div>
+                <div class="timeline-desc">Agent 注册 API、心跳检测、状态监控、单元测试</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-date">Week 3-4</div>
+                <div class="timeline-title">Phase 2：工作流编排</div>
+                <div class="timeline-desc">Workflow 引擎、YAML 解析、执行管理、日志记录</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-date">Week 5+</div>
+                <div class="timeline-title">Phase 3：业务集成（后续）</div>
+                <div class="timeline-desc">Hunter 业务场景对接、数据看板、效能分析</div>
+            </div>
+        </div>
+
+        <h3>3.4 资源需求</h3>
+        <table>
+            <tr><th>角色</th><th>投入</th><th>职责</th></tr>
+            <tr><td>小宁（RAKkDm）</td><td>50%（持续）</td><td>架构设计、代码审查、技术指导</td></tr>
+            <tr><td>Code Agent</td><td>100%（持续）</td><td>代码实现、测试编写、文档维护</td></tr>
+            <tr><td>Diwei</td><td>20%（关键节点）</td><td>需求确认、进度把控、资源协调</td></tr>
+            <tr><td>CTO</td><td>10%（评审节点）</td><td>技术评审、架构把关、风险识别</td></tr>
+        </table>
+
+        <h2 id="section4">4. 风险评估</h2>
+
+        <h3>4.1 技术风险</h3>
+        <div class="risk">
+            <strong>风险 1：异步并发问题</strong>
+            <ul>
+                <li><strong>概率：</strong>中 | <strong>影响：</strong>高</li>
+                <li><strong>应对：</strong>充分测试，使用成熟框架，代码审查</li>
+            </ul>
+        </div>
+
+        <div class="risk">
+            <strong>风险 2：工作流引擎复杂度</strong>
+            <ul>
+                <li><strong>概率：</strong>中 | <strong>影响：</strong>中</li>
+                <li><strong>应对：</strong>复用 Meta-Agent 已验证代码，小步迭代</li>
+            </ul>
+        </div>
+
+        <h3>4.2 业务风险</h3>
+        <div class="risk">
+            <strong>风险 3：需求变更</strong>
+            <ul>
+                <li><strong>概率：</strong>高 | <strong>影响：</strong>中</li>
+                <li><strong>应对：</strong>MVP 聚焦核心功能，Phase 3 灵活调整</li>
+            </ul>
+        </div>
+
+        <h3>4.3 进度风险</h3>
+        <div class="risk">
+            <strong>风险 4：开发延期</strong>
+            <ul>
+                <li><strong>概率：</strong>中 | <strong>影响：</strong>中</li>
+                <li><strong>应对：</strong>每周同步进度，及时调整资源</li>
+            </ul>
+        </div>
+
+        <h2 id="section5">5. 问题讨论</h2>
+
+        <h3>5.1 需要 CTO 确认的问题</h3>
+        <table>
+            <tr><th>序号</th><th>问题</th><th>建议</th><th>决策</th></tr>
+            <tr><td>Q1</td><td>技术栈是否认可？</td><td>FastAPI + PostgreSQL</td><td>☐ 同意 ☐ 调整</td></tr>
+            <tr><td>Q2</td><td>MVP 范围是否合适？</td><td>Phase 1+2，不含业务集成</td><td>☐ 同意 ☐ 调整</td></tr>
+            <tr><td>Q3</td><td>开发模式是否可行？</td><td>混合模式（小宁 + code agent）</td><td>☐ 同意 ☐ 调整</td></tr>
+            <tr><td>Q4</td><td>是否有其他技术建议？</td><td>开放讨论</td><td>☐ 记录</td></tr>
+            <tr><td>Q5</td><td>是否有资源约束？</td><td>确认人力/时间投入</td><td>☐ 记录</td></tr>
+        </table>
+
+        <h3>5.2 备选方案</h3>
+        <div class="warning">
+            <strong>如果 CTO 对技术方案有疑虑：</strong>
+            <ul>
+                <li><strong>备选 1：</strong>使用更成熟的框架（如 Django）</li>
+                <li><strong>备选 2：</strong>先做技术验证（PoC），再全面开发</li>
+                <li><strong>备选 3：</strong>引入外部技术顾问评审架构</li>
+            </ul>
+        </div>
+
+        <h3>5.3 评审结论记录</h3>
+        <div class="meta">
+            <strong>评审结论：</strong>
+            <ul class="checklist">
+                <li>☐ 通过，进入开发阶段</li>
+                <li>☐ 有条件通过，需调整：____________</li>
+                <li>☐ 不通过，需重新设计</li>
+            </ul>
+            <strong>CTO 签字：</strong>____________ &nbsp;&nbsp;&nbsp; <strong>日期：</strong>____________
+        </div>
+
+        <h2>附录</h2>
+
+        <h3>附录 A：相关文档</h3>
+        <ul>
+            <li><a href="http://47.243.116.70/HUNTER_产品架构文档_v1.3.html" target="_blank">Hunter 产品架构文档 v1.3</a></li>
+            <li><a href="#" target="_blank">Hunter Agent 管理模块 PRD v1.0</a></li>
+            <li><a href="#" target="_blank">HUNTER_AGENT_DEV_START.md</a></li>
+            <li><a href="#" target="_blank">Meta-Agent 技术验证报告</a></li>
+        </ul>
+
+        <h3>附录 B：技术指标</h3>
+        <table>
+            <tr><th>指标</th><th>目标值</th><th>说明</th></tr>
+            <tr><td>API 响应时间</td><td>&lt;100ms</td><td>P95</td></tr>
+            <tr><td>心跳检测延迟</td><td>&lt;5s</td><td>从超时到标记离线</td></tr>
+            <tr><td>工作流执行延迟</td><td>&lt;500ms</td><td>单步骤启动延迟</td></tr>
+            <tr><td>系统可用性</td><td>&gt;99.9%</td><td>月度</td></tr>
+            <tr><td>单元测试覆盖率</td><td>&gt;80%</td><td>核心模块</td></tr>
+        </table>
+
+        <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 2px solid #dadce0; color: #5f6368; font-size: 14px;">
+            <p><strong>文档版本：v1.0</strong> | 最后更新：2026-04-16 | 创建者：小宁（RAKkDm） | 状态：待评审</p>
+        </div>
+    </div>
+</body>
+</html>

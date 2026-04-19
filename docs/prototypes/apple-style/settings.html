@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统设置 - Hunter Agent 管理系统</title>
+    <link rel="stylesheet" href="apple-design-system.css">
+    <style>
+        /* Settings Specific Styles */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--spacing-lg);
+        }
+        
+        .settings-section {
+            background: var(--system-background);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+        
+        .settings-header {
+            padding: var(--spacing-lg);
+            border-bottom: 0.5px solid var(--separator);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+        
+        .settings-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-title-2);
+        }
+        
+        .settings-title {
+            font-size: var(--font-headline);
+            font-weight: var(--weight-semibold);
+            color: var(--label-color);
+        }
+        
+        .settings-description {
+            font-size: var(--font-footnote);
+            color: var(--tertiary-label);
+            margin-top: 2px;
+        }
+        
+        .settings-body {
+            padding: var(--spacing-lg);
+        }
+        
+        .settings-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--spacing-md);
+            border-bottom: 0.5px solid var(--separator);
+        }
+        
+        .settings-row:last-child {
+            border-bottom: none;
+        }
+        
+        .settings-row:hover {
+            background: var(--secondary-system-background);
+            border-radius: var(--radius-sm);
+            margin: var(--spacing-xs) 0;
+            padding: var(--spacing-md) var(--spacing-md);
+        }
+        
+        .settings-row-label {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+        
+        .settings-row-name {
+            font-size: var(--font-subhead);
+            font-weight: var(--weight-medium);
+            color: var(--label-color);
+        }
+        
+        .settings-row-hint {
+            font-size: var(--font-caption-1);
+            color: var(--tertiary-label);
+            margin-top: 2px;
+        }
+        
+        .settings-row-control {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .settings-input {
+            padding: 8px 12px;
+            border: 1px solid var(--separator);
+            border-radius: var(--radius-sm);
+            background: var(--system-background);
+            font-size: var(--font-subhead);
+            width: 100px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+        
+        .settings-input:focus {
+            outline: none;
+            border-color: var(--system-blue);
+            box-shadow: 0 0 0 4px var(--system-blue-light);
+        }
+        
+        .settings-select {
+            padding: 8px 12px;
+            border: 1px solid var(--separator);
+            border-radius: var(--radius-sm);
+            background: var(--system-background);
+            font-size: var(--font-subhead);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .settings-select:focus {
+            outline: none;
+            border-color: var(--system-blue);
+            box-shadow: 0 0 0 4px var(--system-blue-light);
+        }
+        
+        .settings-toggle {
+            width: 48px;
+            height: 28px;
+            background: var(--system-fill);
+            border-radius: var(--radius-full);
+            position: relative;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        
+        .settings-toggle.active {
+            background: var(--system-green);
+        }
+        
+        .settings-toggle::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.2s ease;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .settings-toggle.active::after {
+            transform: translateX(20px);
+        }
+        
+        .settings-section-footer {
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-top: 0.5px solid var(--separator);
+            display: flex;
+            justify-content: flex-end;
+            gap: var(--spacing-sm);
+        }
+        
+        .api-key-display {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            flex: 1;
+            max-width: 300px;
+        }
+        
+        .api-key-value {
+            flex: 1;
+            padding: 8px 12px;
+            background: var(--secondary-system-background);
+            border-radius: var(--radius-sm);
+            font-size: var(--font-footnote);
+            font-family: 'SF Mono', Monaco, monospace;
+            color: var(--secondary-label);
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .api-key-copy {
+            padding: 8px 12px;
+            background: var(--system-fill);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: var(--font-footnote);
+            color: var(--secondary-label);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .api-key-copy:hover {
+            background: var(--system-blue-light);
+            color: var(--system-blue);
+        }
+        
+        .api-key-regenerate {
+            padding: 8px 12px;
+            background: var(--system-orange-light);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: var(--font-footnote);
+            color: var(--system-orange);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .api-key-regenerate:hover {
+            background: var(--system-orange);
+            color: white;
+        }
+        
+        /* Danger Zone */
+        .danger-zone {
+            background: var(--system-red-bg);
+            border-left: 3px solid var(--system-red);
+        }
+        
+        .danger-zone .settings-header {
+            border-bottom-color: rgba(255, 59, 48, 0.12);
+        }
+        
+        .danger-zone .settings-icon {
+            background: var(--system-red-light);
+            color: var(--system-red);
+        }
+        
+        .danger-zone .settings-row {
+            border-bottom-color: rgba(255, 59, 48, 0.12);
+        }
+        
+        .danger-zone .settings-row:hover {
+            background: rgba(255, 59, 48, 0.08);
+        }
+        
+        .danger-zone .settings-title {
+            color: var(--system-red);
+        }
+        
+        /* Info Zone */
+        .info-zone {
+            background: var(--system-teal-light);
+            border-left: 3px solid var(--system-teal);
+        }
+        
+        .info-zone .settings-header {
+            border-bottom-color: rgba(90, 200, 250, 0.12);
+        }
+        
+        .info-zone .settings-icon {
+            background: rgba(90, 200, 250, 0.12);
+            color: var(--system-teal);
+        }
+        
+        .info-zone .settings-title {
+            color: var(--system-teal);
+        }
+        
+        /* Version Badge */
+        .version-badge {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .version-number {
+            padding: 6px 12px;
+            background: var(--system-fill);
+            border-radius: var(--radius-sm);
+            font-size: var(--font-footnote);
+            font-weight: var(--weight-medium);
+            color: var(--secondary-label);
+        }
+        
+        .version-status {
+            padding: 4px 8px;
+            background: var(--system-green-light);
+            border-radius: var(--radius-xs);
+            font-size: var(--font-caption-2);
+            color: var(--system-green);
+        }
+        
+        @media (max-width: 600px) {
+            .settings-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--spacing-sm);
+            }
+            
+            .settings-row-control {
+                width: 100%;
+            }
+            
+            .api-key-display {
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-group">
+                    <div class="logo-icon">H</div>
+                    <div class="logo-text">
+                        <div class="logo">Hunter</div>
+                    </div>
+                </div>
+                <button class="sidebar-toggle" onclick="toggleSidebar()">◀</button>
+            </div>
+            <nav class="nav-section">
+                <a href="dashboard.html" class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">Dashboard</span>
+                </a>
+                <a href="agents.html" class="nav-item">
+                    <span class="nav-icon">🤖</span>
+                    <span class="nav-label">Agent 管理</span>
+                </a>
+                <a href="skills.html" class="nav-item">
+                    <span class="nav-icon">⚡</span>
+                    <span class="nav-label">Skill 管理</span>
+                </a>
+                <a href="executions.html" class="nav-item">
+                    <span class="nav-icon">📝</span>
+                    <span class="nav-label">执行记录</span>
+                </a>
+                <a href="settings.html" class="nav-item active">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-label">系统设置</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <h1 class="page-title">⚙️ 系统设置</h1>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <div class="user-avatar">D</div>
+                    <div class="user-details">
+                        <div class="user-name">Diwei</div>
+                        <div class="user-role">管理员</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="settings-grid">
+                <!-- General Settings -->
+                <div class="settings-section">
+                    <div class="settings-header">
+                        <div class="settings-icon" style="background: var(--system-blue-light); color: var(--system-blue);">🎨</div>
+                        <div>
+                            <div class="settings-title">通用设置</div>
+                            <div class="settings-description">配置系统基本参数</div>
+                        </div>
+                    </div>
+                    <div class="settings-body">
+                        <div class="settings-row">
+                            <div class="settings-row-label">
+                                <div>
+                                    <div class="settings-row-name">通知提醒</div>
+                                    <div class="settings-row-hint">接收系统通知和 Agent 状态变更提醒</div>
+                                </div>
+                            </div>
+                            <div class="settings-row-control">
+                                <div class="settings-toggle active" onclick="toggleSetting(this)"></div>
+                            </div>
+                        </div>
+                        <div class="settings-row">
+                            <div class="settings-row-label">
+                                <div>
+                                    <div class="settings-row-name">自动刷新 Dashboard</div>
+                                    <div class="settings-row-hint">每 30 秒自动刷新数据</div>
+                                </div>
+                            </div>
+                            <div class="settings-row-control">
+                                <div class="settings-toggle active" onclick="toggleSetting(this)"></div>
+                            </div>
+                        </div>
+                        <div class="settings-row">
+                            <div class="settings-row-label">
+                                <div>
+                                    <div class="settings-row-name">声音提示</div>
+                                    <div class="settings-row-hint">任务完成/失败时播放提示音</div>
+                                </div>
+                            </div>
+                            <div class="settings-row-control">
+                                <div class="settings-toggle" onclick="toggleSetting(this)"></div>
+                            </div>
+                        </div>
+                        <div class="settings-row">
+                            <div class="settings-row-label">
+                                <div>
+                                    <div class="settings-row-name">语言</div>
+                                    <div class="settings-row-hint">界面显示语言</div>
+                                </div>
+                            </div>
+                            <div class="settings-row-control">
+                                <select class="settings-select">
+                                    <option value="zh-CN" selected>简体中文</option>
+                                    <option value="en">English</option>
+                                    <option value="ja">日本語</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="settings-section-footer">
+                        <button class="btn btn-primary" onclick="saveGeneralSettings()">保存设置</button>
+                    </div>
+                </div>
+
+                <!-- Agent Settings -->
+                <div class="settings-section">
+                    <div class="settings-header">
+                        <div class="settings-icon" style="background: var(--system-purple-light); color: var(--system-purple);">🤖</div>
+                        <div>
+                            <div class="settings-title">Agent 配置</div>
+                            <div class="settings-description">全局 Agent 运行参数</div>
+                        </div>
+                    </div>
+                    <div class="settings-body">
+                        <div class="settings-row">
+                            <div class="settings-row-label">
+                                <div>
+                                    <div class="settings-row-name">Heartbeat 间隔（秒）</div>
+                                    <div class="settings-row-hint">Agent 心跳检测频率</div>
+                                </div>
+                            </div>
+                            <div class="settings-row-control">
+                                <input type="number" class="settings-input" value="30" id="heartbeatInterval">
+                            </div>
+                        </div>
+                        <div class="settings-row">
+                            <div class="settings-row-label">
+                                <div>
+                                    <div class="settings-row-name">执行超时时间（秒）</div>
+                                    <div class="settings-row-hint">单个任务最大执行时间</div>
+                                </div>
+                            </div>
+                            <div class="settings-row-control">
+                                <input type="number" class="settings-input" value="90" id="executionTimeout">
+                            </div>
+                        </div>
+                        <div class="settings-row">
+                            <div class="settings-row-label">
+                                <div>
+                                    <div class="settings-row-name">最大重试次数</div>
+                                    <div class="settings-row-hint">任务失败后自动重试次数</div>
+                                </div>
+                            </div>
+                            <div class="settings-row-control">
+                                <input type="number" class="settings-input" value="3" id="maxRetries">
+                            </div>
+                        </div>
+                        <div class="settings-row">
+                            <div class="settings-row-label">
+                                <div>
+                                    <div class="settings-row-name">并发限制</div>
+                                    <div class="settings-row-hint">同时运行的 Agent 最大数量</div>
+                                </div>
+                            </div>
+                            <div class="settings-row-control">
+                                <input type="number" class="settings-input" value="5" id="concurrencyLimit">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="settings-section-footer">
+                        <button class="btn btn-primary" onclick="saveAgentSettings()">保存设置</button>
+                    </div>
+                </div>
+
+                <!-- API Keys -->
+                <div class="settings-section">
+                    <div class="settings-header">
+                        <div class="settings-icon" style="background: var(--system-orange-light); color: var(--system-orange);">🔑</div>
+                        <div>
+                            <div class="settings-title">API 密钥管理</div>
+                            <div class="settings-description">管理各平台 API 密钥</div>
+                        </div>
+                    </div>
+                    <div class="settings-body">
+                        <div class="settings-row">
+                            <div class="settings-row-label">
+                                <div>
+                                    <div class="settings-row-name">OpenAI API Key</div>
+                                    <div class="settings-row-hint">LLM 模型调用密钥</div>
+                                </div>
+                            </div>
+                            <div class="settings-row-control">
+                                <div class="api-key-display">
+                                    <div class="api-key-value">sk-...********************************</div>
+                                    <button class="api-key-copy" onclick="copyApiKey('openai')">复制</button>
+                                    <button class="api-key-regenerate" onclick="regenerateApiKey('openai')">重置</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="settings-row">
+                            <div class="settings-row-label">
+                                <div>
+                                    <div class="settings-row-name">Meta API Key</div>
+                                    <div class="settings-row-hint">Facebook/Messenger API 密钥</div>
+                                </div>
+                            </div>
+                            <div class="settings-row-control">
+                                <div class="api-key-display">
+                                    <div class="api-key-value">未配置</div>
+                                    <button class="btn btn-secondary btn-sm">配置</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="settings-row">
+                            <div class="settings-row-label">
+                                <div>
+                                    <div class="settings-row-name">WhatsApp Business API</div>
+                                    <div class="settings-row-hint">WhatsApp 商业账号密钥</div>
+                                </div>
+                            </div>
+                            <div class="settings-row-control">
+                                <div class="api-key-display">
+                                    <div class="api-key-value">未配置</div>
+                                    <button class="btn btn-secondary btn-sm">配置</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="settings-row">
+                            <div class="settings-row-label">
+                                <div>
+                                    <div class="settings-row-name">Google Cloud API</div>
+                                    <div class="settings-row-hint">OCR/翻译等服务密钥</div>
+                                </div>
+                            </div>
+                            <div class="settings-row-control">
+                                <div class="api-key-display">
+                                    <div class="api-key-value">AIza...********************************</div>
+                                    <button class="api-key-copy" onclick="copyApiKey('google')">复制</button>
+                                    <button class="api-key-regenerate" onclick="regenerateApiKey('google')">重置</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="settings-section-footer">
+                        <button class="btn btn-secondary" onclick="showApiSettings()">高级设置</button>
+                    </div>
+                </div>
+
+                <!-- Database Settings -->
+                <div class="settings-section">
+                    <div class="settings-header">
+                        <div class="settings-icon" style="background: var(--system-teal-light); color: var(--system-teal);">💾</div>
+                        <div>
+                            <div class="settings-title">数据库连接</div>
+                            <div class="settings-description">数据存储配置</div>
+                        </div>
+                    </div>
+                    <div class="settings-body">
+                        <div class="settings-row">
+                            <div class="settings-row-label">
+                                <div>
+                                    <div class="settings-row-name">数据库类型</div>
+                                    <div class="settings-row-hint">当前使用的数据库</div>
+                                </div>
+                            </div>
+                            <div class="settings-row-control">
+                                <select class="settings-select">
+                                    <option value="postgresql" selected>PostgreSQL</option>
+                                    <option value="mysql">MySQL</option>
+                                    <option value="sqlite">SQLite</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="settings-row">
+                            <div class="settings-row-label">
+                                <div>
+                                    <div class="settings-row-name">连接地址</div>
+                                    <div class="settings-row-hint">数据库服务器地址</div>
+                                </div>
+                            </div>
+                            <div class="settings-row-control">
+                                <div class="api-key-display">
+                                    <div class="api-key-value">postgres://localhost:5432/hunter</div>
+                                    <button class="api-key-copy" onclick="copyDbUrl()">复制</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="settings-row">
+                            <div class="settings-row-label">
+                                <div>
+                                    <div class="settings-row-name">数据备份</div>
+                                    <div class="settings-row-hint">每日自动备份数据</div>
+                                </div>
+                            </div>
+                            <div class="settings-row-control">
+                                <div class="settings-toggle active" onclick="toggleSetting(this)"></div>
+                            </div>
+                        </div>
+                        <div class="settings-row">
+                            <div class="settings-row-label">
+                                <div>
+                                    <div class="settings-row-name">备份保留天数</div>
+                                    <div class="settings-row-hint">历史备份数据保留时间</div>
+                                </div>
+                            </div>
+                            <div class="settings-row-control">
+                                <input type="number" class="settings-input" value="30" id="backupRetention">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="settings-section-footer">
+                        <button class="btn btn-secondary" onclick="testDbConnection()">测试连接</button>
+                        <button class="btn btn-primary" onclick="saveDbSettings()">保存设置</button>
+                    </div>
+                </div>
+
+                <!-- System Info -->
+                <div class="settings-section info-zone">
+                    <div class="settings-header">
+                        <div class="settings-icon">ℹ️</div>
+                        <div>
+                            <div class="settings-title">系统信息</div>
+                            <div class="settings-description">当前系统状态</div>
+                        </div>
+                    </div>
+                    <div class="settings-body">
+                        <div class="settings-row">
+                            <div class="settings-row-label">
+                                <div class="settings-row-name">系统版本</div>
+                            </div>
+                            <div class="settings-row-control">
+                                <div class="version-badge">
+                                    <span class="version-number">v2.1.0</span>
+                                    <span class="version-status">最新版本</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="settings-row">
+                            <div class="settings-row-label">
+                                <div class="settings-row-name">运行时间</div>
+                            </div>
+                            <div class="settings-row-control">
+                                <span style="font-size: 15px; color: var(--label-color);">14 天 6 小时 32 分钟</span>
+                            </div>
+                        </div>
+                        <div class="settings-row">
+                            <div class="settings-row-label">
+                                <div class="settings-row-name">累计执行次数</div>
+                            </div>
+                            <div class="settings-row-control">
+                                <span style="font-size: 15px; color: var(--label-color);">12,458</span>
+                            </div>
+                        </div>
+                        <div class="settings-row">
+                            <div class="settings-row-label">
+                                <div class="settings-row-name">存储使用</div>
+                            </div>
+                            <div class="settings-row-control">
+                                <span style="font-size: 15px; color: var(--label-color);">2.4 GB / 10 GB</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="settings-section-footer">
+                        <button class="btn btn-secondary" onclick="checkUpdate()">检查更新</button>
+                    </div>
+                </div>
+
+                <!-- Danger Zone -->
+                <div class="settings-section danger-zone">
+                    <div class="settings-header">
+                        <div class="settings-icon">⚠️</div>
+                        <div>
+                            <div class="settings-title">危险操作</div>
+                            <div class="settings-description">谨慎操作，不可恢复</div>
+                        </div>
+                    </div>
+                    <div class="settings-body">
+                        <div class="settings-row">
+                            <div class="settings-row-label">
+                                <div>
+                                    <div class="settings-row-name">重置所有 Agents</div>
+                                    <div class="settings-row-hint">停止所有 Agent 并重置配置</div>
+                                </div>
+                            </div>
+                            <div class="settings-row-control">
+                                <button class="btn btn-danger btn-sm">重置</button>
+                            </div>
+                        </div>
+                        <div class="settings-row">
+                            <div class="settings-row-label">
+                                <div>
+                                    <div class="settings-row-name">清除执行日志</div>
+                                    <div class="settings-row-hint">删除所有历史执行记录</div>
+                                </div>
+                            </div>
+                            <div class="settings-row-control">
+                                <button class="btn btn-danger btn-sm">清除</button>
+                            </div>
+                        </div>
+                        <div class="settings-row">
+                            <div class="settings-row-label">
+                                <div>
+                                    <div class="settings-row-name">清空数据库</div>
+                                    <div class="settings-row-hint">删除所有数据，不可恢复</div>
+                                </div>
+                            </div>
+                            <div class="settings-row-control">
+                                <button class="btn btn-danger btn-sm">清空</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // Sidebar Toggle
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        }
+
+        // Toggle Setting
+        function toggleSetting(element) {
+            element.classList.toggle('active');
+        }
+
+        // Toast
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <span class="toast-icon">${type === 'success' ? '✓' : '✕'}</span>
+                <span class="toast-message">${message}</span>
+                <span class="toast-close" onclick="this.parentElement.remove()">✕</span>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Save Settings
+        function saveGeneralSettings() {
+            showToast('通用设置已保存！');
+        }
+
+        function saveAgentSettings() {
+            showToast('Agent 配置已保存！');
+        }
+
+        function saveDbSettings() {
+            showToast('数据库设置已保存！');
+        }
+
+        // API Key Functions
+        function copyApiKey(provider) {
+            showToast('API Key 已复制！');
+        }
+
+        function regenerateApiKey(provider) {
+            if (confirm('确定要重置 API Key？这将使旧 Key 失效。')) {
+                showToast('API Key 已重置！');
+            }
+        }
+
+        function copyDbUrl() {
+            showToast('数据库地址已复制！');
+        }
+
+        // Test DB Connection
+        function testDbConnection() {
+            showToast('数据库连接测试成功！');
+        }
+
+        // Check Update
+        function checkUpdate() {
+            showToast('已是最新版本！');
+        }
+
+        // Show API Settings
+        function showApiSettings() {
+            showToast('高级 API 设置页面开发中...');
+        }
+    </script>
+</body>
+</html>

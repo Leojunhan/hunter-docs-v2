@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill 管理 - Hunter Agent 管理系统</title>
+    <link rel="stylesheet" href="apple-design-system.css">
+    <style>
+        /* Skill Card - Simplified Structure */
+        .skill-card {
+            background: var(--system-background);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+        
+        .skill-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+        
+        .skill-card-header {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing-md);
+        }
+        
+        .skill-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+            background: var(--system-purple-light);
+            color: var(--system-purple);
+        }
+        
+        .skill-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .skill-name {
+            font-size: var(--font-headline);
+            font-weight: var(--weight-semibold);
+            color: var(--label-color);
+            margin-bottom: 4px;
+        }
+        
+        .skill-desc {
+            font-size: var(--font-footnote);
+            color: var(--secondary-label);
+            line-height: 1.4;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .skill-card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: var(--spacing-sm);
+            border-top: 0.5px solid var(--separator);
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            font-size: var(--font-caption-1);
+            font-weight: var(--weight-medium);
+        }
+        
+        .status-badge.enabled {
+            background: var(--system-green-light);
+            color: var(--system-green);
+        }
+        
+        .status-badge.disabled {
+            background: var(--system-fill);
+            color: var(--secondary-label);
+        }
+        
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+        
+        .skill-usage {
+            font-size: var(--font-caption-1);
+            color: var(--tertiary-label);
+        }
+        
+        /* Grid Layout */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: var(--spacing-md);
+        }
+        
+        /* Filter Bar */
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: var(--secondary-system-background);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .filter-search {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: 8px 12px;
+            background: var(--system-background);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--separator);
+        }
+        
+        .filter-search:focus-within {
+            border-color: var(--system-blue);
+            box-shadow: 0 0 0 3px var(--system-blue-light);
+        }
+        
+        .filter-search-icon {
+            color: var(--tertiary-label);
+        }
+        
+        .filter-search-input {
+            border: none;
+            background: transparent;
+            font-size: var(--font-subhead);
+            color: var(--label-color);
+            width: 100%;
+            outline: none;
+        }
+        
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+        
+        .filter-btn {
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            font-size: var(--font-footnote);
+            font-weight: var(--weight-medium);
+            background: var(--system-fill);
+            color: var(--secondary-label);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .filter-btn:hover {
+            background: var(--system-blue-light);
+            color: var(--system-blue);
+        }
+        
+        .filter-btn.active {
+            background: var(--system-blue);
+            color: white;
+        }
+        
+        /* Stats Summary */
+        .stats-summary {
+            display: flex;
+            gap: var(--spacing-md);
+            padding: var(--spacing-lg);
+            background: var(--system-background);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--secondary-system-background);
+            border-radius: var(--radius-sm);
+        }
+        
+        .stat-icon {
+            font-size: var(--font-title-3);
+        }
+        
+        .stat-value {
+            font-size: var(--font-headline);
+            font-weight: var(--weight-semibold);
+            color: var(--label-color);
+        }
+        
+        .stat-label {
+            font-size: var(--font-caption-1);
+            color: var(--tertiary-label);
+        }
+        
+        /* Detail Drawer */
+        .drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .drawer-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 420px;
+            max-width: 100%;
+            height: 100%;
+            background: var(--system-background);
+            z-index: 1001;
+            transform: translateX(100%);
+            transition: transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .drawer.active {
+            transform: translateX(0);
+        }
+        
+        .drawer-header {
+            padding: var(--spacing-lg);
+            border-bottom: 0.5px solid var(--separator);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .drawer-title {
+            font-size: var(--font-title-3);
+            font-weight: var(--weight-semibold);
+            color: var(--label-color);
+        }
+        
+        .drawer-close {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            background: var(--system-fill);
+            border: none;
+            font-size: var(--font-title-3);
+            color: var(--secondary-label);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .drawer-close:hover {
+            background: var(--system-red-light);
+            color: var(--system-red);
+        }
+        
+        .drawer-body {
+            padding: var(--spacing-lg);
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .drawer-actions {
+            padding: var(--spacing-lg);
+            border-top: 0.5px solid var(--separator);
+            background: var(--secondary-system-background);
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+        
+        .action-row {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            font-size: var(--font-subhead);
+            font-weight: var(--weight-medium);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        
+        .action-btn-primary {
+            background: var(--system-blue);
+            color: white;
+        }
+        
+        .action-btn-primary:hover {
+            background: var(--system-blue-hover);
+        }
+        
+        .action-btn-secondary {
+            background: var(--system-fill);
+            color: var(--secondary-label);
+        }
+        
+        .action-btn-secondary:hover {
+            background: var(--system-blue-light);
+            color: var(--system-blue);
+        }
+        
+        .action-btn-warning {
+            background: var(--system-orange-light);
+            color: var(--system-orange);
+        }
+        
+        .action-btn-warning:hover {
+            background: var(--system-orange);
+            color: white;
+        }
+        
+        .action-btn-danger {
+            background: var(--system-red-light);
+            color: var(--system-red);
+        }
+        
+        .action-btn-danger:hover {
+            background: var(--system-red);
+            color: white;
+        }
+        
+        /* Detail Sections */
+        .detail-section {
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .detail-section-title {
+            font-size: var(--font-subhead);
+            font-weight: var(--weight-semibold);
+            color: var(--label-color);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--spacing-sm) 0;
+            border-bottom: 0.5px solid var(--separator);
+        }
+        
+        .detail-label {
+            font-size: var(--font-subhead);
+            color: var(--secondary-label);
+        }
+        
+        .detail-value {
+            font-size: var(--font-subhead);
+            font-weight: var(--weight-medium);
+            color: var(--label-color);
+        }
+        
+        /* Form Inputs */
+        .settings-input {
+            padding: 10px 14px;
+            border: 1px solid var(--separator);
+            border-radius: var(--radius-sm);
+            background: var(--system-background);
+            font-size: var(--font-subhead);
+            color: var(--label-color);
+            transition: all 0.2s ease;
+            width: 100px;
+        }
+        
+        .settings-input:focus {
+            outline: none;
+            border-color: var(--system-blue);
+            box-shadow: 0 0 0 3px var(--system-blue-light);
+        }
+        
+        .settings-select {
+            padding: 10px 14px;
+            border: 1px solid var(--separator);
+            border-radius: var(--radius-sm);
+            background: var(--system-background);
+            font-size: var(--font-subhead);
+            color: var(--label-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .settings-select:focus {
+            outline: none;
+            border-color: var(--system-blue);
+            box-shadow: 0 0 0 3px var(--system-blue-light);
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-summary {
+                flex-wrap: wrap;
+            }
+            
+            .filter-bar {
+                flex-wrap: wrap;
+            }
+            
+            .drawer {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-group">
+                    <div class="logo-icon">H</div>
+                    <div class="logo-text">
+                        <div class="logo">Hunter</div>
+                    </div>
+                </div>
+                <button class="sidebar-toggle" onclick="toggleSidebar()">◀</button>
+            </div>
+            <nav class="nav-section">
+                <a href="dashboard.html" class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">Dashboard</span>
+                </a>
+                <a href="agents.html" class="nav-item">
+                    <span class="nav-icon">🤖</span>
+                    <span class="nav-label">Agent 管理</span>
+                </a>
+                <a href="skills.html" class="nav-item active">
+                    <span class="nav-icon">⚡</span>
+                    <span class="nav-label">Skill 管理</span>
+                </a>
+                <a href="executions.html" class="nav-item">
+                    <span class="nav-icon">📝</span>
+                    <span class="nav-label">执行记录</span>
+                </a>
+                <a href="settings.html" class="nav-item">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-label">系统设置</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <h1 class="page-title">Skill 管理</h1>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-primary" onclick="showCreateDrawer()">
+                    <span>＋</span>
+                    <span>添加 Skill</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Stats Summary -->
+            <div class="stats-summary">
+                <div class="stat-item">
+                    <span class="stat-icon">⚡</span>
+                    <div>
+                        <div class="stat-value">10</div>
+                        <div class="stat-label">全部 Skills</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon" style="color: var(--system-green);">●</span>
+                    <div>
+                        <div class="stat-value">8</div>
+                        <div class="stat-label">已启用</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon" style="color: var(--tertiary-label);">●</span>
+                    <div>
+                        <div class="stat-value">2</div>
+                        <div class="stat-label">已禁用</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <div class="filter-search">
+                    <span class="filter-search-icon">🔍</span>
+                    <input type="text" class="filter-search-input" placeholder="搜索 Skill..." id="searchInput" onkeyup="filterSkills()">
+                </div>
+                <div class="filter-group">
+                    <button class="filter-btn active" onclick="filterByStatus('all')">全部</button>
+                    <button class="filter-btn" onclick="filterByStatus('enabled')">已启用</button>
+                    <button class="filter-btn" onclick="filterByStatus('disabled')">已禁用</button>
+                </div>
+            </div>
+
+            <!-- Skills Grid -->
+            <div class="skills-grid" id="skillsGrid">
+                <!-- xlsx -->
+                <div class="skill-card" onclick="openDetailDrawer('xlsx')">
+                    <div class="skill-card-header">
+                        <div class="skill-icon">📊</div>
+                        <div class="skill-info">
+                            <div class="skill-name">xlsx</div>
+                            <div class="skill-desc">Excel 文件处理，读写、编辑、格式化</div>
+                        </div>
+                    </div>
+                    <div class="skill-card-footer">
+                        <span class="status-badge enabled">
+                            <span class="status-dot"></span>
+                            已启用
+                        </span>
+                        <span class="skill-usage">使用 156 次</span>
+                    </div>
+                </div>
+
+                <!-- docx -->
+                <div class="skill-card" onclick="openDetailDrawer('docx')">
+                    <div class="skill-card-header">
+                        <div class="skill-icon">📄</div>
+                        <div class="skill-info">
+                            <div class="skill-name">docx</div>
+                            <div class="skill-desc">Word 文档生成、编辑、格式转换</div>
+                        </div>
+                    </div>
+                    <div class="skill-card-footer">
+                        <span class="status-badge enabled">
+                            <span class="status-dot"></span>
+                            已启用
+                        </span>
+                        <span class="skill-usage">使用 89 次</span>
+                    </div>
+                </div>
+
+                <!-- pdf -->
+                <div class="skill-card" onclick="openDetailDrawer('pdf')">
+                    <div class="skill-card-header">
+                        <div class="skill-icon">📑</div>
+                        <div class="skill-info">
+                            <div class="skill-name">pdf</div>
+                            <div class="skill-desc">PDF 文件处理、提取、合并、OCR</div>
+                        </div>
+                    </div>
+                    <div class="skill-card-footer">
+                        <span class="status-badge enabled">
+                            <span class="status-dot"></span>
+                            已启用
+                        </span>
+                        <span class="skill-usage">使用 45 次</span>
+                    </div>
+                </div>
+
+                <!-- pptx -->
+                <div class="skill-card" onclick="openDetailDrawer('pptx')">
+                    <div class="skill-card-header">
+                        <div class="skill-icon">📽️</div>
+                        <div class="skill-info">
+                            <div class="skill-name">pptx</div>
+                            <div class="skill-desc">PPT 演示文稿创建、编辑、模板</div>
+                        </div>
+                    </div>
+                    <div class="skill-card-footer">
+                        <span class="status-badge enabled">
+                            <span class="status-dot"></span>
+                            已启用
+                        </span>
+                        <span class="skill-usage">使用 34 次</span>
+                    </div>
+                </div>
+
+                <!-- browser_visible -->
+                <div class="skill-card" onclick="openDetailDrawer('browser_visible')">
+                    <div class="skill-card-header">
+                        <div class="skill-icon">🌐</div>
+                        <div class="skill-info">
+                            <div class="skill-name">browser_visible</div>
+                            <div class="skill-desc">可视化浏览器操作，页面交互、截图</div>
+                        </div>
+                    </div>
+                    <div class="skill-card-footer">
+                        <span class="status-badge enabled">
+                            <span class="status-dot"></span>
+                            已启用
+                        </span>
+                        <span class="skill-usage">使用 67 次</span>
+                    </div>
+                </div>
+
+                <!-- file_reader -->
+                <div class="skill-card" onclick="openDetailDrawer('file_reader')">
+                    <div class="skill-card-header">
+                        <div class="skill-icon">📖</div>
+                        <div class="skill-info">
+                            <div class="skill-name">file_reader</div>
+                            <div class="skill-desc">文本文件读取、解析、内容提取</div>
+                        </div>
+                    </div>
+                    <div class="skill-card-footer">
+                        <span class="status-badge enabled">
+                            <span class="status-dot"></span>
+                            已启用
+                        </span>
+                        <span class="skill-usage">使用 234 次</span>
+                    </div>
+                </div>
+
+                <!-- cron -->
+                <div class="skill-card" onclick="openDetailDrawer('cron')">
+                    <div class="skill-card-header">
+                        <div class="skill-icon">⏰</div>
+                        <div class="skill-info">
+                            <div class="skill-name">cron</div>
+                            <div class="skill-desc">定时任务管理，创建、查询、删除任务</div>
+                        </div>
+                    </div>
+                    <div class="skill-card-footer">
+                        <span class="status-badge enabled">
+                            <span class="status-dot"></span>
+                            已启用
+                        </span>
+                        <span class="skill-usage">使用 98 次</span>
+                    </div>
+                </div>
+
+                <!-- himalaya -->
+                <div class="skill-card" onclick="openDetailDrawer('himalaya')">
+                    <div class="skill-card-header">
+                        <div class="skill-icon">📧</div>
+                        <div class="skill-info">
+                            <div class="skill-name">himalaya</div>
+                            <div class="skill-desc">邮件管理，IMAP/SMTP 收发邮件</div>
+                        </div>
+                    </div>
+                    <div class="skill-card-footer">
+                        <span class="status-badge disabled">
+                            <span class="status-dot"></span>
+                            已禁用
+                        </span>
+                        <span class="skill-usage">使用 12 次</span>
+                    </div>
+                </div>
+
+                <!-- trend-tracking -->
+                <div class="skill-card" onclick="openDetailDrawer('trend-tracking')">
+                    <div class="skill-card-header">
+                        <div class="skill-icon">📈</div>
+                        <div class="skill-info">
+                            <div class="skill-name">trend-tracking</div>
+                            <div class="skill-desc">行业趋势追踪、竞品监控、预警通知</div>
+                        </div>
+                    </div>
+                    <div class="skill-card-footer">
+                        <span class="status-badge disabled">
+                            <span class="status-dot"></span>
+                            已禁用
+                        </span>
+                        <span class="skill-usage">使用 8 次</span>
+                    </div>
+                </div>
+
+                <!-- guidance -->
+                <div class="skill-card" onclick="openDetailDrawer('guidance')">
+                    <div class="skill-card-header">
+                        <div class="skill-icon">💡</div>
+                        <div class="skill-info">
+                            <div class="skill-name">guidance</div>
+                            <div class="skill-desc">CoPaw 安装配置指南、问题解答</div>
+                        </div>
+                    </div>
+                    <div class="skill-card-footer">
+                        <span class="status-badge enabled">
+                            <span class="status-dot"></span>
+                            已启用
+                        </span>
+                        <span class="skill-usage">使用 15 次</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Detail Drawer -->
+    <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+    <div class="drawer" id="detailDrawer">
+        <div class="drawer-header">
+            <div class="drawer-title" id="drawerTitle">Skill 详情</div>
+            <button class="drawer-close" onclick="closeDrawer()">✕</button>
+        </div>
+        <div class="drawer-body" id="drawerBody">
+            <!-- Dynamic content -->
+        </div>
+        <div class="drawer-actions" id="drawerActions">
+            <!-- Dynamic actions -->
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // Skill Detail Data
+        const skillDetails = {
+            'xlsx': {
+                name: 'xlsx',
+                desc: 'Excel 文件处理，读写、编辑、格式化',
+                status: 'enabled',
+                icon: '📊',
+                version: '1.2.0',
+                type: '文件处理',
+                author: 'Hunter Team',
+                usage: 156,
+                successRate: 98.5,
+                created: '2024-01-15',
+                lastUpdate: '2024-03-10',
+                config: { timeout: 30, maxFileSize: '10MB' }
+            },
+            'docx': {
+                name: 'docx',
+                desc: 'Word 文档生成、编辑、格式转换',
+                status: 'enabled',
+                icon: '📄',
+                version: '1.1.0',
+                type: '文件处理',
+                author: 'Hunter Team',
+                usage: 89,
+                successRate: 96.8,
+                created: '2024-02-01',
+                lastUpdate: '2024-03-08',
+                config: { timeout: 30, maxFileSize: '10MB' }
+            },
+            'pdf': {
+                name: 'pdf',
+                desc: 'PDF 文件处理、提取、合并、OCR',
+                status: 'enabled',
+                icon: '📑',
+                version: '1.3.0',
+                type: '文件处理',
+                author: 'Hunter Team',
+                usage: 45,
+                successRate: 94.2,
+                created: '2024-01-20',
+                lastUpdate: '2024-03-05',
+                config: { timeout: 60, maxFileSize: '20MB' }
+            },
+            'pptx': {
+                name: 'pptx',
+                desc: 'PPT 演示文稿创建、编辑、模板',
+                status: 'enabled',
+                icon: '📽️',
+                version: '1.0.0',
+                type: '文件处理',
+                author: 'Hunter Team',
+                usage: 34,
+                successRate: 92.1,
+                created: '2024-02-28',
+                lastUpdate: '2024-03-01',
+                config: { timeout: 30, maxFileSize: '15MB' }
+            },
+            'browser_visible': {
+                name: 'browser_visible',
+                desc: '可视化浏览器操作，页面交互、截图',
+                status: 'enabled',
+                icon: '🌐',
+                version: '2.0.0',
+                type: '浏览器',
+                author: 'Hunter Team',
+                usage: 67,
+                successRate: 95.4,
+                created: '2024-02-10',
+                lastUpdate: '2024-03-12',
+                config: { timeout: 90, headless: false }
+            },
+            'file_reader': {
+                name: 'file_reader',
+                desc: '文本文件读取、解析、内容提取',
+                status: 'enabled',
+                icon: '📖',
+                version: '1.0.0',
+                type: '文件处理',
+                author: 'Hunter Team',
+                usage: 234,
+                successRate: 99.2,
+                created: '2024-01-01',
+                lastUpdate: '2024-03-15',
+                config: { timeout: 15, maxFileSize: '5MB' }
+            },
+            'cron': {
+                name: 'cron',
+                desc: '定时任务管理，创建、查询、删除任务',
+                status: 'enabled',
+                icon: '⏰',
+                version: '1.1.0',
+                type: '任务调度',
+                author: 'Hunter Team',
+                usage: 98,
+                successRate: 99.8,
+                created: '2024-01-10',
+                lastUpdate: '2024-03-10',
+                config: { maxTasks: 50 }
+            },
+            'himalaya': {
+                name: 'himalaya',
+                desc: '邮件管理，IMAP/SMTP 收发邮件',
+                status: 'disabled',
+                icon: '📧',
+                version: '1.0.0',
+                type: '邮件',
+                author: 'Hunter Team',
+                usage: 12,
+                successRate: 88.5,
+                created: '2024-02-20',
+                lastUpdate: '2024-03-01',
+                config: { timeout: 30 }
+            },
+            'trend-tracking': {
+                name: 'trend-tracking',
+                desc: '行业趋势追踪、竞品监控、预警通知',
+                status: 'disabled',
+                icon: '📈',
+                version: '1.0.0',
+                type: '监控',
+                author: 'Hunter Team',
+                usage: 8,
+                successRate: 85.0,
+                created: '2024-03-01',
+                lastUpdate: '2024-03-05',
+                config: { interval: 'daily' }
+            },
+            'guidance': {
+                name: 'guidance',
+                desc: 'CoPaw 安装配置指南、问题解答',
+                status: 'enabled',
+                icon: '💡',
+                version: '1.0.0',
+                type: '指南',
+                author: 'Hunter Team',
+                usage: 15,
+                successRate: 100,
+                created: '2024-03-10',
+                lastUpdate: '2024-03-15',
+                config: { locale: 'zh-CN' }
+            }
+        };
+
+        // Open Detail Drawer
+        function openDetailDrawer(skillId) {
+            const skill = skillDetails[skillId];
+            if (!skill) return;
+
+            document.getElementById('drawerTitle').textContent = skill.name;
+            
+            const statusClass = skill.status === 'enabled' ? 'enabled' : 'disabled';
+            const statusText = skill.status === 'enabled' ? '已启用' : '已禁用';
+            
+            document.getElementById('drawerBody').innerHTML = `
+                <div class="detail-section">
+                    <div class="detail-section-title">基本信息</div>
+                    <div class="detail-row">
+                        <span class="detail-label">状态</span>
+                        <span class="status-badge ${statusClass}">
+                            <span class="status-dot"></span>
+                            ${statusText}
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">描述</span>
+                        <span class="detail-value">${skill.desc}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">版本</span>
+                        <span class="detail-value">${skill.version}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">类型</span>
+                        <span class="detail-value">${skill.type}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">作者</span>
+                        <span class="detail-value">${skill.author}</span>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-section-title">运行统计</div>
+                    <div class="detail-row">
+                        <span class="detail-label">使用次数</span>
+                        <span class="detail-value">${skill.usage}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">成功率</span>
+                        <span class="detail-value">${skill.successRate}%</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">创建时间</span>
+                        <span class="detail-value">${skill.created}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">最后更新</span>
+                        <span class="detail-value">${skill.lastUpdate}</span>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-section-title">配置参数</div>
+                    ${Object.entries(skill.config).map(([k, v]) => `
+                        <div class="detail-row">
+                            <span class="detail-label">${k}</span>
+                            <span class="detail-value">${v}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            // Render actions
+            const isEnabled = skill.status === 'enabled';
+            
+            document.getElementById('drawerActions').innerHTML = `
+                <div class="action-row">
+                    ${isEnabled ? `
+                        <button class="action-btn action-btn-warning" onclick="disableSkill('${skillId}')">⏸ 禁用</button>
+                    ` : `
+                        <button class="action-btn action-btn-primary" onclick="enableSkill('${skillId}')">▶ 启用</button>
+                    `}
+                    <button class="action-btn action-btn-secondary" onclick="editSkill('${skillId}')">✏ 编辑</button>
+                </div>
+                <div class="action-row">
+                    <button class="action-btn action-btn-secondary" onclick="viewDocs('${skillId}')">📖 查看文档</button>
+                    <button class="action-btn action-btn-danger" onclick="deleteSkill('${skillId}')">🗑 删除</button>
+                </div>
+            `;
+            
+            document.getElementById('drawerOverlay').classList.add('active');
+            document.getElementById('detailDrawer').classList.add('active');
+        }
+
+        // Close Drawer
+        function closeDrawer() {
+            document.getElementById('drawerOverlay').classList.remove('active');
+            document.getElementById('detailDrawer').classList.remove('active');
+        }
+
+        // Show Create Drawer
+        function showCreateDrawer() {
+            document.getElementById('drawerTitle').textContent = '添加新 Skill';
+            
+            document.getElementById('drawerBody').innerHTML = `
+                <div class="detail-section">
+                    <div class="detail-section-title">基本信息</div>
+                    <div class="detail-row" style="flex-direction: column; gap: 8px;">
+                        <span class="detail-label">名称</span>
+                        <input type="text" class="settings-input" style="width: 100%; text-align: left;" placeholder="例如：my-skill" id="createName">
+                    </div>
+                    <div class="detail-row" style="flex-direction: column; gap: 8px;">
+                        <span class="detail-label">描述</span>
+                        <textarea class="settings-input" style="width: 100%; text-align: left; height: 60px; resize: none;" placeholder="描述 Skill 的主要功能..." id="createDesc"></textarea>
+                    </div>
+                    <div class="detail-row" style="flex-direction: column; gap: 8px;">
+                        <span class="detail-label">图标</span>
+                        <select class="settings-select" style="width: 100%;" id="createIcon">
+                            <option value="📊">📊 表格</option>
+                            <option value="📄">📄 文档</option>
+                            <option value="📑">📑 PDF</option>
+                            <option value="📽️">📽️ 演示</option>
+                            <option value="🌐">🌐 浏览器</option>
+                            <option value="📖">📖 阅读</option>
+                            <option value="⏰">⏰ 定时</option>
+                            <option value="📧">📧 邮件</option>
+                            <option value="📈">📈 趋势</option>
+                            <option value="💡">💡 指南</option>
+                        </select>
+                    </div>
+                    <div class="detail-row" style="flex-direction: column; gap: 8px;">
+                        <span class="detail-label">类型</span>
+                        <select class="settings-select" style="width: 100%;" id="createType">
+                            <option value="文件处理">文件处理</option>
+                            <option value="浏览器">浏览器</option>
+                            <option value="任务调度">任务调度</option>
+                            <option value="邮件">邮件</option>
+                            <option value="监控">监控</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-section-title">配置参数</div>
+                    <div class="detail-row">
+                        <span class="detail-label">Timeout (秒)</span>
+                        <input type="number" class="settings-input" value="30" id="createTimeout">
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('drawerActions').innerHTML = `
+                <div class="action-row">
+                    <button class="action-btn action-btn-primary" onclick="createSkill()">✓ 添加 Skill</button>
+                    <button class="action-btn action-btn-secondary" onclick="closeDrawer()">取消</button>
+                </div>
+            `;
+            
+            document.getElementById('drawerOverlay').classList.add('active');
+            document.getElementById('detailDrawer').classList.add('active');
+        }
+
+        // Create Skill
+        function createSkill() {
+            const name = document.getElementById('createName').value;
+            if (!name) {
+                showToast('请输入 Skill 名称', 'error');
+                return;
+            }
+            showToast(`${name} 添加成功！`);
+            closeDrawer();
+        }
+
+        // Enable/Disable Skill
+        function enableSkill(skillId) {
+            const skill = skillDetails[skillId];
+            if (skill) {
+                skill.status = 'enabled';
+                showToast(`${skill.name} 已启用`);
+                closeDrawer();
+            }
+        }
+
+        function disableSkill(skillId) {
+            const skill = skillDetails[skillId];
+            if (skill) {
+                skill.status = 'disabled';
+                showToast(`${skill.name} 已禁用`);
+                closeDrawer();
+            }
+        }
+
+        // Edit Skill
+        function editSkill(skillId) {
+            showToast('编辑配置开发中...');
+        }
+
+        // View Docs
+        function viewDocs(skillId) {
+            showToast(`查看 ${skillId} 文档`);
+        }
+
+        // Delete Skill
+        function deleteSkill(skillId) {
+            const skill = skillDetails[skillId];
+            if (skill && confirm(`确定删除 ${skill.name}？此操作不可恢复。`)) {
+                showToast(`${skill.name} 已删除`);
+                closeDrawer();
+            }
+        }
+
+        // Filter Skills
+        function filterSkills() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.skill-card');
+            
+            cards.forEach(card => {
+                const name = card.querySelector('.skill-name').textContent.toLowerCase();
+                const desc = card.querySelector('.skill-desc').textContent.toLowerCase();
+                if (name.includes(search) || desc.includes(search)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Filter by Status
+        function filterByStatus(status) {
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            showToast(`筛选: ${status}`);
+        }
+
+        // Sidebar Toggle
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        }
+
+        // Toast
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <span class="toast-icon">${type === 'success' ? '✓' : '✕'}</span>
+                <span class="toast-message">${message}</span>
+                <span class="toast-close" onclick="this.parentElement.remove()">✕</span>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+    </script>
+</body>
+</html>

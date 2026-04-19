@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Hunter Agent 管理系统</title>
+    <link rel="stylesheet" href="apple-design-system.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* ========================================
+           Dashboard - 基于数据体系 P0-P3 分层
+           ======================================== */
+        
+        /* P0 核心区：系统健康 */
+        .health-banner {
+            background: var(--system-background);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xl);
+            border: 1px solid var(--separator);
+        }
+        
+        .health-banner.warning {
+            background: linear-gradient(135deg, rgba(255, 149, 0, 0.08) 0%, rgba(255, 149, 0, 0.02) 100%);
+            border-color: var(--system-orange);
+        }
+        
+        .health-banner.critical {
+            background: linear-gradient(135deg, rgba(255, 59, 48, 0.08) 0%, rgba(255, 59, 48, 0.02) 100%);
+            border-color: var(--system-red);
+        }
+        
+        .health-status {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+        
+        .health-indicator {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: var(--system-green);
+            color: white;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .health-indicator.warning {
+            background: var(--system-orange);
+        }
+        
+        .health-indicator.critical {
+            background: var(--system-red);
+            animation: pulse-urgent 1s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        @keyframes pulse-urgent {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+        
+        .health-label {
+            font-size: var(--font-title-3);
+            font-weight: var(--weight-semibold);
+            color: var(--label-color);
+        }
+        
+        .health-detail {
+            font-size: var(--font-footnote);
+            color: var(--secondary-label);
+            margin-top: 2px;
+        }
+        
+        .health-metrics {
+            display: flex;
+            gap: var(--spacing-xl);
+            flex: 1;
+            justify-content: flex-end;
+        }
+        
+        .health-metric {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: var(--secondary-system-background);
+            border-radius: var(--radius-md);
+        }
+        
+        .health-metric-value {
+            font-size: var(--font-title-2);
+            font-weight: var(--weight-bold);
+            color: var(--label-color);
+        }
+        
+        .health-metric-label {
+            font-size: var(--font-caption-1);
+            color: var(--tertiary-label);
+            margin-top: 2px;
+        }
+        
+        /* P1 负载区 + P2 效能区 并排 */
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .metric-card {
+            background: var(--system-background);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            border: 1px solid var(--separator);
+        }
+        
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .metric-title {
+            font-size: var(--font-headline);
+            font-weight: var(--weight-semibold);
+            color: var(--label-color);
+        }
+        
+        .metric-badge {
+            font-size: var(--font-caption-1);
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+            background: var(--secondary-system-background);
+            color: var(--secondary-label);
+        }
+        
+        .metric-values {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-md);
+        }
+        
+        .metric-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .metric-number {
+            font-size: var(--font-title-1);
+            font-weight: var(--weight-bold);
+            color: var(--label-color);
+        }
+        
+        .metric-number.success { color: var(--system-green); }
+        .metric-number.warning { color: var(--system-orange); }
+        .metric-number.danger { color: var(--system-red); }
+        
+        .metric-desc {
+            font-size: var(--font-caption-1);
+            color: var(--tertiary-label);
+        }
+        
+        /* 快捷操作：只保留创建类（去冗余） */
+        .quick-create {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .create-card {
+            background: var(--system-background);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid var(--separator);
+        }
+        
+        .create-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--system-blue);
+        }
+        
+        .create-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-title-2);
+        }
+        
+        .create-content {
+            flex: 1;
+        }
+        
+        .create-title {
+            font-size: var(--font-subhead);
+            font-weight: var(--weight-medium);
+            color: var(--label-color);
+        }
+        
+        .create-desc {
+            font-size: var(--font-caption-1);
+            color: var(--tertiary-label);
+            margin-top: 2px;
+        }
+        
+        /* P2 趋势图区 */
+        .trends-section {
+            background: var(--system-background);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            border: 1px solid var(--separator);
+        }
+        
+        .trends-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .trends-title {
+            font-size: var(--font-headline);
+            font-weight: var(--weight-semibold);
+            color: var(--label-color);
+        }
+        
+        .trends-tabs {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+        
+        .trends-tab {
+            font-size: var(--font-footnote);
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            background: transparent;
+            color: var(--secondary-label);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .trends-tab.active {
+            background: var(--system-blue);
+            color: white;
+        }
+        
+        .trends-tab:hover:not(.active) {
+            background: var(--secondary-system-background);
+        }
+        
+        .trends-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-xl);
+        }
+        
+        .chart-wrapper {
+            height: 200px;
+            position: relative;
+        }
+        
+        .chart-label {
+            font-size: var(--font-footnote);
+            color: var(--secondary-label);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        /* Agent 快览区 */
+        .agents-preview {
+            background: var(--system-background);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            border: 1px solid var(--separator);
+        }
+        
+        .agents-preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .agents-preview-title {
+            font-size: var(--font-headline);
+            font-weight: var(--weight-semibold);
+            color: var(--label-color);
+        }
+        
+        .agents-preview-link {
+            font-size: var(--font-footnote);
+            color: var(--system-blue);
+            cursor: pointer;
+        }
+        
+        .agents-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+        }
+        
+        .agent-chip {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: 6px 12px;
+            background: var(--secondary-system-background);
+            border-radius: var(--radius-md);
+            font-size: var(--font-caption-1);
+        }
+        
+        .agent-chip-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--system-green);
+        }
+        
+        .agent-chip-status.running {
+            background: var(--system-orange);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        .agent-chip-status.offline {
+            background: var(--system-red);
+        }
+        
+        .agent-chip-name {
+            color: var(--label-color);
+        }
+        
+        /* 最近执行快览 */
+        .executions-preview {
+            background: var(--system-background);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            border: 1px solid var(--separator);
+        }
+        
+        .execution-preview-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            border-bottom: 0.5px solid var(--separator);
+            transition: background 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .execution-preview-item:last-child {
+            border-bottom: none;
+        }
+        
+        .execution-preview-item:hover {
+            background: var(--secondary-system-background);
+            border-radius: var(--radius-sm);
+        }
+        
+        .execution-preview-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        
+        .execution-preview-content {
+            flex: 1;
+        }
+        
+        .execution-preview-title {
+            font-size: var(--font-footnote);
+            font-weight: var(--weight-medium);
+            color: var(--label-color);
+        }
+        
+        .execution-preview-time {
+            font-size: var(--font-caption-2);
+            color: var(--tertiary-label);
+        }
+        
+        .execution-preview-status {
+            font-size: var(--font-caption-1);
+        }
+        
+        /* 两栏布局 */
+        .dashboard-main {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: var(--spacing-lg);
+        }
+        
+        .dashboard-left {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .dashboard-right {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+        
+        @media (max-width: 1200px) {
+            .dashboard-main { grid-template-columns: 1fr; }
+            .metrics-row { grid-template-columns: 1fr; }
+            .trends-grid { grid-template-columns: 1fr; }
+        }
+        
+        @media (max-width: 768px) {
+            .health-metrics { flex-wrap: wrap; justify-content: flex-start; }
+            .health-banner { flex-wrap: wrap; }
+            .quick-create { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-group">
+                    <div class="logo-icon">H</div>
+                    <div class="logo-text">
+                        <div class="logo">Hunter</div>
+                    </div>
+                </div>
+                <button class="sidebar-toggle" onclick="toggleSidebar()">◀</button>
+            </div>
+            <nav class="nav-section">
+                <a href="dashboard.html" class="nav-item active">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">Dashboard</span>
+                </a>
+                <a href="agents.html" class="nav-item">
+                    <span class="nav-icon">🤖</span>
+                    <span class="nav-label">Agent 管理</span>
+                </a>
+                <a href="skills.html" class="nav-item">
+                    <span class="nav-icon">⚡</span>
+                    <span class="nav-label">Skill 管理</span>
+                </a>
+                <a href="executions.html" class="nav-item">
+                    <span class="nav-icon">📝</span>
+                    <span class="nav-label">执行记录</span>
+                </a>
+                <a href="settings.html" class="nav-item">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-label">系统设置</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <h1 class="page-title">Dashboard</h1>
+                <span class="page-subtitle">系统概览</span>
+            </div>
+            <div class="header-right">
+                <div class="header-time" id="currentTime">2026-04-17 12:00</div>
+                <div class="user-info">
+                    <div class="user-avatar">D</div>
+                    <div class="user-details">
+                        <div class="user-name">Diwei</div>
+                        <div class="user-role">管理员</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- P0 核心区：系统健康 -->
+            <div class="health-banner" id="healthBanner">
+                <div class="health-status">
+                    <div class="health-indicator" id="healthIndicator">✓</div>
+                    <div>
+                        <div class="health-label" id="healthLabel">系统正常</div>
+                        <div class="health-detail" id="healthDetail">所有核心服务运行中</div>
+                    </div>
+                </div>
+                <div class="health-metrics">
+                    <div class="health-metric">
+                        <div class="health-metric-value" style="color: var(--system-green);">92%</div>
+                        <div class="health-metric-label">Agent 在线率</div>
+                    </div>
+                    <div class="health-metric">
+                        <div class="health-metric-value">12/15</div>
+                        <div class="health-metric-label">在线 Agent</div>
+                    </div>
+                    <div class="health-metric">
+                        <div class="health-metric-value" style="color: var(--system-green);">96.8%</div>
+                        <div class="health-metric-label">今日成功率</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 快捷操作：只保留创建类 -->
+            <div class="quick-create">
+                <div class="create-card" onclick="location.href='agents.html'">
+                    <div class="create-icon" style="background: var(--system-blue-light); color: var(--system-blue);">➕</div>
+                    <div class="create-content">
+                        <div class="create-title">创建 Agent</div>
+                        <div class="create-desc">接入新的智能体</div>
+                    </div>
+                    <span style="color: var(--tertiary-label);">→</span>
+                </div>
+                <div class="create-card" onclick="location.href='skills.html'">
+                    <div class="create-icon" style="background: var(--system-purple-light); color: var(--system-purple);">⚡</div>
+                    <div class="create-content">
+                        <div class="create-title">添加 Skill</div>
+                        <div class="create-desc">配置新的能力单元</div>
+                    </div>
+                    <span style="color: var(--tertiary-label);">→</span>
+                </div>
+            </div>
+
+            <!-- P1 负载区 + P2 效能区 -->
+            <div class="metrics-row">
+                <!-- P1 负载 -->
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-title">当前负载</div>
+                        <span class="metric-badge">实时</span>
+                    </div>
+                    <div class="metric-values">
+                        <div class="metric-item">
+                            <div class="metric-number">12</div>
+                            <div class="metric-desc">待处理任务</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-number warning">8</div>
+                            <div class="metric-desc">执行中任务</div>
+                        </div>
+                    </div>
+                    <!-- 负载进度条 -->
+                    <div style="margin-top: var(--spacing-md);">
+                        <div style="display: flex; justify-content: space-between; font-size: var(--font-caption-1); color: var(--tertiary-label); margin-bottom: 4px;">
+                            <span>Agent 利用率</span>
+                            <span>67%</span>
+                        </div>
+                        <div style="height: 6px; background: var(--secondary-system-background); border-radius: 3px; overflow: hidden;">
+                            <div style="height: 100%; width: 67%; background: var(--system-blue); border-radius: 3px; transition: width 0.3s ease;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- P2 效能 -->
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-title">今日效能</div>
+                        <span class="metric-badge">累计</span>
+                    </div>
+                    <div class="metric-values">
+                        <div class="metric-item">
+                            <div class="metric-number success">96.8%</div>
+                            <div class="metric-desc">执行成功率</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-number">2.3s</div>
+                            <div class="metric-desc">平均耗时</div>
+                        </div>
+                    </div>
+                    <!-- 效能对比 -->
+                    <div style="margin-top: var(--spacing-md); display: flex; gap: var(--spacing-lg);">
+                        <div style="flex: 1;">
+                            <div style="font-size: var(--font-caption-2); color: var(--tertiary-label);">较昨日</div>
+                            <div style="font-size: var(--font-footnote); color: var(--system-green);">▲ +1.2%</div>
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-size: var(--font-caption-2); color: var(--tertiary-label);">较上周</div>
+                            <div style="font-size: var(--font-footnote); color: var(--system-green);">▲ +3.5%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- P2 趋势图区 -->
+            <div class="dashboard-main">
+                <div class="dashboard-left">
+                    <div class="trends-section">
+                        <div class="trends-header">
+                            <div class="trends-title">效能趋势</div>
+                            <div class="trends-tabs">
+                                <span class="trends-tab active" onclick="switchTrend('7d')">7天</span>
+                                <span class="trends-tab" onclick="switchTrend('30d')">30天</span>
+                            </div>
+                        </div>
+                        <div class="trends-grid">
+                            <div>
+                                <div class="chart-label">执行成功率</div>
+                                <div class="chart-wrapper">
+                                    <canvas id="successChart"></canvas>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="chart-label">执行量</div>
+                                <div class="chart-wrapper">
+                                    <canvas id="volumeChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- P3 成本区：今日执行数 -->
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <div class="metric-title">业务量统计</div>
+                            <span class="metric-badge">今日</span>
+                        </div>
+                        <div class="metric-values">
+                            <div class="metric-item">
+                                <div class="metric-number">324</div>
+                                <div class="metric-desc">执行次数</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-number">▲ +18%</div>
+                                <div class="metric-desc">较昨日</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-right">
+                    <!-- Agent 快览 -->
+                    <div class="agents-preview">
+                        <div class="agents-preview-header">
+                            <div class="agents-preview-title">Agent 状态</div>
+                            <span class="agents-preview-link" onclick="location.href='agents.html'">查看全部 →</span>
+                        </div>
+                        <div class="agents-list">
+                            <div class="agent-chip">
+                                <div class="agent-chip-status"></div>
+                                <span class="agent-chip-name">SEO内容Agent</span>
+                            </div>
+                            <div class="agent-chip">
+                                <div class="agent-chip-status running"></div>
+                                <span class="agent-chip-name">FB社群Agent</span>
+                            </div>
+                            <div class="agent-chip">
+                                <div class="agent-chip-status"></div>
+                                <span class="agent-chip-name">风控预审Agent</span>
+                            </div>
+                            <div class="agent-chip">
+                                <div class="agent-chip-status"></div>
+                                <span class="agent-chip-name">贷后管理Agent</span>
+                            </div>
+                            <div class="agent-chip">
+                                <div class="agent-chip-status running"></div>
+                                <span class="agent-chip-name">数据回流Agent</span>
+                            </div>
+                            <div class="agent-chip">
+                                <div class="agent-chip-status running"></div>
+                                <span class="agent-chip-name">KOL协作Agent</span>
+                            </div>
+                            <div class="agent-chip">
+                                <div class="agent-chip-status"></div>
+                                <span class="agent-chip-name">WhatsAppAgent</span>
+                            </div>
+                            <div class="agent-chip">
+                                <div class="agent-chip-status offline"></div>
+                                <span class="agent-chip-name">TikTok内容Agent</span>
+                            </div>
+                            <div class="agent-chip">
+                                <div class="agent-chip-status"></div>
+                                <span class="agent-chip-name">竞品监控Agent</span>
+                            </div>
+                            <div class="agent-chip">
+                                <div class="agent-chip-status offline"></div>
+                                <span class="agent-chip-name">雇主端Agent</span>
+                            </div>
+                            <div class="agent-chip">
+                                <div class="agent-chip-status"></div>
+                                <span class="agent-chip-name">MessengerAgent</span>
+                            </div>
+                            <div class="agent-chip">
+                                <div class="agent-chip-status"></div>
+                                <span class="agent-chip-name">被拒留存Agent</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 最近执行 -->
+                    <div class="executions-preview">
+                        <div class="agents-preview-header">
+                            <div class="agents-preview-title">最近执行</div>
+                            <span class="agents-preview-link" onclick="location.href='executions.html'">查看全部 →</span>
+                        </div>
+                        <div class="execution-preview-item">
+                            <div class="execution-preview-icon" style="background: var(--system-green-light); color: var(--system-green);">✓</div>
+                            <div class="execution-preview-content">
+                                <div class="execution-preview-title">SEO内容Agent</div>
+                                <div class="execution-preview-time">2分钟前</div>
+                            </div>
+                            <span class="badge success">成功</span>
+                        </div>
+                        <div class="execution-preview-item">
+                            <div class="execution-preview-icon" style="background: var(--system-orange-light); color: var(--system-orange);">●</div>
+                            <div class="execution-preview-content">
+                                <div class="execution-preview-title">FB社群Agent</div>
+                                <div class="execution-preview-time">进行中</div>
+                            </div>
+                            <span class="badge warning">运行</span>
+                        </div>
+                        <div class="execution-preview-item">
+                            <div class="execution-preview-icon" style="background: var(--system-green-light); color: var(--system-green);">✓</div>
+                            <div class="execution-preview-content">
+                                <div class="execution-preview-title">风控预审Agent</div>
+                                <div class="execution-preview-time">15分钟前</div>
+                            </div>
+                            <span class="badge success">成功</span>
+                        </div>
+                        <div class="execution-preview-item">
+                            <div class="execution-preview-icon" style="background: var(--system-red-light); color: var(--system-red);">✕</div>
+                            <div class="execution-preview-content">
+                                <div class="execution-preview-title">WhatsApp裂变Agent</div>
+                                <div class="execution-preview-time">1小时前</div>
+                            </div>
+                            <span class="badge danger">失败</span>
+                        </div>
+                        <div class="execution-preview-item">
+                            <div class="execution-preview-icon" style="background: var(--system-green-light); color: var(--system-green);">✓</div>
+                            <div class="execution-preview-content">
+                                <div class="execution-preview-title">数据回流Agent</div>
+                                <div class="execution-preview-time">2小时前</div>
+                            </div>
+                            <span class="badge success">成功</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // Sidebar Toggle
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        }
+
+        // Update Time
+        function updateTime() {
+            const now = new Date();
+            const formatted = now.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('currentTime').textContent = formatted;
+        }
+        updateTime();
+        setInterval(updateTime, 60000);
+
+        // Switch Trend Period
+        function switchTrend(period) {
+            document.querySelectorAll('.trends-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            // TODO: Update chart data based on period
+        }
+
+        // Success Rate Chart (简化版)
+        const successCtx = document.getElementById('successChart').getContext('2d');
+        new Chart(successCtx, {
+            type: 'line',
+            data: {
+                labels: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+                datasets: [{
+                    data: [95.2, 96.1, 94.8, 97.5, 98.1, 96.3, 96.8],
+                    borderColor: '#34C759',
+                    backgroundColor: 'rgba(52, 199, 89, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#34C759'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        min: 90,
+                        max: 100,
+                        grid: { color: 'rgba(60, 60, 67, 0.12)' },
+                        ticks: {
+                            callback: value => value + '%'
+                        }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // Volume Chart
+        const volumeCtx = document.getElementById('volumeChart').getContext('2d');
+        new Chart(volumeCtx, {
+            type: 'bar',
+            data: {
+                labels: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+                datasets: [{
+                    data: [245, 312, 287, 356, 398, 289, 324],
+                    backgroundColor: '#007AFF',
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(60, 60, 67, 0.12)' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

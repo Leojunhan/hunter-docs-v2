@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OFW FB 流量 Agent · 任务拆解</title>
+    <style>
+        :root { --primary: #2563eb; --success: #16a34a; --warning: #ca8a04; --danger: #dc2626; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.7; padding: 2rem 0; background: #f8fafc; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 2rem; }
+        .header { background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; padding: 2rem; margin-bottom: 2rem; border-radius: 12px; }
+        .header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+        .card { background: white; border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        h2 { font-size: 1.5rem; margin: 1.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--primary); }
+        h3 { font-size: 1.25rem; margin: 1.25rem 0 0.75rem; }
+        table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f1f5f9; font-weight: 600; }
+        pre { background: #1e293b; color: #e2e8f0; padding: 1rem; border-radius: 8px; overflow-x: auto; margin: 1rem 0; }
+        .footer { text-align: center; padding: 2rem; color: #64748b; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 OFW FB 流量获取 Agent · 任务拆解</h1>
+            <p><strong>负责人：</strong>Diwei | <strong>PM：</strong>小宁 | <strong>状态：</strong>待启动</p>
+        </div>
+        <div class="card"><h1>OFW FB 流量获取 Agent · 项目任务拆解</h1>
+<blockquote>
+<p><strong>创建时间：</strong> 2026-04-15<br />
+<strong>项目负责人：</strong> Diwei<br />
+<strong>PM：</strong> 小宁<br />
+<strong>状态：</strong> 待启动<br />
+<strong>目标：</strong> 4 周 MVP 验证</p>
+</blockquote>
+<hr />
+<h2>📋 项目总览</h2>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>目标</strong></td>
+<td>验证 FB 流量获取 Agent 可行性</td>
+</tr>
+<tr>
+<td><strong>周期</strong></td>
+<td>4 周（Week 1-4）</td>
+</tr>
+<tr>
+<td><strong>预算</strong></td>
+<td>$18,000-20,000</td>
+</tr>
+<tr>
+<td><strong>成功标准</strong></td>
+<td>获客成本&lt;$3/申请，转化率&gt;2%，账号存活&gt;10 天</td>
+</tr>
+<tr>
+<td><strong>失败条件</strong></td>
+<td>连续 4 周成本&gt;$5、封号率&gt;80%、收到律师函、投诉率&gt;5%</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>🗓️ Phase 划分</h2>
+<pre><code>Week 1-2：基础设施准备
+Week 3-4：核心功能开发
+Week 5-6：小规模测试
+Week 7-8：迭代优化
+</code></pre>
+<hr />
+<h2>📝 任务拆解（WBS）</h2>
+<h3>Week 1-2：基础设施准备</h3>
+<h4>T1：账号与代理准备</h4>
+<ul>
+<li>[ ] T1-1 注册 5 个 FB 账号</li>
+<li>负责人：运营</li>
+<li>时间：3 天</li>
+<li>成本：$100-200</li>
+<li>输出：账号列表（账号/密码/邮箱/手机号）</li>
+<li>
+<p>验收：5 个账号可正常登录</p>
+</li>
+<li>
+<p>[ ] T1-2 配置住宅代理</p>
+</li>
+<li>负责人：技术</li>
+<li>时间：2 天</li>
+<li>成本：$200/月</li>
+<li>输出：代理配置文档（IP/端口/账号/密码）</li>
+<li>
+<p>验收：5 个独立 IP 可用，延迟&lt;200ms</p>
+</li>
+<li>
+<p>[ ] T1-3 申请 Meta Business API</p>
+</li>
+<li>负责人：技术</li>
+<li>时间：3 天</li>
+<li>成本：$0</li>
+<li>输出：API Token、Webhook 配置</li>
+<li>
+<p>验收：API 调用成功，Webhook 可接收消息</p>
+</li>
+<li>
+<p>[ ] T1-4 准备服务器环境</p>
+</li>
+<li>负责人：技术</li>
+<li>时间：1 天</li>
+<li>成本：$100/月</li>
+<li>输出：服务器配置（4 核 8G）、域名、SSL 证书</li>
+<li>验收：服务器可访问，HTTPS 正常</li>
+</ul>
+<p><strong>Week 1-2 里程碑：</strong> 所有基础设施就绪，可开始开发</p>
+<hr />
+<h4>T2：合规准备</h4>
+<ul>
+<li>[ ] T2-1 起草隐私政策文档</li>
+<li>负责人：法务/律师</li>
+<li>时间：3 天</li>
+<li>成本：$500-1000</li>
+<li>输出：隐私政策文档（中英文）</li>
+<li>
+<p>验收：律师审核通过</p>
+</li>
+<li>
+<p>[ ] T2-2 设计用户同意流程</p>
+</li>
+<li>负责人：产品</li>
+<li>时间：1 天</li>
+<li>成本：$0</li>
+<li>输出：私信开场白模板 + 隐私政策链接</li>
+<li>
+<p>验收：包含所有合规要素</p>
+</li>
+<li>
+<p>[ ] T2-3 设计数据加密方案</p>
+</li>
+<li>负责人：技术</li>
+<li>时间：1 天</li>
+<li>成本：$0</li>
+<li>输出：加密方案文档（AES-256 + TLS 1.3）</li>
+<li>
+<p>验收：技术方案评审通过</p>
+</li>
+<li>
+<p>[ ] T2-4 设计数据删除功能</p>
+</li>
+<li>负责人：技术</li>
+<li>时间：1 天</li>
+<li>成本：$0</li>
+<li>输出：数据删除 API 设计</li>
+<li>验收：支持用户数据导出和删除</li>
+</ul>
+<p><strong>Week 1-2 里程碑：</strong> 合规文档和流程准备完成</p>
+<hr />
+<h4>T3：话术库准备</h4>
+<ul>
+<li>[ ] T3-1 AI 生成初版话术（100 条）</li>
+<li>负责人：产品+AI</li>
+<li>时间：1 天</li>
+<li>成本：$50（LLM API）</li>
+<li>输出：100 条初版话术</li>
+<li>
+<p>验收：覆盖 12 个场景分类</p>
+</li>
+<li>
+<p>[ ] T3-2 运营初审话术</p>
+</li>
+<li>负责人：运营</li>
+<li>时间：2 天</li>
+<li>成本：$0</li>
+<li>输出：筛选后 86 条话术</li>
+<li>
+<p>验收：语气符合品牌调性</p>
+</li>
+<li>
+<p>[ ] T3-3 律师合规审核</p>
+</li>
+<li>负责人：律师</li>
+<li>时间：3 天</li>
+<li>成本：$500</li>
+<li>输出：合规修改建议</li>
+<li>
+<p>验收：无法律风险话术</p>
+</li>
+<li>
+<p>[ ] T3-4 话术入库</p>
+</li>
+<li>负责人：技术</li>
+<li>时间：1 天</li>
+<li>成本：$0</li>
+<li>输出：话术数据库</li>
+<li>验收：话术可查询、可分类、可更新</li>
+</ul>
+<p><strong>Week 1-2 里程碑：</strong> 86 条合规话术入库</p>
+<hr />
+<h3>Week 3-4：核心功能开发</h3>
+<h4>T4：账号管理模块</h4>
+<ul>
+<li>[ ] T4-1 数据库设计</li>
+<li>负责人：技术</li>
+<li>时间：1 天</li>
+<li>输出：accounts 表结构</li>
+<li>
+<p>验收：表结构评审通过</p>
+</li>
+<li>
+<p>[ ] T4-2 账号 CRUD API</p>
+</li>
+<li>负责人：技术</li>
+<li>时间：2 天</li>
+<li>输出：增删改查 API</li>
+<li>
+<p>验收：API 测试通过</p>
+</li>
+<li>
+<p>[ ] T4-3 账号状态监控</p>
+</li>
+<li>负责人：技术</li>
+<li>时间：2 天</li>
+<li>输出：每小时自动检测脚本</li>
+<li>
+<p>验收：封号 5 分钟内告警</p>
+</li>
+<li>
+<p>[ ] T4-4 管理后台前端</p>
+</li>
+<li>负责人：技术</li>
+<li>时间：2 天</li>
+<li>输出：账号管理页面</li>
+<li>验收：页面可操作，数据实时</li>
+</ul>
+<p><strong>里程碑：</strong> 账号管理功能完成</p>
+<hr />
+<h4>T5：评论监控模块</h4>
+<ul>
+<li>[ ] T5-1 FB 评论抓取脚本</li>
+<li>负责人：技术</li>
+<li>时间：3 天</li>
+<li>输出：评论抓取 API</li>
+<li>
+<p>验收：延迟&lt;5 分钟，准确率&gt;95%</p>
+</li>
+<li>
+<p>[ ] T5-2 意图识别模型</p>
+</li>
+<li>负责人：技术+AI</li>
+<li>时间：5 天</li>
+<li>输出：意图分类 API</li>
+<li>
+<p>验收：准确率&gt;85%（冷启动用规则引擎）</p>
+</li>
+<li>
+<p>[ ] T5-3 去重过滤逻辑</p>
+</li>
+<li>负责人：技术</li>
+<li>时间：1 天</li>
+<li>输出：去重算法</li>
+<li>
+<p>验收：重复率 0%</p>
+</li>
+<li>
+<p>[ ] T5-4 优先级排序</p>
+</li>
+<li>负责人：技术</li>
+<li>时间：1 天</li>
+<li>输出：排序算法</li>
+<li>验收：高意向评论优先处理</li>
+</ul>
+<p><strong>里程碑：</strong> 评论监控功能完成</p>
+<hr />
+<h4>T6：智能互动模块</h4>
+<ul>
+<li>[ ] T6-1 话术生成 API</li>
+<li>负责人：技术+AI</li>
+<li>时间：3 天</li>
+<li>输出：AI 话术生成接口</li>
+<li>
+<p>验收：生成时间&lt;3 秒，通过率&gt;80%</p>
+</li>
+<li>
+<p>[ ] T6-2 频率控制逻辑</p>
+</li>
+<li>负责人：技术</li>
+<li>时间：1 天</li>
+<li>输出：频率限制器</li>
+<li>
+<p>验收：单账号&lt;30 条/天，超限自动阻止</p>
+</li>
+<li>
+<p>[ ] T6-3 自动发布功能</p>
+</li>
+<li>负责人：技术</li>
+<li>时间：2 天</li>
+<li>输出：自动评论发布</li>
+<li>
+<p>验收：发布成功率&gt;95%</p>
+</li>
+<li>
+<p>[ ] T6-4 A/B 测试框架</p>
+</li>
+<li>负责人：技术</li>
+<li>时间：2 天</li>
+<li>输出：话术 A/B 测试系统</li>
+<li>验收：可配置多版本，自动分配流量</li>
+</ul>
+<p><strong>里程碑：</strong> 智能互动功能完成</p>
+<hr />
+<h4>T7：私信对话模块</h4>
+<ul>
+<li>[ ] T7-1 Messenger Webhook 接入</li>
+<li>负责人：技术</li>
+<li>时间：2 天</li>
+<li>输出：Webhook 接收服务</li>
+<li>
+<p>验收：可接收用户消息</p>
+</li>
+<li>
+<p>[ ] T7-2 多轮对话管理</p>
+</li>
+<li>负责人：技术+AI</li>
+<li>时间：3 天</li>
+<li>输出：对话状态机</li>
+<li>
+<p>验收：上下文准确率&gt;90%</p>
+</li>
+<li>
+<p>[ ] T7-3 信息收集流程</p>
+</li>
+<li>负责人：产品+ 技术</li>
+<li>时间：2 天</li>
+<li>输出：结构化信息收集</li>
+<li>
+<p>验收：信息完整率&gt;80%</p>
+</li>
+<li>
+<p>[ ] T7-4 24 小时窗口管理</p>
+</li>
+<li>负责人：技术</li>
+<li>时间：1 天</li>
+<li>输出：窗口追踪器</li>
+<li>
+<p>验收：超时自动停止发送</p>
+</li>
+<li>
+<p>[ ] T7-5 人工接管功能</p>
+</li>
+<li>负责人：技术</li>
+<li>时间：1 天</li>
+<li>输出：转人工 API</li>
+<li>验收：5 分钟内人工响应</li>
+</ul>
+<p><strong>里程碑：</strong> 私信对话功能完成</p>
+<hr />
+<h4>T8：数据看板模块</h4>
+<ul>
+<li>[ ] T8-1 数据埋点实现</li>
+<li>负责人：技术</li>
+<li>时间：2 天</li>
+<li>输出：埋点代码</li>
+<li>
+<p>验收：6 个核心事件全部埋点</p>
+</li>
+<li>
+<p>[ ] T8-2 实时概览页面</p>
+</li>
+<li>负责人：技术</li>
+<li>时间：2 天</li>
+<li>输出：数据看板首页</li>
+<li>
+<p>验收：数据延迟&lt;5 分钟</p>
+</li>
+<li>
+<p>[ ] T8-3 转化漏斗页面</p>
+</li>
+<li>负责人：技术</li>
+<li>时间：2 天</li>
+<li>输出：漏斗分析页面</li>
+<li>
+<p>验收：漏斗数据准确</p>
+</li>
+<li>
+<p>[ ] T8-4 账号健康页面</p>
+</li>
+<li>负责人：技术</li>
+<li>时间：1 天</li>
+<li>输出：账号状态页面</li>
+<li>验收：封号实时告警</li>
+</ul>
+<p><strong>里程碑：</strong> 数据看板功能完成</p>
+<hr />
+<h3>Week 5-6：小规模测试</h3>
+<h4>T9：内部测试</h4>
+<ul>
+<li>[ ] T9-1 功能测试</li>
+<li>负责人：测试</li>
+<li>时间：3 天</li>
+<li>输出：测试报告</li>
+<li>
+<p>验收：P0 功能全部通过</p>
+</li>
+<li>
+<p>[ ] T9-2 性能测试</p>
+</li>
+<li>负责人：技术</li>
+<li>时间：2 天</li>
+<li>输出：压测报告</li>
+<li>
+<p>验收：API 响应 P95&lt;500ms</p>
+</li>
+<li>
+<p>[ ] T9-3 安全测试</p>
+</li>
+<li>负责人：技术</li>
+<li>时间：2 天</li>
+<li>输出：安全报告</li>
+<li>验收：无高危漏洞</li>
+</ul>
+<p><strong>里程碑：</strong> 内部测试完成</p>
+<hr />
+<h4>T10：小规模外部测试</h4>
+<ul>
+<li>[ ] T10-1 单账号测试（日操作&lt;10）</li>
+<li>负责人：运营</li>
+<li>时间：7 天</li>
+<li>输出：测试数据</li>
+<li>
+<p>验收：封号率&lt;20%</p>
+</li>
+<li>
+<p>[ ] T10-2 话术 A/B 测试</p>
+</li>
+<li>负责人：产品+ 运营</li>
+<li>时间：7 天</li>
+<li>输出：话术效果报告</li>
+<li>
+<p>验收：选出最优话术版本</p>
+</li>
+<li>
+<p>[ ] T10-3 转化漏斗分析</p>
+</li>
+<li>负责人：产品</li>
+<li>时间：3 天</li>
+<li>输出：漏斗分析报告</li>
+<li>验收：识别转化瓶颈</li>
+</ul>
+<p><strong>里程碑：</strong> 小规模测试完成，数据反馈收集</p>
+<hr />
+<h3>Week 7-8：迭代优化</h3>
+<h4>T11：问题修复</h4>
+<ul>
+<li>[ ] T11-1 修复 P0 Bug</li>
+<li>负责人：技术</li>
+<li>时间：3 天</li>
+<li>输出：Bug 修复清单</li>
+<li>
+<p>验收：P0 Bug 全部修复</p>
+</li>
+<li>
+<p>[ ] T11-2 优化性能问题</p>
+</li>
+<li>负责人：技术</li>
+<li>时间：2 天</li>
+<li>输出：性能优化报告</li>
+<li>验收：响应时间提升 30%</li>
+</ul>
+<p><strong>里程碑：</strong> 问题修复完成</p>
+<hr />
+<h4>T12：策略优化</h4>
+<ul>
+<li>[ ] T12-1 话术 2.0 迭代</li>
+<li>负责人：产品+ 运营</li>
+<li>时间：3 天</li>
+<li>输出：新版话术库</li>
+<li>
+<p>验收：转化率提升 20%</p>
+</li>
+<li>
+<p>[ ] T12-2 频率策略调整</p>
+</li>
+<li>负责人：运营</li>
+<li>时间：1 天</li>
+<li>输出：新频率策略</li>
+<li>
+<p>验收：封号率降低</p>
+</li>
+<li>
+<p>[ ] T12-3 渠道策略优化</p>
+</li>
+<li>负责人：运营</li>
+<li>时间：2 天</li>
+<li>输出：渠道优化报告</li>
+<li>验收：获客成本降低</li>
+</ul>
+<p><strong>里程碑：</strong> 策略优化完成</p>
+<hr />
+<h4>T13：Phase 1 评审</h4>
+<ul>
+<li>[ ] T13-1 数据复盘</li>
+<li>负责人：产品</li>
+<li>时间：1 天</li>
+<li>输出：Phase 1 复盘报告</li>
+<li>
+<p>验收：数据完整，结论清晰</p>
+</li>
+<li>
+<p>[ ] T13-2 Go/No-Go 决策</p>
+</li>
+<li>负责人：Diwei</li>
+<li>时间：1 天</li>
+<li>输出：决策结果</li>
+<li>验收：基于成功/失败标准</li>
+</ul>
+<p><strong>里程碑：</strong> Phase 1 结束，进入 Phase 2 或终止</p>
+<hr />
+<h2>📊 任务依赖关系</h2>
+<pre><code>T1 账号与代理准备 ──┬──→ T4 账号管理模块
+                     │
+T2 合规准备 ─────────┼──→ T5 评论监控模块
+                     │
+T3 话术库准备 ───────┴──→ T6 智能互动模块
+                              │
+                              ↓
+                         T7 私信对话模块
+                              │
+                              ↓
+                         T8 数据看板模块
+                              │
+                              ↓
+                         T9 内部测试
+                              │
+                              ↓
+                         T10 小规模测试
+                              │
+                              ↓
+                         T11-13 迭代优化
+</code></pre>
+<hr />
+<h2>👥 团队分工</h2>
+<table>
+<thead>
+<tr>
+<th>角色</th>
+<th>负责人</th>
+<th>任务</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>产品</strong></td>
+<td>小宁</td>
+<td>T2-2, T3-1, T7-3, T10-3, T12-1, T13-1</td>
+</tr>
+<tr>
+<td><strong>技术</strong></td>
+<td>待定</td>
+<td>T1-2, T1-3, T1-4, T2-3, T2-4, T4, T5, T6, T7, T8, T9-2, T9-3, T11</td>
+</tr>
+<tr>
+<td><strong>运营</strong></td>
+<td>待定</td>
+<td>T1-1, T3-2, T10-1, T10-2, T12-2, T12-3</td>
+</tr>
+<tr>
+<td><strong>法务</strong></td>
+<td>待定</td>
+<td>T2-1, T3-3</td>
+</tr>
+<tr>
+<td><strong>测试</strong></td>
+<td>待定</td>
+<td>T9-1</td>
+</tr>
+<tr>
+<td><strong>决策</strong></td>
+<td>Diwei</td>
+<td>T13-2</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>📈 进度追踪</h2>
+<h3>每周检查点</h3>
+<table>
+<thead>
+<tr>
+<th>周次</th>
+<th>检查内容</th>
+<th>负责人</th>
+<th>时间</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Week 1</td>
+<td>账号/代理/API 准备进度</td>
+<td>小宁</td>
+<td>周五</td>
+</tr>
+<tr>
+<td>Week 2</td>
+<td>合规/话术准备进度</td>
+<td>小宁</td>
+<td>周五</td>
+</tr>
+<tr>
+<td>Week 3</td>
+<td>账号管理/评论监控开发进度</td>
+<td>小宁</td>
+<td>周五</td>
+</tr>
+<tr>
+<td>Week 4</td>
+<td>互动/对话/看板开发进度</td>
+<td>小宁</td>
+<td>周五</td>
+</tr>
+<tr>
+<td>Week 5</td>
+<td>内部测试进度</td>
+<td>小宁</td>
+<td>周五</td>
+</tr>
+<tr>
+<td>Week 6</td>
+<td>外部测试数据反馈</td>
+<td>小宁</td>
+<td>周五</td>
+</tr>
+<tr>
+<td>Week 7</td>
+<td>问题修复进度</td>
+<td>小宁</td>
+<td>周五</td>
+</tr>
+<tr>
+<td>Week 8</td>
+<td>Phase 1 评审准备</td>
+<td>小宁</td>
+<td>周五</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>风险追踪</h3>
+<table>
+<thead>
+<tr>
+<th>风险</th>
+<th>状态</th>
+<th>应对</th>
+<th>负责人</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FB 账号封禁</td>
+<td>🟡 监控中</td>
+<td>账号矩阵 + 频率控制</td>
+<td>技术</td>
+</tr>
+<tr>
+<td>API 审核延迟</td>
+<td>🟡 监控中</td>
+<td>提前 2 周提交</td>
+<td>技术</td>
+</tr>
+<tr>
+<td>话术转化率低</td>
+<td>⚪ 未发生</td>
+<td>A/B 测试优化</td>
+<td>运营</td>
+</tr>
+<tr>
+<td>技术延期</td>
+<td>⚪ 未发生</td>
+<td>每周检查进度</td>
+<td>小宁</td>
+</tr>
+<tr>
+<td>合规问题</td>
+<td>⚪ 未发生</td>
+<td>律师审核</td>
+<td>法务</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>🎯 下一步行动</h2>
+<h3>立即行动（本周）</h3>
+<table>
+<thead>
+<tr>
+<th>任务</th>
+<th>负责人</th>
+<th>截止时间</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>确认技术负责人</td>
+<td>Diwei</td>
+<td>2026-04-17</td>
+<td>⏳ 待办</td>
+</tr>
+<tr>
+<td>确认运营负责人</td>
+<td>Diwei</td>
+<td>2026-04-17</td>
+<td>⏳ 待办</td>
+</tr>
+<tr>
+<td>确认法务/律师</td>
+<td>Diwei</td>
+<td>2026-04-17</td>
+<td>⏳ 待办</td>
+</tr>
+<tr>
+<td>启动 T1 账号注册</td>
+<td>运营</td>
+<td>2026-04-18</td>
+<td>⏳ 待办</td>
+</tr>
+<tr>
+<td>启动 T2 隐私政策起草</td>
+<td>法务</td>
+<td>2026-04-18</td>
+<td>⏳ 待办</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>本周会议安排</h3>
+<table>
+<thead>
+<tr>
+<th>会议</th>
+<th>时间</th>
+<th>参与人</th>
+<th>议程</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>项目启动会</td>
+<td>2026-04-16 10:00</td>
+<td>全体</td>
+<td>目标对齐、任务分配</td>
+</tr>
+<tr>
+<td>Week 1 复盘</td>
+<td>2026-04-22 10:00</td>
+<td>全体</td>
+<td>进度检查、问题同步</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>文档版本：v1.0</strong><br />
+<strong>最后更新：2026-04-15</strong><br />
+<strong>下次更新：2026-04-22（Week 1 复盘后）</strong></p></div>
+        <div class="footer"><p>下次更新：2026-04-22（Week 1 复盘后）</p></div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>执行记录 - Hunter Agent 管理系统</title>
+    <link rel="stylesheet" href="apple-design-system.css">
+    <style>
+        /* Execution Table */
+        .execution-table {
+            background: var(--system-background);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+        
+        .execution-table-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr 100px 140px 80px 60px;
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: var(--secondary-system-background);
+            border-bottom: 0.5px solid var(--separator);
+            font-size: var(--font-footnote);
+            font-weight: var(--weight-semibold);
+            color: var(--secondary-label);
+        }
+        
+        .execution-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 100px 140px 80px 60px;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-bottom: 0.5px solid var(--separator);
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        
+        .execution-row:hover {
+            background: var(--secondary-system-background);
+        }
+        
+        .execution-row:last-child {
+            border-bottom: none;
+        }
+        
+        .execution-cell {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: var(--font-subhead);
+            color: var(--label-color);
+        }
+        
+        .execution-agent {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .execution-agent-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            background: var(--system-purple-light);
+            color: var(--system-purple);
+        }
+        
+        .execution-agent-name {
+            font-weight: var(--weight-medium);
+        }
+        
+        .execution-skill {
+            padding: 4px 8px;
+            background: var(--system-fill);
+            border-radius: var(--radius-xs);
+            font-size: var(--font-caption-1);
+            color: var(--secondary-label);
+        }
+        
+        .execution-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            font-size: var(--font-caption-1);
+            font-weight: var(--weight-medium);
+        }
+        
+        .execution-status.success {
+            background: var(--system-green-light);
+            color: var(--system-green);
+        }
+        
+        .execution-status.running {
+            background: var(--system-blue-light);
+            color: var(--system-blue);
+        }
+        
+        .execution-status.failed {
+            background: var(--system-red-light);
+            color: var(--system-red);
+        }
+        
+        .execution-status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+        
+        .execution-status.running .execution-status-dot {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        .execution-time {
+            font-size: var(--font-caption-1);
+            color: var(--tertiary-label);
+        }
+        
+        .execution-duration {
+            font-size: var(--font-footnote);
+            color: var(--secondary-label);
+        }
+        
+        .execution-action {
+            font-size: var(--font-title-3);
+            color: var(--tertiary-label);
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        
+        .execution-action:hover {
+            color: var(--system-blue);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Stats Summary */
+        .stats-summary {
+            display: flex;
+            gap: var(--spacing-md);
+            padding: var(--spacing-lg);
+            background: var(--system-background);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--secondary-system-background);
+            border-radius: var(--radius-sm);
+        }
+        
+        .stat-icon {
+            font-size: var(--font-title-3);
+        }
+        
+        .stat-value {
+            font-size: var(--font-headline);
+            font-weight: var(--weight-semibold);
+            color: var(--label-color);
+        }
+        
+        .stat-label {
+            font-size: var(--font-caption-1);
+            color: var(--tertiary-label);
+        }
+        
+        /* Filter Bar */
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: var(--secondary-system-background);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .filter-search {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: 8px 12px;
+            background: var(--system-background);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--separator);
+        }
+        
+        .filter-search:focus-within {
+            border-color: var(--system-blue);
+            box-shadow: 0 0 0 3px var(--system-blue-light);
+        }
+        
+        .filter-search-input {
+            border: none;
+            background: transparent;
+            font-size: var(--font-subhead);
+            color: var(--label-color);
+            width: 100%;
+            outline: none;
+        }
+        
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+        
+        .filter-btn {
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            font-size: var(--font-footnote);
+            font-weight: var(--weight-medium);
+            background: var(--system-fill);
+            color: var(--secondary-label);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .filter-btn:hover {
+            background: var(--system-blue-light);
+            color: var(--system-blue);
+        }
+        
+        .filter-btn.active {
+            background: var(--system-blue);
+            color: white;
+        }
+        
+        /* Detail Drawer */
+        .drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .drawer-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 420px;
+            max-width: 100%;
+            height: 100%;
+            background: var(--system-background);
+            z-index: 1001;
+            transform: translateX(100%);
+            transition: transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .drawer.active {
+            transform: translateX(0);
+        }
+        
+        .drawer-header {
+            padding: var(--spacing-lg);
+            border-bottom: 0.5px solid var(--separator);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .drawer-title {
+            font-size: var(--font-title-3);
+            font-weight: var(--weight-semibold);
+            color: var(--label-color);
+        }
+        
+        .drawer-close {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            background: var(--system-fill);
+            border: none;
+            font-size: var(--font-title-3);
+            color: var(--secondary-label);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .drawer-close:hover {
+            background: var(--system-red-light);
+            color: var(--system-red);
+        }
+        
+        .drawer-body {
+            padding: var(--spacing-lg);
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .drawer-actions {
+            padding: var(--spacing-lg);
+            border-top: 0.5px solid var(--separator);
+            background: var(--secondary-system-background);
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+        
+        .action-row {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            font-size: var(--font-subhead);
+            font-weight: var(--weight-medium);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        
+        .action-btn-primary {
+            background: var(--system-blue);
+            color: white;
+        }
+        
+        .action-btn-primary:hover {
+            background: var(--system-blue-hover);
+        }
+        
+        .action-btn-secondary {
+            background: var(--system-fill);
+            color: var(--secondary-label);
+        }
+        
+        .action-btn-secondary:hover {
+            background: var(--system-blue-light);
+            color: var(--system-blue);
+        }
+        
+        /* Detail Sections */
+        .detail-section {
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .detail-section-title {
+            font-size: var(--font-subhead);
+            font-weight: var(--weight-semibold);
+            color: var(--label-color);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--spacing-sm) 0;
+            border-bottom: 0.5px solid var(--separator);
+        }
+        
+        .detail-label {
+            font-size: var(--font-subhead);
+            color: var(--secondary-label);
+        }
+        
+        .detail-value {
+            font-size: var(--font-subhead);
+            font-weight: var(--weight-medium);
+            color: var(--label-color);
+        }
+        
+        /* Log Output */
+        .log-output {
+            background: var(--secondary-system-background);
+            border-radius: var(--radius-sm);
+            padding: var(--spacing-md);
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: var(--font-caption-1);
+            color: var(--secondary-label);
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .log-output .log-success { color: var(--system-green); }
+        .log-output .log-error { color: var(--system-red); }
+        .log-output .log-info { color: var(--system-blue); }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .execution-table-header,
+            .execution-row {
+                grid-template-columns: 1fr 1fr 80px;
+            }
+            
+            .execution-time,
+            .execution-duration,
+            .execution-action {
+                display: none;
+            }
+            
+            .stats-summary {
+                flex-wrap: wrap;
+            }
+            
+            .filter-bar {
+                flex-wrap: wrap;
+            }
+            
+            .drawer {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-group">
+                    <div class="logo-icon">H</div>
+                    <div class="logo-text">
+                        <div class="logo">Hunter</div>
+                    </div>
+                </div>
+                <button class="sidebar-toggle" onclick="toggleSidebar()">◀</button>
+            </div>
+            <nav class="nav-section">
+                <a href="dashboard.html" class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">Dashboard</span>
+                </a>
+                <a href="agents.html" class="nav-item">
+                    <span class="nav-icon">🤖</span>
+                    <span class="nav-label">Agent 管理</span>
+                </a>
+                <a href="skills.html" class="nav-item">
+                    <span class="nav-icon">⚡</span>
+                    <span class="nav-label">Skill 管理</span>
+                </a>
+                <a href="executions.html" class="nav-item active">
+                    <span class="nav-icon">📝</span>
+                    <span class="nav-label">执行记录</span>
+                </a>
+                <a href="settings.html" class="nav-item">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-label">系统设置</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <h1 class="page-title">执行记录</h1>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-secondary" onclick="exportLogs()">
+                    <span>↓</span>
+                    <span>导出日志</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Stats Summary -->
+            <div class="stats-summary">
+                <div class="stat-item">
+                    <span class="stat-icon">📝</span>
+                    <div>
+                        <div class="stat-value">324</div>
+                        <div class="stat-label">今日执行</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon" style="color: var(--system-green);">●</span>
+                    <div>
+                        <div class="stat-value">312</div>
+                        <div class="stat-label">成功</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon" style="color: var(--system-blue);">●</span>
+                    <div>
+                        <div class="stat-value">5</div>
+                        <div class="stat-label">进行中</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon" style="color: var(--system-red);">●</span>
+                    <div>
+                        <div class="stat-value">7</div>
+                        <div class="stat-label">失败</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <div class="filter-search">
+                    <span>🔍</span>
+                    <input type="text" class="filter-search-input" placeholder="搜索 Agent 或 Skill..." id="searchInput" onkeyup="filterExecutions()">
+                </div>
+                <div class="filter-group">
+                    <button class="filter-btn active" onclick="filterByStatus('all')">全部</button>
+                    <button class="filter-btn" onclick="filterByStatus('success')">成功</button>
+                    <button class="filter-btn" onclick="filterByStatus('running')">进行中</button>
+                    <button class="filter-btn" onclick="filterByStatus('failed')">失败</button>
+                </div>
+            </div>
+
+            <!-- Execution Table -->
+            <div class="execution-table">
+                <div class="execution-table-header">
+                    <div class="execution-cell">Agent</div>
+                    <div class="execution-cell">Skill</div>
+                    <div class="execution-cell">状态</div>
+                    <div class="execution-cell">开始时间</div>
+                    <div class="execution-cell">耗时</div>
+                    <div class="execution-cell"></div>
+                </div>
+
+                <!-- Running Executions -->
+                <div class="execution-row" onclick="openDetailDrawer('exec-001')">
+                    <div class="execution-cell execution-agent">
+                        <div class="execution-agent-icon">👥</div>
+                        <span class="execution-agent-name">FB社群Agent</span>
+                    </div>
+                    <div class="execution-cell">
+                        <span class="execution-skill">browser_visible</span>
+                    </div>
+                    <div class="execution-cell">
+                        <span class="execution-status running">
+                            <span class="execution-status-dot"></span>
+                            进行中
+                        </span>
+                    </div>
+                    <div class="execution-cell execution-time">刚刚</div>
+                    <div class="execution-cell execution-duration">—</div>
+                    <div class="execution-cell execution-action">›</div>
+                </div>
+
+                <div class="execution-row" onclick="openDetailDrawer('exec-002')">
+                    <div class="execution-cell execution-agent">
+                        <div class="execution-agent-icon">💰</div>
+                        <span class="execution-agent-name">贷后管理Agent</span>
+                    </div>
+                    <div class="execution-cell">
+                        <span class="execution-skill">cron</span>
+                    </div>
+                    <div class="execution-cell">
+                        <span class="execution-status running">
+                            <span class="execution-status-dot"></span>
+                            进行中
+                        </span>
+                    </div>
+                    <div class="execution-cell execution-time">2 分钟前</div>
+                    <div class="execution-cell execution-duration">—</div>
+                    <div class="execution-cell execution-action">›</div>
+                </div>
+
+                <!-- Success Executions -->
+                <div class="execution-row" onclick="openDetailDrawer('exec-003')">
+                    <div class="execution-cell execution-agent">
+                        <div class="execution-agent-icon">📝</div>
+                        <span class="execution-agent-name">SEO内容Agent</span>
+                    </div>
+                    <div class="execution-cell">
+                        <span class="execution-skill">docx</span>
+                    </div>
+                    <div class="execution-cell">
+                        <span class="execution-status success">
+                            <span class="execution-status-dot"></span>
+                            成功
+                        </span>
+                    </div>
+                    <div class="execution-cell execution-time">5 分钟前</div>
+                    <div class="execution-cell execution-duration">1.2s</div>
+                    <div class="execution-cell execution-action">›</div>
+                </div>
+
+                <div class="execution-row" onclick="openDetailDrawer('exec-004')">
+                    <div class="execution-cell execution-agent">
+                        <div class="execution-agent-icon">🛡️</div>
+                        <span class="execution-agent-name">风控预审Agent</span>
+                    </div>
+                    <div class="execution-cell">
+                        <span class="execution-skill">file_reader</span>
+                    </div>
+                    <div class="execution-cell">
+                        <span class="execution-status success">
+                            <span class="execution-status-dot"></span>
+                            成功
+                        </span>
+                    </div>
+                    <div class="execution-cell execution-time">15 分钟前</div>
+                    <div class="execution-cell execution-duration">0.8s</div>
+                    <div class="execution-cell execution-action">›</div>
+                </div>
+
+                <div class="execution-row" onclick="openDetailDrawer('exec-005')">
+                    <div class="execution-cell execution-agent">
+                        <div class="execution-agent-icon">🎯</div>
+                        <span class="execution-agent-name">意图分类Agent</span>
+                    </div>
+                    <div class="execution-cell">
+                        <span class="execution-skill">file_reader</span>
+                    </div>
+                    <div class="execution-cell">
+                        <span class="execution-status success">
+                            <span class="execution-status-dot"></span>
+                            成功
+                        </span>
+                    </div>
+                    <div class="execution-cell execution-time">30 分钟前</div>
+                    <div class="execution-cell execution-duration">0.3s</div>
+                    <div class="execution-cell execution-action">›</div>
+                </div>
+
+                <div class="execution-row" onclick="openDetailDrawer('exec-006')">
+                    <div class="execution-cell execution-agent">
+                        <div class="execution-agent-icon">📚</div>
+                        <span class="execution-agent-name">知识库Agent</span>
+                    </div>
+                    <div class="execution-cell">
+                        <span class="execution-skill">pdf</span>
+                    </div>
+                    <div class="execution-cell">
+                        <span class="execution-status success">
+                            <span class="execution-status-dot"></span>
+                            成功
+                        </span>
+                    </div>
+                    <div class="execution-cell execution-time">1 小时前</div>
+                    <div class="execution-cell execution-duration">2.1s</div>
+                    <div class="execution-cell execution-action">›</div>
+                </div>
+
+                <!-- Failed Executions -->
+                <div class="execution-row" onclick="openDetailDrawer('exec-007')">
+                    <div class="execution-cell execution-agent">
+                        <div class="execution-agent-icon">💬</div>
+                        <span class="execution-agent-name">WhatsApp裂变Agent</span>
+                    </div>
+                    <div class="execution-cell">
+                        <span class="execution-skill">himalaya</span>
+                    </div>
+                    <div class="execution-cell">
+                        <span class="execution-status failed">
+                            <span class="execution-status-dot"></span>
+                            失败
+                        </span>
+                    </div>
+                    <div class="execution-cell execution-time">1 小时前</div>
+                    <div class="execution-cell execution-duration">15.2s</div>
+                    <div class="execution-cell execution-action">›</div>
+                </div>
+
+                <div class="execution-row" onclick="openDetailDrawer('exec-008')">
+                    <div class="execution-cell execution-agent">
+                        <div class="execution-agent-icon">🎬</div>
+                        <span class="execution-agent-name">TikTok内容Agent</span>
+                    </div>
+                    <div class="execution-cell">
+                        <span class="execution-skill">pptx</span>
+                    </div>
+                    <div class="execution-cell">
+                        <span class="execution-status success">
+                            <span class="execution-status-dot"></span>
+                            成功
+                        </span>
+                    </div>
+                    <div class="execution-cell execution-time">2 小时前</div>
+                    <div class="execution-cell execution-duration">3.5s</div>
+                    <div class="execution-cell execution-action">›</div>
+                </div>
+
+                <div class="execution-row" onclick="openDetailDrawer('exec-009')">
+                    <div class="execution-cell execution-agent">
+                        <div class="execution-agent-icon">🔄</div>
+                        <span class="execution-agent-name">数据回流Agent</span>
+                    </div>
+                    <div class="execution-cell">
+                        <span class="execution-skill">xlsx</span>
+                    </div>
+                    <div class="execution-cell">
+                        <span class="execution-status success">
+                            <span class="execution-status-dot"></span>
+                            成功
+                        </span>
+                    </div>
+                    <div class="execution-cell execution-time">3 小时前</div>
+                    <div class="execution-cell execution-duration">1.8s</div>
+                    <div class="execution-cell execution-action">›</div>
+                </div>
+
+                <div class="execution-row" onclick="openDetailDrawer('exec-010')">
+                    <div class="execution-cell execution-agent">
+                        <div class="execution-agent-icon">🎛️</div>
+                        <span class="execution-agent-name">Agent Manager</span>
+                    </div>
+                    <div class="execution-cell">
+                        <span class="execution-skill">guidance</span>
+                    </div>
+                    <div class="execution-cell">
+                        <span class="execution-status success">
+                            <span class="execution-status-dot"></span>
+                            成功
+                        </span>
+                    </div>
+                    <div class="execution-cell execution-time">4 小时前</div>
+                    <div class="execution-cell execution-duration">0.5s</div>
+                    <div class="execution-cell execution-action">›</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Detail Drawer -->
+    <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+    <div class="drawer" id="detailDrawer">
+        <div class="drawer-header">
+            <div class="drawer-title" id="drawerTitle">执行详情</div>
+            <button class="drawer-close" onclick="closeDrawer()">✕</button>
+        </div>
+        <div class="drawer-body" id="drawerBody">
+            <!-- Dynamic content -->
+        </div>
+        <div class="drawer-actions" id="drawerActions">
+            <!-- Dynamic actions -->
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // Execution Detail Data
+        const executionDetails = {
+            'exec-001': {
+                agent: 'FB社群Agent',
+                agentIcon: '👥',
+                skill: 'browser_visible',
+                status: 'running',
+                startTime: '刚刚',
+                duration: '—',
+                input: '{"url": "https://facebook.com/group/123"}',
+                output: '正在执行...',
+                logs: '[INFO] 启动浏览器...\n[INFO] 打开页面: facebook.com/group/123\n[INFO] 正在监控评论...'
+            },
+            'exec-002': {
+                agent: '贷后管理Agent',
+                agentIcon: '💰',
+                skill: 'cron',
+                status: 'running',
+                startTime: '2 分钟前',
+                duration: '—',
+                input: '{"task": "daily_reminder"}',
+                output: '正在执行...',
+                logs: '[INFO] 执行定时任务: daily_reminder\n[INFO] 查询待还款用户...\n[INFO] 发送提醒: 12 个用户'
+            },
+            'exec-003': {
+                agent: 'SEO内容Agent',
+                agentIcon: '📝',
+                skill: 'docx',
+                status: 'success',
+                startTime: '5 分钟前',
+                duration: '1.2s',
+                input: '{"topic": "OFW借贷攻略", "keywords": ["菲律宾", "借贷", "信用"]}',
+                output: '生成文档: OFW借贷攻略.docx',
+                logs: '[INFO] 开始生成内容...\n[SUCCESS] 内容生成完成\n[SUCCESS] 文档保存成功'
+            },
+            'exec-004': {
+                agent: '风控预审Agent',
+                agentIcon: '🛡️',
+                skill: 'file_reader',
+                status: 'success',
+                startTime: '15 分钟前',
+                duration: '0.8s',
+                input: '{"file": "applicant_001.pdf"}',
+                output: '{"score": 85, "risk_level": "low", "approved": true}',
+                logs: '[INFO] 读取文件: applicant_001.pdf\n[SUCCESS] 文件解析完成\n[SUCCESS] 风控评分: 85'
+            },
+            'exec-005': {
+                agent: '意图分类Agent',
+                agentIcon: '🎯',
+                skill: 'file_reader',
+                status: 'success',
+                startTime: '30 分钟前',
+                duration: '0.3s',
+                input: '{"message": "我想申请贷款"}',
+                output: '{"intent": "loan_application", "confidence": 0.95}',
+                logs: '[SUCCESS] 意图识别: loan_application'
+            },
+            'exec-006': {
+                agent: '知识库Agent',
+                agentIcon: '📚',
+                skill: 'pdf',
+                status: 'success',
+                startTime: '1 小时前',
+                duration: '2.1s',
+                input: '{"query": "还款流程"}',
+                output: '找到 3 个相关文档',
+                logs: '[INFO] 搜索知识库...\n[SUCCESS] 找到匹配内容\n[SUCCESS] 返回结果'
+            },
+            'exec-007': {
+                agent: 'WhatsApp裂变Agent',
+                agentIcon: '💬',
+                skill: 'himalaya',
+                status: 'failed',
+                startTime: '1 小时前',
+                duration: '15.2s',
+                input: '{"action": "send_invite"}',
+                output: 'Error: SMTP连接失败',
+                logs: '[INFO] 准备发送邀请...\n[ERROR] SMTP连接超时\n[ERROR] 发送失败',
+                error: 'SMTP连接超时，请检查邮件服务器配置'
+            },
+            'exec-008': {
+                agent: 'TikTok内容Agent',
+                agentIcon: '🎬',
+                skill: 'pptx',
+                status: 'success',
+                startTime: '2 小时前',
+                duration: '3.5s',
+                input: '{"template": "product_intro", "data": {...}}',
+                output: '生成PPT: product_intro.pptx',
+                logs: '[INFO] 加载模板...\n[SUCCESS] 内容填充完成\n[SUCCESS] PPT生成成功'
+            },
+            'exec-009': {
+                agent: '数据回流Agent',
+                agentIcon: '🔄',
+                skill: 'xlsx',
+                status: 'success',
+                startTime: '3 小时前',
+                duration: '1.8s',
+                input: '{"action": "sync_data"}',
+                output: '同步 156 条数据',
+                logs: '[INFO] 开始数据同步...\n[SUCCESS] 数据回流完成'
+            },
+            'exec-010': {
+                agent: 'Agent Manager',
+                agentIcon: '🎛️',
+                skill: 'guidance',
+                status: 'success',
+                startTime: '4 小时前',
+                duration: '0.5s',
+                input: '{"action": "health_check"}',
+                output: '所有 Agent 运行正常',
+                logs: '[SUCCESS] 健康检查完成'
+            }
+        };
+
+        // Open Detail Drawer
+        function openDetailDrawer(execId) {
+            const exec = executionDetails[execId];
+            if (!exec) return;
+
+            document.getElementById('drawerTitle').textContent = '执行详情';
+            
+            const statusClass = exec.status;
+            const statusText = exec.status === 'success' ? '成功' : 
+                               exec.status === 'running' ? '进行中' : '失败';
+            
+            const logsHtml = exec.logs.split('\n').map(line => {
+                if (line.includes('[SUCCESS]')) return `<span class="log-success">${line}</span>`;
+                if (line.includes('[ERROR]')) return `<span class="log-error">${line}</span>`;
+                if (line.includes('[INFO]')) return `<span class="log-info">${line}</span>`;
+                return line;
+            }).join('\n');
+            
+            document.getElementById('drawerBody').innerHTML = `
+                <div class="detail-section">
+                    <div class="detail-section-title">基本信息</div>
+                    <div class="detail-row">
+                        <span class="detail-label">Agent</span>
+                        <span class="detail-value">${exec.agentIcon} ${exec.agent}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Skill</span>
+                        <span class="detail-value">${exec.skill}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">状态</span>
+                        <span class="execution-status ${statusClass}">
+                            <span class="execution-status-dot"></span>
+                            ${statusText}
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">开始时间</span>
+                        <span class="detail-value">${exec.startTime}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">耗时</span>
+                        <span class="detail-value">${exec.duration}</span>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-section-title">输入参数</div>
+                    <div class="log-output">${exec.input}</div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-section-title">输出结果</div>
+                    <div class="log-output">${exec.output}</div>
+                </div>
+                
+                ${exec.error ? `
+                <div class="detail-section">
+                    <div class="detail-section-title">错误信息</div>
+                    <div class="log-output" style="background: var(--system-red-bg);">${exec.error}</div>
+                </div>
+                ` : ''}
+                
+                <div class="detail-section">
+                    <div class="detail-section-title">执行日志</div>
+                    <div class="log-output">${logsHtml}</div>
+                </div>
+            `;
+            
+            // Render actions
+            const isRunning = exec.status === 'running';
+            const isFailed = exec.status === 'failed';
+            
+            document.getElementById('drawerActions').innerHTML = `
+                <div class="action-row">
+                    ${isRunning ? `
+                        <button class="action-btn action-btn-warning" onclick="stopExecution('${execId}')">⏹ 停止执行</button>
+                    ` : isFailed ? `
+                        <button class="action-btn action-btn-primary" onclick="retryExecution('${execId}')">🔄 重试执行</button>
+                    ` : `
+                        <button class="action-btn action-btn-secondary" onclick="rerunExecution('${execId}')">↻ 重新执行</button>
+                    `}
+                    <button class="action-btn action-btn-secondary" onclick="copyLogs('${execId}')">📋 复制日志</button>
+                </div>
+            `;
+            
+            document.getElementById('drawerOverlay').classList.add('active');
+            document.getElementById('detailDrawer').classList.add('active');
+        }
+
+        // Close Drawer
+        function closeDrawer() {
+            document.getElementById('drawerOverlay').classList.remove('active');
+            document.getElementById('detailDrawer').classList.remove('active');
+        }
+
+        // Actions
+        function stopExecution(execId) {
+            showToast('执行已停止');
+            closeDrawer();
+        }
+
+        function retryExecution(execId) {
+            showToast('正在重试执行...');
+        }
+
+        function rerunExecution(execId) {
+            showToast('正在重新执行...');
+        }
+
+        function copyLogs(execId) {
+            const exec = executionDetails[execId];
+            if (exec) {
+                showToast('日志已复制');
+            }
+        }
+
+        function exportLogs() {
+            showToast('日志导出功能开发中...');
+        }
+
+        // Filter
+        function filterExecutions() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('.execution-row');
+            
+            rows.forEach(row => {
+                const agent = row.querySelector('.execution-agent-name').textContent.toLowerCase();
+                const skill = row.querySelector('.execution-skill').textContent.toLowerCase();
+                if (agent.includes(search) || skill.includes(search)) {
+                    row.style.display = 'grid';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        function filterByStatus(status) {
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            showToast(`筛选: ${status}`);
+        }
+
+        // Sidebar Toggle
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        }
+
+        // Toast
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <span class="toast-icon">${type === 'success' ? '✓' : '✕'}</span>
+                <span class="toast-message">${message}</span>
+                <span class="toast-close" onclick="this.parentElement.remove()">✕</span>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+    </script>
+</body>
+</html>
