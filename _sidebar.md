@@ -2,7 +2,7 @@
 
 - 🏠 **首页**
   - [概述](/)
-  - [快速开始](/docs/prototypes/README.md)
+  - [快速开始](https://leojunhan.github.io/ofw-docs/prototypes/apple-style/executions.html)
 
 - 📋 **战略规划**
   - [顶层设计](/docs/strategy/top-level-design.md)
