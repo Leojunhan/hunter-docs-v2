@@ -19,12 +19,7 @@
   - [Hunter 产品架构](/docs/architecture/HUNTER_产品架构文档.md)
 
 - 📝 **产品需求**
-  - **Agent 管理系统 v2.0** ⭐ [NEW](/docs/prd/hunter-agent-management-prd-v2.0.md)
-  - [Agent 管理系统 v1.0](/docs/prd/hunter-agent-management-v1.0.md)
-  - [Agent 开发计划](/docs/prd/hunter-agent-dev-plan-v1.0.md)
-  - [Agent 测试用例](/docs/prd/hunter-agent-test-cases-v1.0.md)
-  - [Agent 原型 v1.0](/docs/prd/hunter-agent-prototype-v1.0.md)
-  - [FB Traffic Agent PRD](/docs/prd/OFW_FB_Traffic_Agent_PRD_v1.md)
+  - **Agent 管理系统 PRD v2.0** ⭐
 
 - 📊 **数据系统**
   - [Hunter 数据系统 v1.0](/docs/data-system/hunter-data-system-v1.0.md)
@@ -39,7 +34,6 @@
 - 🗄️ **归档文档**
   - [Agent 开发启动](/docs/archive/HUNTER_AGENT_DEV_START.md)
   - [A2A MVP 总结](/docs/archive/A2A_MVP_SUMMARY.md)
-  - [Phase2 总结](/docs/archive/PHASE2_SUMMARY.md)
   - [Meta Agent 设计](/docs/archive/meta_agent_design.md)
 
 - 🖥️ **原型系统**
@@ -55,4 +49,4 @@
 
 - 🔗 **外部链接**
   - [原型演示 (ofw-docs)](https://leojunhan.github.io/ofw-docs/)
-  - [GitHub 仓库](https://github.com/Leojunhan/hunter-docs)
+  - [GitHub 仓库](https://github.com/Leojunhan/hunter-docs-v2)
