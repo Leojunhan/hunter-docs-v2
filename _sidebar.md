@@ -19,8 +19,8 @@
   - [Hunter 产品架构](/docs/architecture/HUNTER_产品架构文档.md)
 
 - 📝 **产品需求**
-  - [核心任务清单](/docs/prd/hunter-core-tasks.md) ⭐
-  - [Agent 管理系统 PRD v2.0](/docs/prd/hunter-agent-management-prd-v2.0)
+  - [核心任务清单 v1.0](/docs/prd/hunter-core-tasks.md) ⭐
+  - [Agent 管理系统 PRD v3.0](/docs/prd/hunter-agent-management-prd-v2.0)
 
 - 📊 **数据系统**
   - [Hunter 数据系统 v1.0](/docs/data-system/hunter-data-system-v1.0.md)
