@@ -31,6 +31,9 @@
 - 🔍 **评审记录**
   - [PRD 评审](/docs/review/hunter-agent-prd-review.md)
 
+- 🧪 **验证报告**
+  - [FB API 可行性验证](/docs/validation/fb-api-validation.md)
+
 - 🗄️ **归档文档**
   - [Agent 开发启动](/docs/archive/HUNTER_AGENT_DEV_START.md)
   - [A2A MVP 总结](/docs/archive/A2A_MVP_SUMMARY.md)
