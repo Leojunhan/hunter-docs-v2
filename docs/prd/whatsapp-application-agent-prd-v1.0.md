@@ -647,14 +647,7 @@ Redis 记录保留（TTL 7天）
 | **风控预审集成** | Phase 3 | 集成风控 Agent，实时预审 |
 | **数据存储演进** | Phase 3 | 飞书表格迁移到正式存储方案 |
 
-### 8.3 相关文档
-
-- 战略规划：https://leojunhan.github.io/ofw-docs/#/docs/strategy/ofw_strategy_top_level_design
-- 业务架构：https://leojunhan.github.io/ofw-docs/#/docs/architecture/ofw_strategy_business_architecture
-
----
-
-## A. N8N 工作流架构图
+### 8.3 后续迭代
 
 ```mermaid
 graph TB
