@@ -14,7 +14,7 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            background: #f5f7fa;
             color: #2c3e50;
             overflow: hidden;
         }
@@ -92,7 +92,7 @@
             margin-bottom: 4px;
             border-radius: 6px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: background 0.2s;
         }
         
         .filter-item:hover {
@@ -104,16 +104,10 @@
         }
         
         .filter-color {
-            width: 24px;
-            height: 24px;
-            border-radius: 6px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
             margin-right: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            color: #fff;
-            font-weight: 600;
         }
         
         .filter-item label {
@@ -153,7 +147,6 @@
             background: #3498db;
             border-color: #3498db;
             color: #ffffff;
-            transform: translateY(-1px);
         }
         
         .action-btn.primary {
@@ -196,12 +189,13 @@
         .node-detail-icon {
             width: 48px;
             height: 48px;
-            border-radius: 12px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-right: 16px;
             font-size: 20px;
+            color: #fff;
         }
         
         .node-detail h2 {
@@ -304,49 +298,47 @@
             top: 0;
             right: 0;
             bottom: 0;
-            background: transparent;
         }
         
-        /* SVG 背景网格 */
-        .grid-line {
-            stroke: #e1e5e9;
-            stroke-width: 0.5;
-            stroke-opacity: 0.3;
-        }
-        
-        /* 卡片节点样式 */
-        .node-card {
+        /* 圆形节点样式 */
+        .node-circle {
             cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .node-card:hover {
-            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15));
-            transform: scale(1.05);
         }
         
         /* 连线样式 */
         .link {
             fill: none;
             stroke: #95a5a6;
-            stroke-width: 1.5;
-            stroke-opacity: 0.4;
-            transition: all 0.3s;
+            stroke-width: 2;
+            stroke-opacity: 0.6;
         }
         
-        .link:hover {
+        .link.highlighted {
             stroke: #3498db;
-            stroke-width: 2.5;
+            stroke-width: 3;
             stroke-opacity: 1;
+        }
+        
+        /* 连线标签背景 */
+        .link-label-bg {
+            fill: #ffffff;
+            stroke: #e1e5e9;
+            stroke-width: 1;
         }
         
         .link-label {
             font-size: 11px;
-            fill: #7f8c8d;
+            fill: #5a6c7d;
             pointer-events: none;
-            background: #ffffff;
-            padding: 2px 6px;
-            border-radius: 4px;
+        }
+        
+        /* 节点圆形 */
+        .node-bg {
+            transition: stroke-width 0.2s, stroke 0.2s;
+        }
+        
+        .node-bg:hover {
+            stroke-width: 4;
         }
         
         /* 底部提示 */
@@ -400,10 +392,39 @@
         }
         
         /* 颜色方案 */
-        .color-core { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); }
-        .color-resource { background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); }
-        .color-dig { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); }
-        .color-touch { background: linear-gradient(135deg, #27ae60 0%, #229954 100%); }
+        .color-core { background: #3498db; }
+        .color-resource { background: #9b59b6; }
+        .color-dig { background: #f39c12; }
+        .color-touch { background: #27ae60; }
+        
+        /* 说明 */
+        .legend {
+            margin-top: 24px;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .legend h4 {
+            font-size: 12px;
+            color: #2c3e50;
+            margin-bottom: 12px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 11px;
+            color: #7f8c8d;
+        }
+        
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
     </style>
 </head>
 <body>
@@ -415,11 +436,11 @@
         <!-- 统计 -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-number" id="totalNodes">14</div>
+                <div class="stat-number">14</div>
                 <div class="stat-label">实体</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" id="totalLinks">18</div>
+                <div class="stat-number">15</div>
                 <div class="stat-label">关系</div>
             </div>
         </div>
@@ -433,20 +454,24 @@
         <div class="section">
             <h3>实体类型</h3>
             <div class="filter-item active" data-type="core">
-                <div class="filter-color color-core">8</div>
+                <div class="filter-color color-core"></div>
                 <label>核心业务对象</label>
+                <span class="count">8</span>
             </div>
             <div class="filter-item active" data-type="resource">
-                <div class="filter-color color-resource">2</div>
+                <div class="filter-color color-resource"></div>
                 <label>账号资源</label>
+                <span class="count">2</span>
             </div>
             <div class="filter-item active" data-type="dig">
-                <div class="filter-color color-dig">2</div>
+                <div class="filter-color color-dig"></div>
                 <label>挖掘策略域</label>
+                <span class="count">2</span>
             </div>
             <div class="filter-item active" data-type="touch">
-                <div class="filter-color color-touch">2</div>
+                <div class="filter-color color-touch"></div>
                 <label>触达策略域</label>
+                <span class="count">2</span>
             </div>
         </div>
         
@@ -465,14 +490,20 @@
         </div>
         
         <!-- 说明 -->
-        <div class="section">
-            <h3>使用说明</h3>
-            <p style="font-size: 12px; color: #7f8c8d; line-height: 1.6;">
-                拖拽卡片可移动位置<br/>
-                点击卡片查看详细信息<br/>
-                滚轮缩放，拖拽空白平移<br/>
-                搜索框实时筛选实体
-            </p>
+        <div class="legend">
+            <h4>业务路径说明</h4>
+            <div class="legend-item">
+                <div class="legend-dot color-dig"></div>
+                <span>挖掘域（大娃Agent负责）</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot color-touch"></div>
+                <span>触达域（二娃Agent负责）</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot" style="background: #e74c3c;"></div>
+                <span>边界：采集用户 → 触达用户</span>
+            </div>
         </div>
     </div>
     
@@ -498,7 +529,7 @@
             <span>🖱️</span> 拖拽移动 · 滚轮缩放
         </div>
         <div class="tip-item">
-            <span>👆</span> 点击卡片查看详情
+            <span>👆</span> 点击圆圈查看详情
         </div>
         <div class="tip-item">
             <span>🔍</span> 搜索实时筛选
@@ -552,10 +583,10 @@
         
         // 颜色映射
         const colorMap = {
-            core: { bg: "#3498db", text: "#ffffff" },
-            resource: { bg: "#9b59b6", text: "#ffffff" },
-            dig: { bg: "#f39c12", text: "#ffffff" },
-            touch: { bg: "#27ae60", text: "#ffffff" }
+            core: "#3498db",
+            resource: "#9b59b6",
+            dig: "#f39c12",
+            touch: "#27ae60"
         };
         
         // 初始化SVG
@@ -566,25 +597,6 @@
             .append("svg")
             .attr("width", width)
             .attr("height", height);
-        
-        // 绘制背景网格
-        const gridGroup = svg.append("g").attr("class", "grid");
-        
-        // 垂直线
-        for (let x = 0; x < width; x += 50) {
-            gridGroup.append("line")
-                .attr("x1", x).attr("y1", 0)
-                .attr("x2", x).attr("y2", height)
-                .attr("class", "grid-line");
-        }
-        
-        // 水平线
-        for (let y = 0; y < height; y += 50) {
-            gridGroup.append("line")
-                .attr("x1", 0).attr("y1", y)
-                .attr("x2", width).attr("y2", y)
-                .attr("class", "grid-line");
-        }
         
         // 缩放功能
         const zoom = d3.zoom()
@@ -599,29 +611,39 @@
         
         // 创建力导向图
         const simulation = d3.forceSimulation(nodes)
-            .force("link", d3.forceLink(links).id(d => d.id).distance(180))
-            .force("charge", d3.forceManyBody().strength(-500))
+            .force("link", d3.forceLink(links).id(d => d.id).distance(160))
+            .force("charge", d3.forceManyBody().strength(-400))
             .force("center", d3.forceCenter(width / 2, height / 2))
-            .force("collision", d3.forceCollide().radius(80))
+            .force("collision", d3.forceCollide().radius(60))
             .on("tick", ticked);
         
         // 边界约束
-        simulation.on("tick", () => {
+        simulation.force("bounds", () => {
             nodes.forEach(d => {
-                d.x = Math.max(80, Math.min(width - 80, d.x));
-                d.y = Math.max(80, Math.min(height - 80, d.y));
+                d.x = Math.max(60, Math.min(width - 60, d.x));
+                d.y = Math.max(60, Math.min(height - 60, d.y));
             });
-            ticked();
         });
         
-        // 绘制连线
+        // 绘制连线（使用曲线）
         const link = mainGroup.append("g")
             .selectAll("path")
             .data(links)
             .enter()
             .append("path")
             .attr("class", "link")
-            .attr("id", d => `link-${d.source.id}-${d.target.id}`);
+            .attr("id", d => `link-${d.source.id || d.source}-${d.target.id || d.target}`);
+        
+        // 绘制连线标签背景
+        const linkLabelBg = mainGroup.append("g")
+            .selectAll("rect")
+            .data(links)
+            .enter()
+            .append("rect")
+            .attr("class", "link-label-bg")
+            .attr("width", d => d.label.length * 8 + 16)
+            .attr("height", 20)
+            .attr("rx", 4);
         
         // 绘制连线标签
         const linkLabel = mainGroup.append("g")
@@ -631,16 +653,16 @@
             .append("text")
             .attr("class", "link-label")
             .attr("text-anchor", "middle")
-            .attr("dy", -4)
+            .attr("dy", 4)
             .text(d => d.label);
         
-        // 绘制卡片节点
+        // 绘制圆形节点
         const node = mainGroup.append("g")
             .selectAll("g")
             .data(nodes)
             .enter()
             .append("g")
-            .attr("class", "node-card")
+            .attr("class", "node-circle")
             .attr("id", d => `node-${d.id}`)
             .call(d3.drag()
                 .on("start", dragStarted)
@@ -648,53 +670,37 @@
                 .on("end", dragEnded))
             .on("click", showDetail);
         
-        // 卡片背景（圆角矩形）
-        node.append("rect")
-            .attr("width", 120)
-            .attr("height", 70)
-            .attr("rx", 12)
-            .attr("ry", 12)
-            .attr("x", -60)
-            .attr("y", -35)
-            .attr("fill", "#ffffff")
-            .attr("stroke", d => colorMap[d.type].bg)
-            .attr("stroke-width", 2)
-            .style("filter", "drop-shadow(0 2px 4px rgba(0,0,0,0.08))");
-        
-        // 卡片顶部颜色条
-        node.append("rect")
-            .attr("width", 120)
-            .attr("height", 24)
-            .attr("rx", 12)
-            .attr("ry", 12)
-            .attr("x", -60)
-            .attr("y", -35)
-            .attr("fill", d => colorMap[d.type].bg)
-            .attr("clip-path", "inset(0 0 12px 0)");
+        // 圆形背景
+        node.append("circle")
+            .attr("class", "node-bg")
+            .attr("r", 45)
+            .attr("fill", d => colorMap[d.type])
+            .attr("stroke", "#ffffff")
+            .attr("stroke-width", 3);
         
         // 图标
         node.append("text")
-            .attr("x", -60)
-            .attr("y", -22)
-            .attr("text-anchor", "start")
+            .attr("class", "node-icon")
+            .attr("dy", -8)
+            .attr("text-anchor", "middle")
             .attr("fill", "#ffffff")
-            .attr("font-size", "12px")
+            .attr("font-size", "18px")
             .text(d => d.icon);
         
         // 实体名称
         node.append("text")
-            .attr("x", 0)
-            .attr("y", 0)
+            .attr("class", "node-name")
+            .attr("dy", 12)
             .attr("text-anchor", "middle")
-            .attr("fill", "#2c3e50")
-            .attr("font-size", "14px")
+            .attr("fill", "#ffffff")
+            .attr("font-size", "13px")
             .attr("font-weight", "600")
             .text(d => d.name);
         
-        // 描述标签
+        // 描述标签（节点外）
         node.append("text")
-            .attr("x", 0)
-            .attr("y", 18)
+            .attr("class", "node-desc")
+            .attr("dy", 60)
             .attr("text-anchor", "middle")
             .attr("fill", "#7f8c8d")
             .attr("font-size", "11px")
@@ -702,11 +708,26 @@
         
         // 更新位置函数
         function ticked() {
+            // 曲线连线
             link.attr("d", d => {
                 const dx = d.target.x - d.source.x;
                 const dy = d.target.y - d.source.y;
-                return `M${d.source.x},${d.source.y}L${d.target.x},${d.target.y}`;
+                const dr = Math.sqrt(dx * dx + dy * dy) * 0.8;
+                
+                // 计算方向，避免曲线都弯向同一侧
+                const midX = (d.source.x + d.target.x) / 2;
+                const midY = (d.source.y + d.target.y) / 2;
+                
+                // 使用贝塞尔曲线，弯向不同方向
+                return `M${d.source.x},${d.source.y} 
+                        Q${midX + dy * 0.3},${midY - dx * 0.3} 
+                        ${d.target.x},${d.target.y}`;
             });
+            
+            // 更新标签位置（在曲线中点）
+            linkLabelBg
+                .attr("x", d => (d.source.x + d.target.x) / 2 - d.label.length * 4 - 8)
+                .attr("y", d => (d.source.y + d.target.y) / 2 - 10);
             
             linkLabel
                 .attr("x", d => (d.source.x + d.target.x) / 2)
@@ -798,26 +819,22 @@
         
         // 高亮节点
         function highlightNode(nodeId) {
-            d3.selectAll(".node-card rect")
-                .attr("stroke-width", d => d.id === nodeId ? 4 : 2)
-                .attr("filter", d => d.id === nodeId ? "drop-shadow(0 4px 12px rgba(0,0,0,0.2))" : "drop-shadow(0 2px 4px rgba(0,0,0,0.08))");
+            d3.selectAll(".node-bg")
+                .attr("stroke-width", d => d.id === nodeId ? 5 : 3)
+                .attr("stroke", d => d.id === nodeId ? "#2c3e50" : "#ffffff");
             
             d3.selectAll(".link")
-                .attr("stroke-width", d => (d.source.id === nodeId || d.target.id === nodeId) ? 3 : 1.5)
-                .attr("stroke-opacity", d => (d.source.id === nodeId || d.target.id === nodeId) ? 1 : 0.4)
-                .attr("stroke", d => (d.source.id === nodeId || d.target.id === nodeId) ? "#3498db" : "#95a5a6");
+                .classed("highlighted", d => (d.source.id === nodeId || d.target.id === nodeId));
         }
         
         // 重置高亮
         function resetHighlight() {
-            d3.selectAll(".node-card rect")
-                .attr("stroke-width", 2)
-                .attr("filter", "drop-shadow(0 2px 4px rgba(0,0,0,0.08))");
+            d3.selectAll(".node-bg")
+                .attr("stroke-width", 3)
+                .attr("stroke", "#ffffff");
             
             d3.selectAll(".link")
-                .attr("stroke-width", 1.5)
-                .attr("stroke-opacity", 0.4)
-                .attr("stroke", "#95a5a6");
+                .classed("highlighted", false);
         }
         
         // 重置视图
@@ -834,15 +851,19 @@
         function highlightPath() {
             const pathNodes = ["kol", "post", "comment_act", "comment_content", "collect_user", "touch_user", "traffic"];
             
-            d3.selectAll(".node-card rect")
-                .attr("stroke-width", d => pathNodes.includes(d.id) ? 4 : 1)
-                .attr("filter", d => pathNodes.includes(d.id) ? "drop-shadow(0 4px 16px rgba(52,152,219,0.3))" : "drop-shadow(0 1px 2px rgba(0,0,0,0.04))")
-                .attr("stroke", d => pathNodes.includes(d.id) ? "#3498db" : "#bdc3c7");
+            d3.selectAll(".node-bg")
+                .attr("stroke-width", d => pathNodes.includes(d.id) ? 5 : 2)
+                .attr("stroke", d => pathNodes.includes(d.id) ? "#2c3e50" : "#e0e0e0")
+                .attr("fill-opacity", d => pathNodes.includes(d.id) ? 1 : 0.5);
             
             d3.selectAll(".link")
-                .attr("stroke-width", d => (pathNodes.includes(d.source.id) && pathNodes.includes(d.target.id)) ? 3 : 0.5)
-                .attr("stroke-opacity", d => (pathNodes.includes(d.source.id) && pathNodes.includes(d.target.id)) ? 1 : 0.2)
-                .attr("stroke", d => (pathNodes.includes(d.source.id) && pathNodes.includes(d.target.id)) ? "#3498db" : "#bdc3c7");
+                .classed("highlighted", d => (pathNodes.includes(d.source.id) && pathNodes.includes(d.target.id)));
+            
+            d3.selectAll(".node-circle")
+                .attr("opacity", d => pathNodes.includes(d.id) ? 1 : 0.4);
+            
+            d3.selectAll(".link")
+                .attr("stroke-opacity", d => (pathNodes.includes(d.source.id) && pathNodes.includes(d.target.id)) ? 1 : 0.15);
         }
         
         // 导出数据
@@ -870,14 +891,14 @@
         document.getElementById("searchInput").addEventListener("input", function(e) {
             const searchTerm = e.target.value.toLowerCase();
             
-            d3.selectAll(".node-card")
+            d3.selectAll(".node-circle")
                 .attr("opacity", d => d.name.toLowerCase().includes(searchTerm) || searchTerm === "" ? 1 : 0.3);
             
             d3.selectAll(".link")
                 .attr("stroke-opacity", d => {
-                    const sourceMatch = d.source.name.toLowerCase().includes(searchTerm);
-                    const targetMatch = d.target.name.toLowerCase().includes(searchTerm);
-                    return (sourceMatch || targetMatch || searchTerm === "") ? 0.4 : 0.1;
+                    const sourceMatch = d.source.name && d.source.name.toLowerCase().includes(searchTerm);
+                    const targetMatch = d.target.name && d.target.name.toLowerCase().includes(searchTerm);
+                    return (sourceMatch || targetMatch || searchTerm === "") ? 0.6 : 0.15;
                 });
         });
         
@@ -891,21 +912,21 @@
                     activeTypes.push(active.dataset.type);
                 });
                 
-                d3.selectAll(".node-card")
+                d3.selectAll(".node-circle")
                     .attr("opacity", d => activeTypes.includes(d.type) ? 1 : 0.3);
                 
                 d3.selectAll(".link")
                     .attr("stroke-opacity", d => {
                         const sourceActive = activeTypes.includes(d.source.type);
                         const targetActive = activeTypes.includes(d.target.type);
-                        return (sourceActive && targetActive) ? 0.4 : 0.1;
+                        return (sourceActive && targetActive) ? 0.6 : 0.15;
                     });
             });
         });
         
         // 点击空白关闭详情
         svg.on("click", function(event) {
-            if (event.target === this || event.target.classList.contains("grid-line")) {
+            if (event.target === this) {
                 closeDetail();
             }
         });
