@@ -453,7 +453,7 @@
                 <div class="stat-label">实体</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">15</div>
+                <div class="stat-number">17</div>
                 <div class="stat-label">关系</div>
             </div>
         </div>
@@ -597,6 +597,8 @@
             { source: "dig_strategy", target: "struct_output", label: "输出", agent: "dawa" },
             { source: "collect_user", target: "verify_strategy", label: "验证", agent: "dawa" },
             { source: "collect_user", target: "touch_user", label: "转化边界", agent: "boundary" },
+            { source: "dig_strategy", target: "account_matrix", label: "使用", agent: "dawa" },
+            { source: "dig_strategy", target: "ip_matrix", label: "使用", agent: "dawa" },
             { source: "touch_strategy", target: "account_matrix", label: "绑定", agent: "erwa" },
             { source: "touch_strategy", target: "ip_matrix", label: "绑定", agent: "erwa" },
             { source: "touch_strategy", target: "touch_user", label: "执行", agent: "erwa" },
