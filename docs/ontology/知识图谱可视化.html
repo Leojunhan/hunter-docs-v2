@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>本体论 · 自媒体流量获客截留业务 · 知识图谱</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .section-title {
+            color: #2c3e50;
+            font-size: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+        .mermaid {
+            text-align: center;
+        }
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        .entity-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .entity-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+        }
+        .entity-card h3 {
+            color: #2c3e50;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        .entity-card p {
+            color: #7f8c8d;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .entity-card.domain-collect {
+            border-left-color: #e1f5fe;
+        }
+        .entity-card.domain-touch {
+            border-left-color: #e8f5e9;
+        }
+        .entity-card.domain-resource {
+            border-left-color: #f3e5f5;
+        }
+        .entity-card.domain-cognition {
+            border-left-color: #fff3e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>本体论 · 自媒体流量获客截留业务</h1>
+        <p class="subtitle">知识图谱可视化 · 14个实体 · 完整关系链 · 2026-04-28</p>
+
+        <!-- 实体全景图 -->
+        <div class="section">
+            <h2 class="section-title">📊 实体全景图（14个实体）</h2>
+            <div class="entity-list">
+                <div class="entity-card domain-collect">
+                    <h3>🔍 核心业务对象（8个）</h3>
+                    <p>KOL、帖子、评论行为、评论内容、采集用户、触达用户、流量、验证策略</p>
+                </div>
+                <div class="entity-card domain-resource">
+                    <h3>📦 账号资源（2个）</h3>
+                    <p>自媒体账号矩阵、IP矩阵</p>
+                </div>
+                <div class="entity-card domain-cognition">
+                    <h3>🧠 挖掘策略域（2个）</h3>
+                    <p>挖掘策略（含采集/清洗/加工）、结构化输出</p>
+                </div>
+                <div class="entity-card domain-touch">
+                    <h3>🎯 触达策略域（2个）</h3>
+                    <p>触达策略（剧本）、触达记录</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 知识图谱 -->
+        <div class="section">
+            <h2 class="section-title">🕸️ 实体关系图谱（知识图谱）</h2>
+            <div class="mermaid">
+graph TB
+    subgraph 挖掘域["🔍 挖掘域（大娃负责）"]
+        KOL["KOL<br/>流量源头"]
+        POST["帖子<br/>内容载体"]
+        COMMENT_ACT["评论行为<br/>消费行为"]
+        COMMENT_CONTENT["评论内容<br/>意图评分/语义标签"]
+        COLLECT_USER["采集用户<br/>状态: 待清洗→待分配→已验证<br/>属性: 契合度"]
+        VERIFY_STRATEGY["验证策略<br/>verify_users.py"]
+        DIG_STRATEGY["挖掘策略<br/>含采集/清洗/加工"]
+        STRUCT_OUTPUT["结构化输出<br/>能力+结果"]
+    end
+    
+    subgraph 账号资源["📦 账号资源"]
+        ACCOUNT["自媒体账号矩阵<br/>具体账号资源"]
+        IP["IP矩阵<br/>网络IP资源"]
+    end
+    
+    subgraph 触达域["🎯 触达域（二娃负责）"]
+        TOUCH_USER["触达用户<br/>状态: 已分配→已触达→已转化<br/>属性: 信任度/归因"]
+        TOUCH_STRATEGY["触达策略（剧本）<br/>账号绑定/IP绑定/话术/时机"]
+        TOUCH_RECORD["触达记录<br/>效果属性"]
+    end
+    
+    KOL -->|"拥有"| POST
+    POST -->|"承载"| COMMENT_ACT
+    COMMENT_ACT -->|"产生"| COMMENT_CONTENT
+    COMMENT_CONTENT -->|"意图分类"| COLLECT_USER
+    COLLECT_USER -->|"验证"| VERIFY_STRATEGY
+    VERIFY_STRATEGY -->|"已验证"| COLLECT_USER
+    
+    DIG_STRATEGY -->|"爬取"| POST
+    DIG_STRATEGY -->|"发现"| COLLECT_USER
+    DIG_STRATEGY -->|"输出"| STRUCT_OUTPUT
+    
+    COLLECT_USER -->|"转化为"| TOUCH_USER
+    
+    TOUCH_STRATEGY -->|"绑定"| ACCOUNT
+    TOUCH_STRATEGY -->|"绑定"| IP
+    TOUCH_STRATEGY -->|"执行"| TOUCH_USER
+    TOUCH_USER -->|"产生"| TOUCH_RECORD
+    
+    style KOL fill:#e1f5fe,stroke:#0288d1
+    style POST fill:#e1f5fe,stroke:#0288d1
+    style COMMENT_ACT fill:#e1f5fe,stroke:#0288d1
+    style COMMENT_CONTENT fill:#fff3e0,stroke:#f57c00
+    style COLLECT_USER fill:#fff3e0,stroke:#f57c00
+    style VERIFY_STRATEGY fill:#fff3e0,stroke:#f57c00
+    style DIG_STRATEGY fill:#fff3e0,stroke:#f57c00
+    style STRUCT_OUTPUT fill:#fff3e0,stroke:#f57c00
+    style TOUCH_USER fill:#e8f5e9,stroke:#2e7d32
+    style TOUCH_STRATEGY fill:#e8f5e9,stroke:#2e7d32
+    style TOUCH_RECORD fill:#e8f5e9,stroke:#2e7d32
+    style ACCOUNT fill:#f3e5f5,stroke:#7b1fa2
+    style IP fill:#f3e5f5,stroke:#7b1fa2
+            </div>
+            <div class="legend">
+                <div class="legend-item"><div class="legend-color" style="background:#e1f5fe;"></div><span>KOL/帖子/评论行为</span></div>
+                <div class="legend-item"><div class="legend-color" style="background:#fff3e0;"></div><span>挖掘域实体</span></div>
+                <div class="legend-item"><div class="legend-color" style="background:#e8f5e9;"></div><span>触达域实体</span></div>
+                <div class="legend-item"><div class="legend-color" style="background:#f3e5f5;"></div><span>账号资源</span></div>
+            </div>
+        </div>
+
+        <!-- 状态流转图 -->
+        <div class="section">
+            <h2 class="section-title">🔄 采集用户状态流转图</h2>
+            <div class="mermaid">
+stateDiagram-v2
+    [*] --> 待清洗: 挖掘策略发现用户
+    
+    待清洗 --> 待分配: 挖掘策略清洗<br/>HIGH/MEDIUM命中
+    待清洗 --> 待观察: 挖掘策略清洗<br/>LOW命中
+    待清洗 --> 已过滤: 挖掘策略清洗<br/>评分<0.2
+    
+    待分配 --> 已验证: 验证策略验证<br/>评分≥70
+    待分配 --> 待人工: 验证策略验证<br/>评分40-69
+    待分配 --> 僵尸: 验证策略验证<br/>评分<40
+    
+    待观察 --> 已过滤: 人工判断无价值
+    
+    待人工 --> 已验证: 人工确认
+    待人工 --> 已过滤: 人工拒绝
+    
+    僵尸 --> 已过滤: 自动过滤
+    
+    已验证 --> [转化为触达用户]
+    
+    note right of 待清洗
+        大娃负责
+        deep_clean.py
+    end note
+    
+    note right of 待分配
+        大娃负责
+        verify_users.py
+    end note
+    
+    note right of 待人工
+        人工负责
+        飞书判断
+    end note
+            </div>
+        </div>
+
+        <!-- 触达用户状态流转图 -->
+        <div class="section">
+            <h2 class="section-title">🔄 触达用户状态流转图</h2>
+            <div class="mermaid">
+stateDiagram-v2
+    [*] --> 已分配: 从采集用户转化<br/>触达策略分配
+    
+    已分配 --> 已触达: 二娃执行<br/>发送消息成功
+    已分配 --> 已关闭: 二娃执行<br/>发送失败/账号问题
+    
+    已触达 --> 已转化: 用户响应+转化成功
+    已触达 --> 已关闭: 用户无响应/拒绝
+    
+    已转化 --> [*]: 归因追溯完成
+    已关闭 --> [*]: 记录关闭原因
+    
+    note right of 已分配
+        触达策略负责
+        剧本选择+账号分配
+    end note
+    
+    note right of 已触达
+        二娃负责
+        执行触达+记录效果
+    end note
+    
+    note right of 已转化
+        归因追溯:
+        KOL→帖子→评论→触达策略
+    end note
+            </div>
+        </div>
+
+        <!-- 挖掘域流程图 -->
+        <div class="section">
+            <h2 class="section-title">🔍 挖掘域完整流程图</h2>
+            <div class="mermaid">
+flowchart TB
+    subgraph 发现阶段["发现阶段"]
+        A1["挖掘策略启动"]
+        A2["爬取KOL帖子"]
+        A3["采集评论"]
+        A4["发现用户"]
+    end
+    
+    subgraph 清洗阶段["清洗阶段"]
+        B1["评论内容分析"]
+        B2["意图分类"]
+        B3["语义识别"]
+        B4["计算契合度"]
+    end
+    
+    subgraph 验证阶段["验证阶段"]
+        C1["验证策略执行"]
+        C2["浏览器访问主页"]
+        C3["评估活跃度"]
+        C4["状态判定"]
+    end
+    
+    subgraph 输出阶段["输出阶段"]
+        D1["结构化输出"]
+        D2["用户画像"]
+        D3["转化为触达用户"]
+    end
+    
+    A1 --> A2 --> A3 --> A4
+    A4 --> B1
+    B1 --> B2 --> B3 --> B4
+    B4 --> C1 --> C2 --> C3 --> C4
+    C4 -->|"已验证"| D1 --> D2 --> D3
+    
+    style 发现阶段 fill:#e1f5fe
+    style 清洗阶段 fill:#fff3e0
+    style 验证阶段 fill:#ffebee
+    style 输出阶段 fill:#e8f5e9
+            </div>
+        </div>
+
+        <!-- 触达域流程图 -->
+        <div class="section">
+            <h2 class="section-title">🎯 触达域完整流程图</h2>
+            <div class="mermaid">
+flowchart TB
+    subgraph 准备阶段["准备阶段"]
+        A1["接收触达用户"]
+        A2["触达策略选择"]
+        A3["剧本加载"]
+        A4["账号/IP绑定"]
+    end
+    
+    subgraph 执行阶段["执行阶段"]
+        B1["二娃启动"]
+        B2["话术生成"]
+        B3["消息发送"]
+        B4["触达记录"]
+    end
+    
+    subgraph 反馈阶段["反馈阶段"]
+        C1["等待响应"]
+        C2["效果记录"]
+        C3["信任度评估"]
+        C4["状态更新"]
+    end
+    
+    subgraph 归因阶段["归因阶段"]
+        D1["转化确认"]
+        D2["归因追溯"]
+        D3["KOL→帖子→评论→策略"]
+        D4["优化反馈"]
+    end
+    
+    A1 --> A2 --> A3 --> A4
+    A4 --> B1 --> B2 --> B3 --> B4
+    B4 --> C1 --> C2 --> C3 --> C4
+    C4 -->|"已转化"| D1 --> D2 --> D3 --> D4
+    
+    style 准备阶段 fill:#e8f5e9
+    style 执行阶段 fill:#fff3e0
+    style 反馈阶段 fill:#e1f5fe
+    style 归因阶段 fill:#f3e5f5
+            </div>
+        </div>
+
+        <!-- 分类系统对比图 -->
+        <div class="section">
+            <h2 class="section-title">🧠 分类系统对比图</h2>
+            <div class="mermaid">
+flowchart LR
+    subgraph 评论内容["评论内容"]
+        INPUT["评论原文"]
+    end
+    
+    subgraph 意图分类["意图分类（商业价值）"]
+        I1["关键词匹配<br/>HIGH/MEDIUM/LOW/COMPLAINT"]
+        I2["计算评分"]
+        I3["决定状态<br/>待分配/待观察/已过滤"]
+    end
+    
+    subgraph 语义识别["语义识别（行为标签）"]
+        S1["行为意图识别<br/>求购/咨询/投诉/求助/推荐/分享/闲聊"]
+        S2["情绪强度<br/>强烈/中等/平淡"]
+        S3["语言检测<br/>ES/PT/EN"]
+        S4["组合标签<br/>投诉|强烈|ES"]
+    end
+    
+    INPUT --> I1 --> I2 --> I3
+    INPUT --> S1 --> S2 --> S3 --> S4
+    
+    I3 -->|"决定要不要触达"| OUTPUT1["采集用户状态"]
+    S4 -->|"决定怎么触达"| OUTPUT2["触达策略输入"]
+    
+    style 评论内容 fill:#f5f5f5
+    style 意图分类 fill:#fff3e0
+    style 语义识别 fill:#e1f5fe
+    style OUTPUT1 fill:#e8f5e9
+    style OUTPUT2 fill:#f3e5f5
+            </div>
+        </div>
+
+        <!-- 归因链路图 -->
+        <div class="section">
+            <h2 class="section-title">🔗 归因追溯链路图</h2>
+            <div class="mermaid">
+flowchart TB
+    TOP["触达用户（已转化）"]
+    
+    subgraph 归因链路["归因追溯链路"]
+        L1["触达策略<br/>哪个剧本有效"]
+        L2["采集用户<br/>从哪来的"]
+        L3["评论行为<br/>哪个评论"]
+        L4["帖子<br/>哪个帖子"]
+        L5["KOL<br/>哪个KOL"]
+    end
+    
+    subgraph 优化方向["优化反馈"]
+        O1["重点挖掘哪个KOL"]
+        O2["分析哪个帖子内容"]
+        O3["优化哪个分类规则"]
+        O4["迭代哪个触达剧本"]
+    end
+    
+    TOP --> L1 --> L2 --> L3 --> L4 --> L5
+    
+    L5 -->|"转化多"| O1
+    L4 -->|"效果好"| O2
+    L3 -->|"分类准"| O3
+    L1 -->|"剧本有效"| O4
+    
+    style TOP fill:#e8f5e9,stroke:#2e7d32
+    style 归因链路 fill:#fff3e0,stroke:#f57c00
+    style 优化方向 fill:#e1f5fe,stroke:#0288d1
+            </div>
+        </div>
+
+        <!-- 版本信息 -->
+        <div class="section">
+            <h2 class="section-title">📝 文档信息</h2>
+            <p><strong>版本：</strong>v1.0</p>
+            <p><strong>创建日期：</strong>2026-04-28</p>
+            <p><strong>实体数量：</strong>14个</p>
+            <p><strong>关联文档：</strong>memory/本体论-自媒体流量获客截留业务.md</p>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            },
+            stateDiagram: {
+                useMaxWidth: true
+            }
+        });
+    </script>
+</body>
+</html>
