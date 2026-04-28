@@ -580,10 +580,60 @@
             .attr("stroke", d => colorMap[d.type])
             .attr("stroke-width", 3);
         
-        // 节点文字
+        // 节点文字（实体名称）
         node.append("text")
             .attr("dy", 4)
+            .attr("font-weight", "bold")
             .text(d => d.name);
+        
+        // 节点属性标签（下方显示）
+        node.append("text")
+            .attr("dy", 22)
+            .attr("font-size", "10px")
+            .attr("fill", "#7f8c8d")
+            .text(d => {
+                // 根据不同实体类型显示不同属性
+                if (d.id === "collect_user") return "状态: 待清洗→已验证";
+                if (d.id === "touch_user") return "状态: 已分配→已转化";
+                if (d.id === "comment_content") return "属性: 意图评分/语义标签";
+                if (d.id === "dig_strategy") return "包含: 采集/清洗/加工";
+                if (d.id === "touch_strategy") return "包含: 话术/账号/IP";
+                if (d.id === "kol") return "定位: 流量源头";
+                if (d.id === "post") return "定位: 内容载体";
+                if (d.id === "comment_act") return "包含: 谁/何时/帖子";
+                if (d.id === "verify_strategy") return "方式: 浏览器验证";
+                if (d.id === "touch_record") return "属性: 效果";
+                if (d.id === "account_matrix") return "用途: 触达账号";
+                if (d.id === "ip_matrix") return "用途: 绑定IP";
+                if (d.id === "struct_output") return "形态: 用户画像";
+                if (d.id === "traffic") return "定位: 业务结果";
+                return "";
+            });
+        
+        // 节点负责Agent标签（底部）
+        node.append("text")
+            .attr("dy", 35)
+            .attr("font-size", "9px")
+            .attr("fill", d => {
+                if (d.type === "dig" || d.id === "collect_user" || d.id === "verify_strategy" || 
+                    d.id === "kol" || d.id === "post" || d.id === "comment_act" || d.id === "comment_content") {
+                    return "#ffb74d"; // 大娃 - 橙色
+                }
+                if (d.type === "touch" || d.id === "touch_user" || d.id === "touch_record") {
+                    return "#81c784"; // 二娃 - 绿色
+                }
+                return "#7f8c8d";
+            })
+            .text(d => {
+                if (d.type === "dig" || d.id === "collect_user" || d.id === "verify_strategy" || 
+                    d.id === "kol" || d.id === "post" || d.id === "comment_act" || d.id === "comment_content") {
+                    return "🤖 大娃";
+                }
+                if (d.type === "touch" || d.id === "touch_user" || d.id === "touch_record") {
+                    return "🤖 二娃";
+                }
+                return "";
+            });
         
         // 更新位置
         simulation.on("tick", () => {
