@@ -17,6 +17,7 @@
 - 🏗️ **架构设计**
   - [产品架构 v1.2](/docs/architecture/hunter-architecture-v1.2.md)
   - [Hunter 产品架构](/docs/architecture/HUNTER_产品架构文档.md)
+  - [二娃Agent设计 v1.0](/docs/architecture/二娃Agent设计文档-v1.0.md)
 
 - 📝 **产品需求**
   - [核心任务清单 v3.0](/docs/prd/hunter-core-tasks.md) ⭐
