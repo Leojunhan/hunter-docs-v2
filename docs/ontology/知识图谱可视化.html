@@ -567,24 +567,24 @@
         // 实体数据 - 按Agent负责分类
         const nodes = [
             // 大娃Agent负责 - 挖掘域 (橙色)
-            { id: "kol", name: "KOL", agent: "dawa", description: "流量源头", icon: "📢", properties: { 定义: "意见领袖，拥有粉丝和影响力", 作用: "流量来源，帖子的发布者", 负责: "大娃Agent" } },
-            { id: "post", name: "帖子", agent: "dawa", description: "内容载体", icon: "📝", properties: { 定义: "KOL发布的内容", 作用: "承载评论，发现用户的入口", 负责: "大娃Agent" } },
-            { id: "comment_act", name: "评论行为", agent: "dawa", description: "消费行为", icon: "💬", properties: { 定义: "用户对帖子的评论行为", 包含: "谁、何时、对哪个帖子", 负责: "大娃Agent" } },
-            { id: "comment_content", name: "评论内容", agent: "dawa", description: "行为结果", icon: "📄", properties: { 定义: "评论的具体内容", 属性: "意图评分、意图状态、语义标签", 作用: "分析用户意图的基础", 负责: "大娃Agent" } },
-            { id: "collect_user", name: "采集用户", agent: "dawa", description: "挖掘域", icon: "👤", properties: { 状态: "待清洗 → 待分配 → 已验证 → 待人工 → 已过滤", 属性: "契合度", 负责Agent: "大娃", 阶段: "挖掘域", 边界: "已验证后转化为触达用户" } },
-            { id: "verify_strategy", name: "验证策略", agent: "dawa", description: "自动验证", icon: "✓", properties: { 定义: "verify_users.py", 作用: "验证用户真实性", 方式: "浏览器访问主页评估活跃度", 负责: "大娃Agent" } },
-            { id: "dig_strategy", name: "挖掘策略", agent: "dawa", description: "统一策略", icon: "⛏", properties: { 定义: "发现目标的顶层策略", 包含: "采集、清洗、加工（现阶段统一）", 输出: "结构化输出", 负责: "大娃Agent" } },
-            { id: "struct_output", name: "结构化输出", agent: "dawa", description: "能力+结果", icon: "📊", properties: { 定义: "挖掘策略的输出", 形态: "用户画像、数据产品", 作用: "数据产品化", 负责: "大娃Agent" } },
-            { id: "traffic", name: "获客结果", agent: "erwa", description: "业务产出", icon: "🎉", properties: { 定义: "成功转化的客户，业务最终产出", 来源: "由触达用户转化产生", 归因: "可追溯到来源KOL和帖子", 负责: "二娃Agent（触达域产出）" } },
+            { id: "kol", name: "KOL", agent: "dawa", size: 50, description: "流量源头", icon: "📢", properties: { 定义: "意见领袖，拥有粉丝和影响力", 作用: "流量来源，帖子的发布者", 负责: "大娃Agent" } },
+            { id: "post", name: "帖子", agent: "dawa", size: 50, description: "内容载体", icon: "📝", properties: { 定义: "KOL发布的内容", 作用: "承载评论，发现用户的入口", 负责: "大娃Agent" } },
+            { id: "comment_act", name: "评论行为", agent: "dawa", size: 45, description: "消费行为", icon: "💬", properties: { 定义: "用户对帖子的评论行为", 包含: "谁、何时、对哪个帖子", 负责: "大娃Agent" } },
+            { id: "comment_content", name: "评论内容", agent: "dawa", size: 50, description: "行为结果", icon: "📄", properties: { 定义: "评论的具体内容", 属性: "意图评分、意图状态、语义标签", 作用: "分析用户意图的基础", 负责: "大娃Agent" } },
+            { id: "collect_user", name: "采集用户", agent: "dawa", size: 60, description: "挖掘域", icon: "👤", properties: { 状态: "待清洗 → 待分配 → 已验证 → 待人工 → 已过滤", 属性: "契合度", 负责Agent: "大娃", 阶段: "挖掘域", 边界: "已验证后转化为触达用户" } },
+            { id: "verify_strategy", name: "验证策略", agent: "dawa", size: 50, description: "自动验证", icon: "✓", properties: { 定义: "verify_users.py", 作用: "验证用户真实性", 方式: "浏览器访问主页评估活跃度", 负责: "大娃Agent" } },
+            { id: "dig_strategy", name: "挖掘策略", agent: "dawa", size: 55, description: "统一策略", icon: "⛏", properties: { 定义: "发现目标的顶层策略", 包含: "采集、清洗、加工（现阶段统一）", 输出: "结构化输出", 负责: "大娃Agent" } },
+            { id: "struct_output", name: "结构化输出", agent: "dawa", size: 45, description: "能力+结果", icon: "📊", properties: { 定义: "挖掘策略的输出", 形态: "用户画像、数据产品", 作用: "数据产品化", 负责: "大娃Agent" } },
             
             // 二娃Agent负责 - 触达域 (绿色)
-            { id: "touch_user", name: "触达用户", agent: "erwa", description: "触达域", icon: "🎯", properties: { 状态: "已分配 → 已触达 → 已转化 → 已关闭", 属性: "信任度、归因", 负责Agent: "二娃", 阶段: "触达域", 来源: "由采集用户转化" } },
-            { id: "touch_strategy", name: "触达策略", agent: "erwa", description: "触达方式", icon: "🎬", properties: { 定义: "触达用户的策略方式", 包含: "账号绑定、IP绑定、话术、时机、行为方式、人设", MVP阶段: "与剧本合一", 负责: "二娃Agent" } },
-            { id: "touch_record", name: "触达记录", agent: "erwa", description: "执行记录", icon: "📋", properties: { 定义: "每次触达动作", 包含: "触达用户ID、执行账号、执行时间、话术内容", 属性: "效果（是否回复、是否转化）", 负责: "二娃Agent" } },
+            { id: "traffic", name: "获客结果", agent: "erwa", size: 60, description: "业务产出", icon: "🎉", properties: { 定义: "成功转化的客户，业务最终产出", 来源: "由触达用户转化产生", 归因: "可追溯到来源KOL和帖子", 负责: "二娃Agent（触达域产出）" } },
+            { id: "touch_user", name: "触达用户", agent: "erwa", size: 60, description: "触达域", icon: "🎯", properties: { 状态: "已分配 → 已触达 → 已转化 → 已关闭", 属性: "信任度、归因", 负责Agent: "二娃", 阶段: "触达域", 来源: "由采集用户转化" } },
+            { id: "touch_strategy", name: "触达策略", agent: "erwa", size: 55, description: "触达方式", icon: "🎬", properties: { 定义: "触达用户的策略方式", 包含: "账号绑定、IP绑定、话术、时机、行为方式、人设", MVP阶段: "与剧本合一", 负责: "二娃Agent" } },
+            { id: "touch_record", name: "触达记录", agent: "erwa", size: 45, description: "执行记录", icon: "📋", properties: { 定义: "每次触达动作", 包含: "触达用户ID、执行账号、执行时间、话术内容", 属性: "效果（是否回复、是否转化）", 负责: "二娃Agent" } },
             
             // 共用资源 (蓝色)
-            { id: "account_matrix", name: "账号矩阵", agent: "shared", description: "账号资源", icon: "📱", properties: { 定义: "具体的社媒账号资源", 用途: "爬取+触达都需要使用", 包含: "小红书账号、抖音账号等", 使用者: "大娃爬取 + 二娃触达" } },
-            { id: "ip_matrix", name: "IP矩阵", agent: "shared", description: "网络IP", icon: "🌐", properties: { 定义: "网络IP资源", 用途: "爬取+触达都需要绑定", 作用: "防止账号被封，模拟真实用户", 使用者: "大娃爬取 + 二娃触达" } }
+            { id: "account_matrix", name: "账号矩阵", agent: "shared", size: 40, description: "账号资源", icon: "📱", properties: { 定义: "具体的社媒账号资源", 用途: "爬取+触达都需要使用", 包含: "小红书账号、抖音账号等", 使用者: "大娃爬取 + 二娃触达" } },
+            { id: "ip_matrix", name: "IP矩阵", agent: "shared", size: 40, description: "网络IP", icon: "🌐", properties: { 定义: "网络IP资源", 用途: "爬取+触达都需要绑定", 作用: "防止账号被封，模拟真实用户", 使用者: "大娃爬取 + 二娃触达" } }
         ];
         
         // 关系数据
@@ -640,7 +640,7 @@
             .force("link", d3.forceLink(links).id(d => d.id).distance(180))
             .force("charge", d3.forceManyBody().strength(-500))
             .force("center", d3.forceCenter(width / 2, height / 2))
-            .force("collision", d3.forceCollide().radius(70))
+            .force("collision", d3.forceCollide().radius(d => (d.size || 50) + 20))
             // 分组力：同Agent的节点互相吸引
             .force("group", forceGroup(nodes, d => d.agent, 150))
             .on("tick", ticked);
@@ -695,8 +695,9 @@
         // 边界约束
         simulation.force("bounds", () => {
             nodes.forEach(d => {
-                d.x = Math.max(70, Math.min(width - 70, d.x));
-                d.y = Math.max(70, Math.min(height - 70, d.y));
+                const radius = d.size || 50;
+                d.x = Math.max(radius + 20, Math.min(width - radius - 20, d.x));
+                d.y = Math.max(radius + 20, Math.min(height - radius - 20, d.y));
             });
         });
         
@@ -764,7 +765,7 @@
         // 圆形背景
         node.append("circle")
             .attr("class", "node-bg")
-            .attr("r", 50)
+            .attr("r", d => d.size || 50)
             .attr("fill", d => agentColorMap[d.agent])
             .attr("stroke", "#ffffff")
             .attr("stroke-width", 4);
@@ -772,16 +773,16 @@
         // Agent标识（小圆圈）
         node.append("circle")
             .attr("r", 12)
-            .attr("cx", 40)
-            .attr("cy", -40)
+            .attr("cx", d => (d.size || 50) * 0.8)
+            .attr("cy", d => -(d.size || 50) * 0.8)
             .attr("fill", d => agentColorMap[d.agent])
             .attr("stroke", "#ffffff")
             .attr("stroke-width", 2);
         
         // Agent标识文字
         node.append("text")
-            .attr("x", 40)
-            .attr("y", -36)
+            .attr("x", d => (d.size || 50) * 0.8)
+            .attr("y", d => -(d.size || 50) * 0.8 + 4)
             .attr("text-anchor", "middle")
             .attr("fill", "#ffffff")
             .attr("font-size", "9px")
@@ -794,26 +795,26 @@
         // 图标
         node.append("text")
             .attr("class", "node-icon")
-            .attr("dy", -6)
+            .attr("dy", d => -(d.size || 50) * 0.15)
             .attr("text-anchor", "middle")
             .attr("fill", "#ffffff")
-            .attr("font-size", "20px")
+            .attr("font-size", d => (d.size || 50) * 0.35 + "px")
             .text(d => d.icon);
         
         // 实体名称
         node.append("text")
             .attr("class", "node-name")
-            .attr("dy", 18)
+            .attr("dy", d => (d.size || 50) * 0.3)
             .attr("text-anchor", "middle")
             .attr("fill", "#ffffff")
-            .attr("font-size", "13px")
+            .attr("font-size", d => (d.size || 50) * 0.25 + "px")
             .attr("font-weight", "600")
             .text(d => d.name);
         
         // Agent标签（节点外）
         node.append("text")
             .attr("class", "node-desc")
-            .attr("dy", 68)
+            .attr("dy", d => (d.size || 50) + 18)
             .attr("text-anchor", "middle")
             .attr("fill", d => agentColorMap[d.agent])
             .attr("font-size", "11px")
