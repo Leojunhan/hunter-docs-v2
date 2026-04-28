@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>本体论 · 自媒体流量获客截留业务 · 交互式知识图谱</title>
+    <title>本体论 · 自媒体流量获客截留业务 · 知识图谱</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
         * {
@@ -13,9 +13,9 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #1a1a2e;
-            color: #eaeaea;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            color: #2c3e50;
             overflow: hidden;
         }
         
@@ -24,631 +24,696 @@
             position: fixed;
             left: 0;
             top: 0;
-            width: 280px;
+            width: 260px;
             height: 100vh;
-            background: #16213e;
-            border-right: 1px solid #0f3460;
-            padding: 20px;
+            background: #ffffff;
+            border-right: 1px solid #e1e5e9;
+            padding: 24px;
             overflow-y: auto;
             z-index: 100;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.05);
         }
         
         .sidebar h1 {
-            font-size: 18px;
-            color: #e94560;
-            margin-bottom: 5px;
+            font-size: 20px;
+            color: #2c3e50;
+            margin-bottom: 4px;
+            font-weight: 600;
         }
         
         .sidebar .subtitle {
-            font-size: 12px;
+            font-size: 13px;
             color: #7f8c8d;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
         
         /* 搜索框 */
         .search-box {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
         
         .search-box input {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #0f3460;
-            border-radius: 5px;
-            background: #1a1a2e;
-            color: #eaeaea;
+            padding: 12px 16px;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            background: #f8f9fa;
+            color: #2c3e50;
             font-size: 14px;
+            transition: all 0.3s;
         }
         
         .search-box input:focus {
             outline: none;
-            border-color: #e94560;
+            border-color: #3498db;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
+        }
+        
+        /* 分组 */
+        .section {
+            margin-bottom: 24px;
+        }
+        
+        .section h3 {
+            font-size: 12px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            font-weight: 500;
         }
         
         /* 实体类型筛选 */
-        .filter-section {
-            margin-bottom: 20px;
-        }
-        
-        .filter-section h3 {
-            font-size: 14px;
-            color: #e94560;
-            margin-bottom: 10px;
-        }
-        
         .filter-item {
             display: flex;
             align-items: center;
-            margin-bottom: 8px;
+            padding: 8px 12px;
+            margin-bottom: 4px;
+            border-radius: 6px;
             cursor: pointer;
+            transition: all 0.2s;
         }
         
-        .filter-item input[type="checkbox"] {
-            margin-right: 10px;
-            cursor: pointer;
+        .filter-item:hover {
+            background: #f8f9fa;
         }
         
-        .filter-item label {
-            font-size: 13px;
-            cursor: pointer;
+        .filter-item.active {
+            background: #e8f4f8;
         }
         
         .filter-color {
-            width: 14px;
-            height: 14px;
-            border-radius: 3px;
-            margin-right: 8px;
-            display: inline-block;
-        }
-        
-        /* 统计信息 */
-        .stats-section {
-            margin-bottom: 20px;
-            padding: 15px;
-            background: #0f3460;
-            border-radius: 5px;
-        }
-        
-        .stats-section h3 {
-            font-size: 14px;
-            color: #e94560;
-            margin-bottom: 10px;
-        }
-        
-        .stat-item {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            margin-right: 12px;
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-            font-size: 13px;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .filter-item label {
+            font-size: 14px;
+            color: #2c3e50;
+            cursor: pointer;
+        }
+        
+        .filter-item .count {
+            margin-left: auto;
+            font-size: 12px;
+            color: #7f8c8d;
+            background: #f0f0f0;
+            padding: 2px 8px;
+            border-radius: 10px;
         }
         
         /* 操作按钮 */
-        .action-buttons {
-            margin-bottom: 20px;
-        }
-        
         .action-btn {
             width: 100%;
-            padding: 10px;
+            padding: 12px 16px;
             margin-bottom: 8px;
-            border: 1px solid #0f3460;
-            border-radius: 5px;
-            background: #1a1a2e;
-            color: #eaeaea;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #2c3e50;
             font-size: 14px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
         
         .action-btn:hover {
-            background: #e94560;
-            border-color: #e94560;
+            background: #3498db;
+            border-color: #3498db;
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+        
+        .action-btn.primary {
+            background: #3498db;
+            border-color: #3498db;
+            color: #ffffff;
+        }
+        
+        .action-btn.primary:hover {
+            background: #2980b9;
         }
         
         /* 节点详情面板 */
         .node-detail {
             position: fixed;
-            right: 20px;
-            top: 20px;
-            width: 350px;
-            max-height: 80vh;
-            background: #16213e;
-            border: 1px solid #0f3460;
-            border-radius: 10px;
-            padding: 20px;
+            right: 24px;
+            top: 24px;
+            width: 380px;
+            max-height: calc(100vh - 48px);
+            background: #ffffff;
+            border: 1px solid #e1e5e9;
+            border-radius: 12px;
+            padding: 24px;
             z-index: 100;
             display: none;
             overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
         
         .node-detail.active {
             display: block;
         }
         
+        .node-detail-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .node-detail-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 20px;
+        }
+        
         .node-detail h2 {
             font-size: 18px;
-            color: #e94560;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .node-detail .type-tag {
+            font-size: 12px;
+            color: #7f8c8d;
+            padding: 4px 12px;
+            background: #f0f0f0;
+            border-radius: 12px;
         }
         
         .node-detail .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
             background: none;
             border: none;
             color: #7f8c8d;
-            font-size: 20px;
+            font-size: 24px;
             cursor: pointer;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
         }
         
         .node-detail .close-btn:hover {
-            color: #e94560;
+            background: #f0f0f0;
+            color: #e74c3c;
         }
         
-        .node-detail .property {
-            margin-bottom: 12px;
+        .node-detail .property-group {
+            margin-bottom: 16px;
         }
         
         .node-detail .property-label {
-            font-size: 12px;
+            font-size: 11px;
             color: #7f8c8d;
-            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
         }
         
         .node-detail .property-value {
             font-size: 14px;
-            color: #eaeaea;
-            padding: 8px;
-            background: #1a1a2e;
-            border-radius: 5px;
+            color: #2c3e50;
+            padding: 10px 14px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            line-height: 1.5;
         }
         
-        .node-detail .relations {
-            margin-top: 15px;
+        .node-detail .relations-section {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid #e1e5e9;
         }
         
-        .node-detail .relations h3 {
+        .node-detail .relations-section h3 {
             font-size: 14px;
-            color: #e94560;
-            margin-bottom: 10px;
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 12px;
         }
         
         .node-detail .relation-item {
-            font-size: 13px;
-            padding: 8px;
-            background: #0f3460;
-            border-radius: 5px;
-            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            padding: 10px 14px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 6px;
             cursor: pointer;
+            transition: all 0.2s;
         }
         
         .node-detail .relation-item:hover {
-            background: #e94560;
+            background: #3498db;
+            color: #ffffff;
+        }
+        
+        .node-detail .relation-arrow {
+            margin-right: 8px;
+            font-size: 12px;
         }
         
         /* 主可视化区域 */
         .visualization {
             position: fixed;
-            left: 280px;
+            left: 260px;
             top: 0;
             right: 0;
             bottom: 0;
-            background: #1a1a2e;
+            background: transparent;
         }
         
-        /* SVG 样式 */
-        .node {
+        /* SVG 背景网格 */
+        .grid-line {
+            stroke: #e1e5e9;
+            stroke-width: 0.5;
+            stroke-opacity: 0.3;
+        }
+        
+        /* 卡片节点样式 */
+        .node-card {
             cursor: pointer;
             transition: all 0.3s;
         }
         
-        .node:hover {
-            filter: brightness(1.3);
+        .node-card:hover {
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15));
+            transform: scale(1.05);
         }
         
-        .node circle {
-            stroke-width: 2px;
-        }
-        
-        .node text {
-            font-size: 12px;
-            fill: #eaeaea;
-            text-anchor: middle;
-            pointer-events: none;
-        }
-        
+        /* 连线样式 */
         .link {
-            stroke-opacity: 0.6;
+            fill: none;
+            stroke: #95a5a6;
+            stroke-width: 1.5;
+            stroke-opacity: 0.4;
             transition: all 0.3s;
         }
         
         .link:hover {
+            stroke: #3498db;
+            stroke-width: 2.5;
             stroke-opacity: 1;
-            stroke-width: 3px;
         }
         
         .link-label {
-            font-size: 10px;
+            font-size: 11px;
             fill: #7f8c8d;
             pointer-events: none;
+            background: #ffffff;
+            padding: 2px 6px;
+            border-radius: 4px;
         }
         
-        /* 缩放提示 */
-        .zoom-tip {
+        /* 底部提示 */
+        .tip-bar {
             position: fixed;
-            bottom: 20px;
-            left: 300px;
-            background: #16213e;
-            padding: 10px 15px;
-            border-radius: 5px;
-            font-size: 12px;
+            bottom: 24px;
+            left: 280px;
+            right: 24px;
+            background: #ffffff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
             color: #7f8c8d;
-            z-index: 50;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
         
-        /* 图例 */
-        .legend {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #16213e;
-            padding: 15px;
-            border-radius: 5px;
-            z-index: 50;
-        }
-        
-        .legend h3 {
-            font-size: 12px;
-            color: #e94560;
-            margin-bottom: 10px;
-        }
-        
-        .legend-item {
+        .tip-bar .tip-item {
             display: flex;
             align-items: center;
-            margin-bottom: 5px;
-            font-size: 11px;
+            gap: 6px;
         }
         
-        .legend-color {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 8px;
+        /* 统计卡片 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 24px;
         }
+        
+        .stat-card {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-card .stat-number {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .stat-card .stat-label {
+            font-size: 11px;
+            color: #7f8c8d;
+            margin-top: 2px;
+        }
+        
+        /* 颜色方案 */
+        .color-core { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); }
+        .color-resource { background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); }
+        .color-dig { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); }
+        .color-touch { background: linear-gradient(135deg, #27ae60 0%, #229954 100%); }
     </style>
 </head>
 <body>
     <!-- 左侧工具栏 -->
     <div class="sidebar">
-        <h1>🧠 本体论知识图谱</h1>
-        <p class="subtitle">自媒体流量获客截留业务 · 14实体</p>
+        <h1>本体论知识图谱</h1>
+        <p class="subtitle">自媒体流量获客截留业务</p>
+        
+        <!-- 统计 -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalNodes">14</div>
+                <div class="stat-label">实体</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalLinks">18</div>
+                <div class="stat-label">关系</div>
+            </div>
+        </div>
         
         <!-- 搜索 -->
         <div class="search-box">
-            <input type="text" id="searchInput" placeholder="🔍 搜索实体名称..." />
+            <input type="text" id="searchInput" placeholder="搜索实体..." />
         </div>
         
         <!-- 实体类型筛选 -->
-        <div class="filter-section">
-            <h3>📦 实体类型</h3>
-            <div class="filter-item">
-                <span class="filter-color" style="background: #4fc3f7;"></span>
-                <input type="checkbox" id="filter-core" checked />
-                <label for="filter-core">核心业务对象 (8)</label>
+        <div class="section">
+            <h3>实体类型</h3>
+            <div class="filter-item active" data-type="core">
+                <div class="filter-color color-core">8</div>
+                <label>核心业务对象</label>
             </div>
-            <div class="filter-item">
-                <span class="filter-color" style="background: #ba68c8;"></span>
-                <input type="checkbox" id="filter-resource" checked />
-                <label for="filter-resource">账号资源 (2)</label>
+            <div class="filter-item active" data-type="resource">
+                <div class="filter-color color-resource">2</div>
+                <label>账号资源</label>
             </div>
-            <div class="filter-item">
-                <span class="filter-color" style="background: #ffb74d;"></span>
-                <input type="checkbox" id="filter-dig" checked />
-                <label for="filter-dig">挖掘策略域 (2)</label>
+            <div class="filter-item active" data-type="dig">
+                <div class="filter-color color-dig">2</div>
+                <label>挖掘策略域</label>
             </div>
-            <div class="filter-item">
-                <span class="filter-color" style="background: #81c784;"></span>
-                <input type="checkbox" id="filter-touch" checked />
-                <label for="filter-touch">触达策略域 (2)</label>
+            <div class="filter-item active" data-type="touch">
+                <div class="filter-color color-touch">2</div>
+                <label>触达策略域</label>
             </div>
         </div>
         
-        <!-- 统计 -->
-        <div class="stats-section">
-            <h3>📊 统计信息</h3>
-            <div class="stat-item">
-                <span>实体总数</span>
-                <span id="totalNodes">14</span>
-            </div>
-            <div class="stat-item">
-                <span>关系总数</span>
-                <span id="totalLinks">18</span>
-            </div>
-            <div class="stat-item">
-                <span>当前显示</span>
-                <span id="visibleNodes">14</span>
-            </div>
+        <!-- 操作 -->
+        <div class="section">
+            <h3>操作</h3>
+            <button class="action-btn primary" onclick="resetView()">
+                <span>↻</span> 重置布局
+            </button>
+            <button class="action-btn" onclick="highlightPath()">
+                <span>✦</span> 高亮业务路径
+            </button>
+            <button class="action-btn" onclick="exportData()">
+                <span>↓</span> 导出数据
+            </button>
         </div>
         
-        <!-- 操作按钮 -->
-        <div class="action-buttons">
-            <button class="action-btn" onclick="resetView()">🔄 重置视图</button>
-            <button class="action-btn" onclick="highlightPath()">✨ 高亮路径</button>
-            <button class="action-btn" onclick="exportData()">💾 导出数据</button>
-        </div>
-        
-        <!-- 使用说明 -->
-        <div class="filter-section">
-            <h3>💡 使用说明</h3>
+        <!-- 说明 -->
+        <div class="section">
+            <h3>使用说明</h3>
             <p style="font-size: 12px; color: #7f8c8d; line-height: 1.6;">
-                • 拖拽节点可移动位置<br/>
-                • 点击节点查看详情<br/>
-                • 滚轮缩放视图<br/>
-                • 拖拽空白区域平移<br/>
-                • 搜索框实时筛选<br/>
-                • 点击关系跳转目标节点
+                拖拽卡片可移动位置<br/>
+                点击卡片查看详细信息<br/>
+                滚轮缩放，拖拽空白平移<br/>
+                搜索框实时筛选实体
             </p>
         </div>
     </div>
     
     <!-- 节点详情面板 -->
     <div class="node-detail" id="nodeDetail">
-        <h2>
-            <span id="detailTitle">节点名称</span>
-            <button class="close-btn" onclick="closeDetail()">×</button>
-        </h2>
+        <button class="close-btn" onclick="closeDetail()">×</button>
+        <div class="node-detail-header">
+            <div class="node-detail-icon" id="detailIcon"></div>
+            <div>
+                <h2 id="detailTitle">节点名称</h2>
+                <div class="type-tag" id="detailType">类型</div>
+            </div>
+        </div>
         <div id="detailContent"></div>
     </div>
     
     <!-- 主可视化区域 -->
     <div class="visualization" id="visualization"></div>
     
-    <!-- 缩放提示 -->
-    <div class="zoom-tip">
-        🖱️ 滚轮缩放 | 拖拽移动 | 点击查看详情
-    </div>
-    
-    <!-- 图例 -->
-    <div class="legend">
-        <h3>实体类型</h3>
-        <div class="legend-item">
-            <div class="legend-color" style="background: #4fc3f7;"></div>
-            <span>核心业务对象</span>
+    <!-- 底部提示 -->
+    <div class="tip-bar">
+        <div class="tip-item">
+            <span>🖱️</span> 拖拽移动 · 滚轮缩放
         </div>
-        <div class="legend-item">
-            <div class="legend-color" style="background: #ba68c8;"></div>
-            <span>账号资源</span>
+        <div class="tip-item">
+            <span>👆</span> 点击卡片查看详情
         </div>
-        <div class="legend-item">
-            <div class="legend-color" style="background: #ffb74d;"></div>
-            <span>挖掘策略域</span>
-        </div>
-        <div class="legend-item">
-            <div class="legend-color" style="background: #81c784;"></div>
-            <span>触达策略域</span>
+        <div class="tip-item">
+            <span>🔍</span> 搜索实时筛选
         </div>
     </div>
     
     <script>
         // 实体数据
         const nodes = [
-            // 核心业务对象 (蓝色)
-            { id: "kol", name: "KOL", type: "core", description: "流量源头", properties: { 定义: "意见领袖，拥有粉丝和影响力", 作用: "流量来源，帖子的发布者" } },
-            { id: "post", name: "帖子", type: "core", description: "内容载体", properties: { 定义: "KOL发布的内容", 作用: "承载评论，发现用户的入口" } },
-            { id: "comment_act", name: "评论行为", type: "core", description: "消费行为", properties: { 定义: "用户对帖子的评论行为", 包含: "谁、何时、对哪个帖子" } },
-            { id: "comment_content", name: "评论内容", type: "core", description: "行为结果", properties: { 定义: "评论的具体内容", 属性: "意图评分、意图状态、语义标签", 作用: "分析用户意图的基础" } },
-            { id: "collect_user", name: "采集用户", type: "core", description: "大娃负责", properties: { 状态: "待清洗→待分配→已验证→待人工→已过滤", 属性: "契合度", 负责Agent: "大娃" } },
-            { id: "touch_user", name: "触达用户", type: "core", description: "二娃负责", properties: { 状态: "已分配→已触达→已转化→已关闭", 属性: "信任度、归因", 负责Agent: "二娃" } },
-            { id: "traffic", name: "流量", type: "core", description: "业务结果", properties: { 定义: "最终业务目标", 作用: "获客转化的结果" } },
-            { id: "verify_strategy", name: "验证策略", type: "core", description: "自动验证", properties: { 定义: "verify_users.py", 作用: "验证用户真实性", 方式: "浏览器访问主页评估活跃度" } },
+            // 核心业务对象
+            { id: "kol", name: "KOL", type: "core", description: "流量源头", icon: "📢", properties: { 定义: "意见领袖，拥有粉丝和影响力", 作用: "流量来源，帖子的发布者", 负责: "大娃Agent" } },
+            { id: "post", name: "帖子", type: "core", description: "内容载体", icon: "📝", properties: { 定义: "KOL发布的内容", 作用: "承载评论，发现用户的入口", 负责: "大娃Agent" } },
+            { id: "comment_act", name: "评论行为", type: "core", description: "消费行为", icon: "💬", properties: { 定义: "用户对帖子的评论行为", 包含: "谁、何时、对哪个帖子", 负责: "大娃Agent" } },
+            { id: "comment_content", name: "评论内容", type: "core", description: "行为结果", icon: "📄", properties: { 定义: "评论的具体内容", 属性: "意图评分、意图状态、语义标签", 作用: "分析用户意图的基础", 负责: "大娃Agent" } },
+            { id: "collect_user", name: "采集用户", type: "core", description: "大娃负责", icon: "👤", properties: { 状态: "待清洗 → 待分配 → 已验证 → 待人工 → 已过滤", 属性: "契合度", 负责Agent: "大娃", 阶段: "挖掘域" } },
+            { id: "touch_user", name: "触达用户", type: "core", description: "二娃负责", icon: "🎯", properties: { 状态: "已分配 → 已触达 → 已转化 → 已关闭", 属性: "信任度、归因", 负责Agent: "二娃", 阶段: "触达域" } },
+            { id: "traffic", name: "流量", type: "core", description: "业务结果", icon: "📈", properties: { 定义: "最终业务目标", 作用: "获客转化的结果" } },
+            { id: "verify_strategy", name: "验证策略", type: "core", description: "自动验证", icon: "✓", properties: { 定义: "verify_users.py", 作用: "验证用户真实性", 方式: "浏览器访问主页评估活跃度", 负责: "大娃Agent" } },
             
-            // 账号资源 (紫色)
-            { id: "account_matrix", name: "自媒体账号矩阵", type: "resource", description: "账号资源", properties: { 定义: "具体的社媒账号资源", 用途: "触达时使用的账号", 包含: "小红书账号、抖音账号等" } },
-            { id: "ip_matrix", name: "IP矩阵", type: "resource", description: "网络IP", properties: { 定义: "网络IP资源", 用途: "触达时绑定的IP", 作用: "防止账号被封" } },
+            // 账号资源
+            { id: "account_matrix", name: "自媒体账号矩阵", type: "resource", description: "账号资源", icon: "📱", properties: { 定义: "具体的社媒账号资源", 用途: "触达时使用的账号", 包含: "小红书账号、抖音账号等" } },
+            { id: "ip_matrix", name: "IP矩阵", type: "resource", description: "网络IP", icon: "🌐", properties: { 定义: "网络IP资源", 用途: "触达时绑定的IP", 作用: "防止账号被封" } },
             
-            // 挖掘策略域 (橙色)
-            { id: "dig_strategy", name: "挖掘策略", type: "dig", description: "统一策略", properties: { 定义: "发现目标的顶层策略", 包含: "采集、清洗、加工（现阶段统一）", 输出: "结构化输出" } },
-            { id: "struct_output", name: "结构化输出", type: "dig", description: "能力+结果", properties: { 定义: "挖掘策略的输出", 形态: "用户画像、数据产品", 作用: "数据产品化" } },
+            // 挖掘策略域
+            { id: "dig_strategy", name: "挖掘策略", type: "dig", description: "统一策略", icon: "⛏", properties: { 定义: "发现目标的顶层策略", 包含: "采集、清洗、加工（现阶段统一）", 输出: "结构化输出", 负责: "大娃Agent" } },
+            { id: "struct_output", name: "结构化输出", type: "dig", description: "能力+结果", icon: "📊", properties: { 定义: "挖掘策略的输出", 形态: "用户画像、数据产品", 作用: "数据产品化" } },
             
-            // 触达策略域 (绿色)
-            { id: "touch_strategy", name: "触达策略（剧本）", type: "touch", description: "触达方式", properties: { 定义: "触达用户的策略方式", 包含: "账号绑定、IP绑定、话术、时机、行为方式、人设", MVP阶段: "与剧本合一" } },
-            { id: "touch_record", name: "触达记录", type: "touch", description: "执行记录", properties: { 定义: "每次触达动作", 包含: "触达用户ID、执行账号、执行时间、话术内容", 属性: "效果（是否回复、是否转化）" } }
+            // 触达策略域
+            { id: "touch_strategy", name: "触达策略（剧本）", type: "touch", description: "触达方式", icon: "🎬", properties: { 定义: "触达用户的策略方式", 包含: "账号绑定、IP绑定、话术、时机、行为方式、人设", MVP阶段: "与剧本合一", 负责: "二娃Agent" } },
+            { id: "touch_record", name: "触达记录", type: "touch", description: "执行记录", icon: "📋", properties: { 定义: "每次触达动作", 包含: "触达用户ID、执行账号、执行时间、话术内容", 属性: "效果（是否回复、是否转化）", 负责: "二娃Agent" } }
         ];
         
         // 关系数据
         const links = [
-            { source: "kol", target: "post", label: "拥有", type: "own" },
-            { source: "post", target: "comment_act", label: "承载", type: "carry" },
-            { source: "comment_act", target: "comment_content", label: "产生", type: "produce" },
-            { source: "comment_content", target: "collect_user", label: "意图分类", type: "classify" },
-            { source: "dig_strategy", target: "post", label: "爬取", type: "crawl" },
-            { source: "dig_strategy", target: "collect_user", label: "发现", type: "discover" },
-            { source: "dig_strategy", target: "struct_output", label: "输出", type: "output" },
-            { source: "collect_user", target: "verify_strategy", label: "验证", type: "verify" },
-            { source: "verify_strategy", target: "collect_user", label: "已验证", type: "verified" },
+            { source: "kol", target: "post", label: "拥有", type: "core" },
+            { source: "post", target: "comment_act", label: "承载", type: "core" },
+            { source: "comment_act", target: "comment_content", label: "产生", type: "core" },
+            { source: "comment_content", target: "collect_user", label: "意图分类", type: "dig" },
+            { source: "dig_strategy", target: "post", label: "爬取", type: "dig" },
+            { source: "dig_strategy", target: "collect_user", label: "发现", type: "dig" },
+            { source: "dig_strategy", target: "struct_output", label: "输出", type: "dig" },
+            { source: "collect_user", target: "verify_strategy", label: "验证", type: "core" },
             { source: "collect_user", target: "touch_user", label: "转化为", type: "transform" },
-            { source: "touch_strategy", target: "account_matrix", label: "绑定", type: "bind" },
-            { source: "touch_strategy", target: "ip_matrix", label: "绑定", type: "bind" },
-            { source: "touch_strategy", target: "touch_user", label: "执行", type: "execute" },
-            { source: "touch_user", target: "touch_record", label: "产生", type: "produce" },
-            { source: "touch_record", target: "touch_user", label: "反馈信任度", type: "feedback" },
-            { source: "touch_user", target: "traffic", label: "转化", type: "convert" },
-            { source: "touch_user", target: "kol", label: "归因追溯", type: "attribute" },
-            { source: "touch_user", target: "touch_strategy", label: "归因追溯", type: "attribute" }
+            { source: "touch_strategy", target: "account_matrix", label: "绑定", type: "resource" },
+            { source: "touch_strategy", target: "ip_matrix", label: "绑定", type: "resource" },
+            { source: "touch_strategy", target: "touch_user", label: "执行", type: "touch" },
+            { source: "touch_user", target: "touch_record", label: "产生", type: "touch" },
+            { source: "touch_user", target: "traffic", label: "转化", type: "touch" },
+            { source: "touch_user", target: "kol", label: "归因", type: "attribute" }
         ];
         
         // 颜色映射
         const colorMap = {
-            core: "#4fc3f7",
-            resource: "#ba68c8",
-            dig: "#ffb74d",
-            touch: "#81c784"
-        };
-        
-        // 关系颜色
-        const linkColorMap = {
-            own: "#e94560",
-            carry: "#4fc3f7",
-            produce: "#81c784",
-            classify: "#ffb74d",
-            crawl: "#ffb74d",
-            discover: "#ffb74d",
-            output: "#ffb74d",
-            verify: "#4fc3f7",
-            verified: "#81c784",
-            transform: "#e94560",
-            bind: "#ba68c8",
-            execute: "#81c784",
-            feedback: "#81c784",
-            convert: "#81c784",
-            attribute: "#7f8c8d"
+            core: { bg: "#3498db", text: "#ffffff" },
+            resource: { bg: "#9b59b6", text: "#ffffff" },
+            dig: { bg: "#f39c12", text: "#ffffff" },
+            touch: { bg: "#27ae60", text: "#ffffff" }
         };
         
         // 初始化SVG
-        const width = window.innerWidth - 280;
-        const height = window.innerHeight;
+        const width = window.innerWidth - 260;
+        const height = window.innerHeight - 60;
         
         const svg = d3.select("#visualization")
             .append("svg")
             .attr("width", width)
             .attr("height", height);
         
-        // 添加缩放功能
+        // 绘制背景网格
+        const gridGroup = svg.append("g").attr("class", "grid");
+        
+        // 垂直线
+        for (let x = 0; x < width; x += 50) {
+            gridGroup.append("line")
+                .attr("x1", x).attr("y1", 0)
+                .attr("x2", x).attr("y2", height)
+                .attr("class", "grid-line");
+        }
+        
+        // 水平线
+        for (let y = 0; y < height; y += 50) {
+            gridGroup.append("line")
+                .attr("x1", 0).attr("y1", y)
+                .attr("x2", width).attr("y2", y)
+                .attr("class", "grid-line");
+        }
+        
+        // 缩放功能
         const zoom = d3.zoom()
-            .scaleExtent([0.3, 3])
+            .scaleExtent([0.3, 2])
             .on("zoom", (event) => {
-                g.attr("transform", event.transform);
+                mainGroup.attr("transform", event.transform);
             });
         
         svg.call(zoom);
         
-        const g = svg.append("g");
+        const mainGroup = svg.append("g");
         
         // 创建力导向图
         const simulation = d3.forceSimulation(nodes)
-            .force("link", d3.forceLink(links).id(d => d.id).distance(150))
-            .force("charge", d3.forceManyBody().strength(-400))
+            .force("link", d3.forceLink(links).id(d => d.id).distance(180))
+            .force("charge", d3.forceManyBody().strength(-500))
             .force("center", d3.forceCenter(width / 2, height / 2))
-            .force("collision", d3.forceCollide().radius(50))
-            .force("bounds", () => {
-                // 边界约束：保持节点在可视区域内
-                nodes.forEach(d => {
-                    d.x = Math.max(50, Math.min(width - 50, d.x));
-                    d.y = Math.max(50, Math.min(height - 50, d.y));
-                });
-            });
+            .force("collision", d3.forceCollide().radius(80))
+            .on("tick", ticked);
         
-        // 绘制关系线
-        const link = g.append("g")
-            .selectAll("line")
+        // 边界约束
+        simulation.on("tick", () => {
+            nodes.forEach(d => {
+                d.x = Math.max(80, Math.min(width - 80, d.x));
+                d.y = Math.max(80, Math.min(height - 80, d.y));
+            });
+            ticked();
+        });
+        
+        // 绘制连线
+        const link = mainGroup.append("g")
+            .selectAll("path")
             .data(links)
             .enter()
-            .append("line")
+            .append("path")
             .attr("class", "link")
-            .attr("stroke", d => linkColorMap[d.type] || "#7f8c8d")
-            .attr("stroke-width", 2);
+            .attr("id", d => `link-${d.source.id}-${d.target.id}`);
         
-        // 绘制关系标签
-        const linkLabel = g.append("g")
+        // 绘制连线标签
+        const linkLabel = mainGroup.append("g")
             .selectAll("text")
             .data(links)
             .enter()
             .append("text")
             .attr("class", "link-label")
             .attr("text-anchor", "middle")
+            .attr("dy", -4)
             .text(d => d.label);
         
-        // 绘制节点
-        const node = g.append("g")
+        // 绘制卡片节点
+        const node = mainGroup.append("g")
             .selectAll("g")
             .data(nodes)
             .enter()
             .append("g")
-            .attr("class", "node")
+            .attr("class", "node-card")
+            .attr("id", d => `node-${d.id}`)
             .call(d3.drag()
                 .on("start", dragStarted)
                 .on("drag", dragged)
                 .on("end", dragEnded))
             .on("click", showDetail);
         
-        // 节点圆形
-        node.append("circle")
-            .attr("r", 30)
-            .attr("fill", d => colorMap[d.type])
-            .attr("stroke", d => colorMap[d.type])
-            .attr("stroke-width", 3);
+        // 卡片背景（圆角矩形）
+        node.append("rect")
+            .attr("width", 120)
+            .attr("height", 70)
+            .attr("rx", 12)
+            .attr("ry", 12)
+            .attr("x", -60)
+            .attr("y", -35)
+            .attr("fill", "#ffffff")
+            .attr("stroke", d => colorMap[d.type].bg)
+            .attr("stroke-width", 2)
+            .style("filter", "drop-shadow(0 2px 4px rgba(0,0,0,0.08))");
         
-        // 节点文字（实体名称）
+        // 卡片顶部颜色条
+        node.append("rect")
+            .attr("width", 120)
+            .attr("height", 24)
+            .attr("rx", 12)
+            .attr("ry", 12)
+            .attr("x", -60)
+            .attr("y", -35)
+            .attr("fill", d => colorMap[d.type].bg)
+            .attr("clip-path", "inset(0 0 12px 0)");
+        
+        // 图标
         node.append("text")
-            .attr("dy", 4)
-            .attr("font-weight", "bold")
+            .attr("x", -60)
+            .attr("y", -22)
+            .attr("text-anchor", "start")
+            .attr("fill", "#ffffff")
+            .attr("font-size", "12px")
+            .text(d => d.icon);
+        
+        // 实体名称
+        node.append("text")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("text-anchor", "middle")
+            .attr("fill", "#2c3e50")
+            .attr("font-size", "14px")
+            .attr("font-weight", "600")
             .text(d => d.name);
         
-        // 节点属性标签（下方显示）
+        // 描述标签
         node.append("text")
-            .attr("dy", 22)
-            .attr("font-size", "10px")
+            .attr("x", 0)
+            .attr("y", 18)
+            .attr("text-anchor", "middle")
             .attr("fill", "#7f8c8d")
-            .text(d => {
-                // 根据不同实体类型显示不同属性
-                if (d.id === "collect_user") return "状态: 待清洗→已验证";
-                if (d.id === "touch_user") return "状态: 已分配→已转化";
-                if (d.id === "comment_content") return "属性: 意图评分/语义标签";
-                if (d.id === "dig_strategy") return "包含: 采集/清洗/加工";
-                if (d.id === "touch_strategy") return "包含: 话术/账号/IP";
-                if (d.id === "kol") return "定位: 流量源头";
-                if (d.id === "post") return "定位: 内容载体";
-                if (d.id === "comment_act") return "包含: 谁/何时/帖子";
-                if (d.id === "verify_strategy") return "方式: 浏览器验证";
-                if (d.id === "touch_record") return "属性: 效果";
-                if (d.id === "account_matrix") return "用途: 触达账号";
-                if (d.id === "ip_matrix") return "用途: 绑定IP";
-                if (d.id === "struct_output") return "形态: 用户画像";
-                if (d.id === "traffic") return "定位: 业务结果";
-                return "";
-            });
+            .attr("font-size", "11px")
+            .text(d => d.description);
         
-        // 节点负责Agent标签（底部）
-        node.append("text")
-            .attr("dy", 35)
-            .attr("font-size", "9px")
-            .attr("fill", d => {
-                if (d.type === "dig" || d.id === "collect_user" || d.id === "verify_strategy" || 
-                    d.id === "kol" || d.id === "post" || d.id === "comment_act" || d.id === "comment_content") {
-                    return "#ffb74d"; // 大娃 - 橙色
-                }
-                if (d.type === "touch" || d.id === "touch_user" || d.id === "touch_record") {
-                    return "#81c784"; // 二娃 - 绿色
-                }
-                return "#7f8c8d";
-            })
-            .text(d => {
-                if (d.type === "dig" || d.id === "collect_user" || d.id === "verify_strategy" || 
-                    d.id === "kol" || d.id === "post" || d.id === "comment_act" || d.id === "comment_content") {
-                    return "🤖 大娃";
-                }
-                if (d.type === "touch" || d.id === "touch_user" || d.id === "touch_record") {
-                    return "🤖 二娃";
-                }
-                return "";
+        // 更新位置函数
+        function ticked() {
+            link.attr("d", d => {
+                const dx = d.target.x - d.source.x;
+                const dy = d.target.y - d.source.y;
+                return `M${d.source.x},${d.source.y}L${d.target.x},${d.target.y}`;
             });
-        
-        // 更新位置
-        simulation.on("tick", () => {
-            link
-                .attr("x1", d => d.source.x)
-                .attr("y1", d => d.source.y)
-                .attr("x2", d => d.target.x)
-                .attr("y2", d => d.target.y);
             
             linkLabel
                 .attr("x", d => (d.source.x + d.target.x) / 2)
                 .attr("y", d => (d.source.y + d.target.y) / 2);
             
             node.attr("transform", d => `translate(${d.x},${d.y})`);
-        });
+        }
         
         // 拖拽函数
         function dragStarted(event, d) {
@@ -670,24 +735,25 @@
         
         // 显示节点详情
         function showDetail(event, d) {
+            event.stopPropagation();
+            
             const detail = document.getElementById("nodeDetail");
+            const icon = document.getElementById("detailIcon");
             const title = document.getElementById("detailTitle");
+            const type = document.getElementById("detailType");
             const content = document.getElementById("detailContent");
             
+            icon.textContent = d.icon;
+            icon.className = `node-detail-icon color-${d.type}`;
             title.textContent = d.name;
+            type.textContent = d.description;
             
-            let html = `
-                <div class="property">
-                    <div class="property-label">类型</div>
-                    <div class="property-value">${d.description}</div>
-                </div>
-            `;
+            let html = '';
             
-            // 显示属性
             if (d.properties) {
                 for (const [key, value] of Object.entries(d.properties)) {
                     html += `
-                        <div class="property">
+                        <div class="property-group">
                             <div class="property-label">${key}</div>
                             <div class="property-value">${value}</div>
                         </div>
@@ -699,16 +765,17 @@
             const relations = links.filter(l => l.source.id === d.id || l.target.id === d.id);
             if (relations.length > 0) {
                 html += `
-                    <div class="relations">
-                        <h3>🔗 相关关系 (${relations.length})</h3>
+                    <div class="relations-section">
+                        <h3>相关关系 (${relations.length})</h3>
                 `;
                 
                 relations.forEach(r => {
                     const targetName = r.source.id === d.id ? r.target.name : r.source.name;
-                    const direction = r.source.id === d.id ? "→" : "←";
+                    const arrow = r.source.id === d.id ? "→" : "←";
                     html += `
                         <div class="relation-item" onclick="highlightNode('${r.source.id === d.id ? r.target.id : r.source.id}')">
-                            ${direction} ${r.label} ${targetName}
+                            <span class="relation-arrow">${arrow}</span>
+                            <span>${r.label} ${targetName}</span>
                         </div>
                     `;
                 });
@@ -731,24 +798,26 @@
         
         // 高亮节点
         function highlightNode(nodeId) {
-            node.selectAll("circle")
-                .attr("stroke-width", d => d.id === nodeId ? 6 : 3)
-                .attr("filter", d => d.id === nodeId ? "brightness(1.5)" : "none");
+            d3.selectAll(".node-card rect")
+                .attr("stroke-width", d => d.id === nodeId ? 4 : 2)
+                .attr("filter", d => d.id === nodeId ? "drop-shadow(0 4px 12px rgba(0,0,0,0.2))" : "drop-shadow(0 2px 4px rgba(0,0,0,0.08))");
             
-            link
-                .attr("stroke-width", d => (d.source.id === nodeId || d.target.id === nodeId) ? 4 : 2)
-                .attr("stroke-opacity", d => (d.source.id === nodeId || d.target.id === nodeId) ? 1 : 0.6);
+            d3.selectAll(".link")
+                .attr("stroke-width", d => (d.source.id === nodeId || d.target.id === nodeId) ? 3 : 1.5)
+                .attr("stroke-opacity", d => (d.source.id === nodeId || d.target.id === nodeId) ? 1 : 0.4)
+                .attr("stroke", d => (d.source.id === nodeId || d.target.id === nodeId) ? "#3498db" : "#95a5a6");
         }
         
         // 重置高亮
         function resetHighlight() {
-            node.selectAll("circle")
-                .attr("stroke-width", 3)
-                .attr("filter", "none");
-            
-            link
+            d3.selectAll(".node-card rect")
                 .attr("stroke-width", 2)
-                .attr("stroke-opacity", 0.6);
+                .attr("filter", "drop-shadow(0 2px 4px rgba(0,0,0,0.08))");
+            
+            d3.selectAll(".link")
+                .attr("stroke-width", 1.5)
+                .attr("stroke-opacity", 0.4)
+                .attr("stroke", "#95a5a6");
         }
         
         // 重置视图
@@ -763,16 +832,17 @@
         
         // 高亮路径
         function highlightPath() {
-            // 高亮从KOL到流量的完整路径
             const pathNodes = ["kol", "post", "comment_act", "comment_content", "collect_user", "touch_user", "traffic"];
             
-            node.selectAll("circle")
-                .attr("stroke-width", d => pathNodes.includes(d.id) ? 6 : 2)
-                .attr("filter", d => pathNodes.includes(d.id) ? "brightness(1.5)" : "none");
+            d3.selectAll(".node-card rect")
+                .attr("stroke-width", d => pathNodes.includes(d.id) ? 4 : 1)
+                .attr("filter", d => pathNodes.includes(d.id) ? "drop-shadow(0 4px 16px rgba(52,152,219,0.3))" : "drop-shadow(0 1px 2px rgba(0,0,0,0.04))")
+                .attr("stroke", d => pathNodes.includes(d.id) ? "#3498db" : "#bdc3c7");
             
-            link
-                .attr("stroke-width", d => (pathNodes.includes(d.source.id) && pathNodes.includes(d.target.id)) ? 4 : 1)
-                .attr("stroke-opacity", d => (pathNodes.includes(d.source.id) && pathNodes.includes(d.target.id)) ? 1 : 0.3);
+            d3.selectAll(".link")
+                .attr("stroke-width", d => (pathNodes.includes(d.source.id) && pathNodes.includes(d.target.id)) ? 3 : 0.5)
+                .attr("stroke-opacity", d => (pathNodes.includes(d.source.id) && pathNodes.includes(d.target.id)) ? 1 : 0.2)
+                .attr("stroke", d => (pathNodes.includes(d.source.id) && pathNodes.includes(d.target.id)) ? "#3498db" : "#bdc3c7");
         }
         
         // 导出数据
@@ -800,56 +870,45 @@
         document.getElementById("searchInput").addEventListener("input", function(e) {
             const searchTerm = e.target.value.toLowerCase();
             
-            node.selectAll("circle")
-                .attr("opacity", d => d.name.toLowerCase().includes(searchTerm) || searchTerm === "" ? 1 : 0.2);
+            d3.selectAll(".node-card")
+                .attr("opacity", d => d.name.toLowerCase().includes(searchTerm) || searchTerm === "" ? 1 : 0.3);
             
-            node.selectAll("text")
-                .attr("opacity", d => d.name.toLowerCase().includes(searchTerm) || searchTerm === "" ? 1 : 0.2);
-            
-            link
-                .attr("opacity", d => {
+            d3.selectAll(".link")
+                .attr("stroke-opacity", d => {
                     const sourceMatch = d.source.name.toLowerCase().includes(searchTerm);
                     const targetMatch = d.target.name.toLowerCase().includes(searchTerm);
-                    return (sourceMatch || targetMatch || searchTerm === "") ? 1 : 0.2;
+                    return (sourceMatch || targetMatch || searchTerm === "") ? 0.4 : 0.1;
                 });
-            
-            // 更新可见数量
-            const visibleCount = nodes.filter(n => n.name.toLowerCase().includes(searchTerm) || searchTerm === "").length;
-            document.getElementById("visibleNodes").textContent = visibleCount;
         });
         
         // 类型筛选
-        document.querySelectorAll(".filter-item input[type='checkbox']").forEach(cb => {
-            cb.addEventListener("change", function() {
+        document.querySelectorAll(".filter-item").forEach(item => {
+            item.addEventListener("click", function() {
+                this.classList.toggle("active");
+                
                 const activeTypes = [];
-                if (document.getElementById("filter-core").checked) activeTypes.push("core");
-                if (document.getElementById("filter-resource").checked) activeTypes.push("resource");
-                if (document.getElementById("filter-dig").checked) activeTypes.push("dig");
-                if (document.getElementById("filter-touch").checked) activeTypes.push("touch");
+                document.querySelectorAll(".filter-item.active").forEach(active => {
+                    activeTypes.push(active.dataset.type);
+                });
                 
-                node.selectAll("circle")
-                    .attr("opacity", d => activeTypes.includes(d.type) ? 1 : 0.2);
+                d3.selectAll(".node-card")
+                    .attr("opacity", d => activeTypes.includes(d.type) ? 1 : 0.3);
                 
-                node.selectAll("text")
-                    .attr("opacity", d => activeTypes.includes(d.type) ? 1 : 0.2);
-                
-                link
-                    .attr("opacity", d => {
+                d3.selectAll(".link")
+                    .attr("stroke-opacity", d => {
                         const sourceActive = activeTypes.includes(d.source.type);
                         const targetActive = activeTypes.includes(d.target.type);
-                        return (sourceActive && targetActive) ? 1 : 0.2;
+                        return (sourceActive && targetActive) ? 0.4 : 0.1;
                     });
-                
-                // 更新可见数量
-                const visibleCount = nodes.filter(n => activeTypes.includes(n.type)).length;
-                document.getElementById("visibleNodes").textContent = visibleCount;
             });
         });
         
-        // 初始化显示
-        document.getElementById("totalNodes").textContent = nodes.length;
-        document.getElementById("totalLinks").textContent = links.length;
-        document.getElementById("visibleNodes").textContent = nodes.length;
+        // 点击空白关闭详情
+        svg.on("click", function(event) {
+            if (event.target === this || event.target.classList.contains("grid-line")) {
+                closeDetail();
+            }
+        });
     </script>
 </body>
 </html>
