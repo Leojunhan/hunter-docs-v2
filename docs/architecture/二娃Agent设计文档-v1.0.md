@@ -18,9 +18,173 @@
 
 ---
 
-## 二、数据边界
+## 二、智能体架构
 
-### 2.1 领地划分
+### 2.1 完整文件结构
+
+```
+outreach_agent_v1.0/
+│
+├── config/
+│   ├── settings.py              # 全局参数配置
+│   │   ├── 飞书配置（app_id/secret/触达表ID）
+│   │   ├── 状态机参数（48h/72h/3次/24h）
+│   │   ├── 风控参数（15人/天、3-5min间隔）
+│   │   ├── 账号池（ACCOUNTS = [{profile_id, daily_limit}]）
+│   │   └── 链接配置（落地页URL + UTM模板）
+│   │
+│   ├── templates.py             # 话术模板库
+│   │   ├── DM话术（按语义标签分类，每类2-3套）
+│   │   ├── 评论回复话术（3套通用）
+│   │   ├── 异议处理话术（HESITANT用户专用）
+│   │   └── 二次触达话术（跟进专用）
+│   │
+│   └── prompts.py               # LLM提示词
+│       └── RESPONSE_CLASSIFIER_PROMPT（响应分类，唯一一个）
+│
+├── scripts/
+│   ├── handoff.py               # Skill: outreach-handoff
+│   │   ├── 读大娃采集表（状态=已验证）
+│   │   ├── 复制9个字段到触达表
+│   │   ├── 触达表状态=待触达
+│   │   ├── 采集表状态→已移交
+│   │   └── 防重复（检查采集记录ID是否已存在）
+│   │
+│   ├── outreach_run.py          # Skill: outreach-run
+│   │   ├── 选人引擎（优先级排序 + 冷却过滤 + 通道过滤）
+│   │   ├── 策略引擎（语义→话术 + 变量填充 + 链接决策）
+│   │   ├── 执行调度（账号选择 + AdsPower启动 + 发送）
+│   │   ├── 结果处理（更新触达表 + 设置冷却）
+│   │   └── 文件锁（防并发）
+│   │
+│   ├── check_responses.py       # Skill: outreach-followup（第一步）
+│   │   ├── 遍历触达表（状态=触达中 + 超过48h）
+│   │   ├── AdsPower打开Messenger逐个检查
+│   │   ├── 提取新消息内容
+│   │   ├── 关键词快速判断（60%场景）
+│   │   ├── LLM分类（40%模糊场景）
+│   │   └── 更新触达表（状态/响应内容/响应时间）
+│   │
+│   └── follow_up.py             # Skill: outreach-followup（第二步）
+│       ├── 遍历触达表（状态=未响应 + 触达次数<3 + 冷却已过）
+│       ├── 选二次触达话术（换模板）
+│       ├── 执行发送
+│       ├── 触达次数≥3 → 状态=已关闭
+│       └── 更新触达表
+│
+├── tools/
+│   ├── adspower_api.py          # AdsPower封装
+│   │   ├── start_browser(profile_id) → ws_url
+│   │   ├── stop_browser(profile_id)
+│   │   └── pick_account(accounts) → 可用账号
+│   │
+│   ├── fb_messenger.py          # DM发送能力
+│   │   ├── send_dm(page, user_url, text) → 成功/失败
+│   │   ├── check_dm_response(page, user_url) → 新消息列表
+│   │   └── has_message_button(page) → bool
+│   │
+│   ├── fb_comment.py            # 评论回复能力
+│   │   ├── reply_comment(page, post_url, user_name, text) → 成功/失败
+│   │   └── check_comment_reply(page, post_url, our_comment) → 回复列表
+│   │
+│   ├── response_classifier.py   # 响应分类器
+│   │   ├── classify_by_keywords(text) → 标签或None
+│   │   ├── classify_by_llm(text, context) → 标签
+│   │   └── classify(text, context) → 关键词优先，未命中走LLM
+│   │
+│   ├── feishu_reader.py         # 飞书读取
+│   │   ├── get_pending_users() → 待触达列表
+│   │   ├── get_in_progress_users() → 触达中列表
+│   │   └── get_record(record_id) → 单条记录
+│   │
+│   └── feishu_writer.py         # 飞书写入
+│       ├── create_record(fields) → record_id
+│       ├── update_record(record_id, fields)
+│       └── record_exists(source_record_id) → bool（防重复移交）
+│
+├── skills/                      # Kiro Skill定义
+│   ├── outreach-handoff/
+│   │   └── SKILL.md             # 触发: #outreach-handoff
+│   ├── outreach-run/
+│   │   └── SKILL.md             # 触发: #outreach-run
+│   └── outreach-followup/
+│       └── SKILL.md             # 触发: #outreach-followup
+│
+├── data/
+│   ├── .outreach_run.lock       # 文件锁
+│   ├── .outreach_handoff.lock
+│   └── .outreach_followup.lock
+│
+├── .env                         # 凭证（飞书API/AdsPower）
+└── .env.example                 # 凭证模板
+```
+
+### 2.2 模块职责
+
+| 层 | 包含文件 | 定位 | 是否依赖LLM |
+|----|---------|------|------------|
+| **config/** | settings.py / templates.py / prompts.py | 配置层：所有参数和模板集中管理 | prompts.py（仅响应分类） |
+| **scripts/** | handoff.py / outreach_run.py / check_responses.py / follow_up.py | 业务层：每个脚本对应一个Skill入口 | check_responses.py（模糊场景走LLM） |
+| **tools/** | adspower_api.py / fb_messenger.py / fb_comment.py / response_classifier.py / feishu_reader.py / feishu_writer.py | 能力层：封装外部系统和操作能力 | response_classifier.py（关键词兜底 + LLM兜底） |
+| **skills/** | outreach-handoff/ / outreach-run/ / outreach-followup/ | 入口层：Skill描述，定义触发方式和参数 | 无 |
+
+### 2.3 调用链路
+
+```
+                  ┌──────────────────────────────────┐
+                  │      飞书多维表格（4张表）        │
+                  │  触达用户表 / 话术模板表          │
+                  │  账号管理表 / 触达统计表          │
+                  └──────────┬───────────┬───────────┘
+                             │           │
+              ┌──────────────┘           └──────────────┐
+              │                                          │
+         ┌────▼─────┐                          ┌───────▼───────┐
+         │ handoff  │                          │  outreach_run  │
+         │ 移交脚本  │                          │  触达执行脚本   │
+         └────┬─────┘                          └───────┬───────┘
+              │                                        │
+              │ 读采集表(已验证) → 写入触达表(待触达)     │ 选人→选话术→账号调度→发送
+              │                                        │
+              └────────────┬───────────────────────────┘
+                           │
+                    ┌──────▼──────┐
+                    │ check_responses  │
+                    │ 响应检查 (48h后) │
+                    └──────┬──────┘
+                           │
+                    ┌──────▼──────┐
+                    │  follow_up  │
+                    │  二次触达     │
+                    └─────────────┘
+```
+
+### 2.4 LLM使用范围（最小化原则）
+
+二娃仅在**一处**使用 LLM，且做了两层兜底：
+
+```
+用户回复
+  ↓
+  关键词快速判断（覆盖 60% 明确场景）
+  ├── 命中拒绝词 → 已关闭
+  ├── 命中强兴趣词 → 已响应，发进件链接
+  └── 未命中 → 调 LLM
+        ↓
+        LLM 分类（处理 40% 模糊场景）
+        ├── INTERESTED  → 已响应，发进件链接
+        ├── HESITANT    → 发异议处理模板
+        ├── REJECTED    → 已关闭
+        └── IRRELEVANT  → 不发模板，记录即可
+```
+
+LLM 只做一件事：**四分类**。不生成话术、不做决策、不分析情绪。
+
+---
+
+## 三、数据边界
+
+### 3.1 领地划分
 
 | 领地 | Agent | 操作权限 |
 |------|--------|---------|
@@ -38,7 +202,7 @@
     移交脚本（handoff.py）──────┘
 ```
 
-### 2.2 触达用户表字段（22个）
+### 3.2 触达用户表字段（22个）
 
 #### 继承字段（9个，移交时写入，二娃只读）
 
@@ -84,9 +248,9 @@
 
 ---
 
-## 三、状态机
+## 四、状态机
 
-### 3.1 状态流转图
+### 4.1 状态流转图
 
 ```
 待触达 ──→ 触达中 ──→ 已响应 ──→ 已转化
@@ -101,7 +265,7 @@
         超过N次无响应 ──→ 已关闭
 ```
 
-### 3.2 状态参数（配置化）
+### 4.2 状态参数（配置化）
 
 | 参数 | 值 | 配置字段名 | 说明 |
 |------|-----|-----------|------|
@@ -110,7 +274,7 @@
 | 触达上限 | 3次 | `max_attempts` | 同用户最多触达次数 |
 | 冷却时间 | 24h | `cooldown_hours` | 同用户两次触达间隔 |
 
-### 3.3 时间线示例
+### 4.3 时间线示例
 
 ```
 Day 0     首次触达 → 状态=触达中
@@ -128,7 +292,7 @@ Day 8     48h无响应 → 触达次数=3 ≥ 上限 → 状态=已关闭
 
 最坏情况8天关闭一个用户，不会无限占用资源。
 
-### 3.4 明确拒绝判定
+### 4.4 明确拒绝判定
 
 用户回复包含以下信号直接关闭，不等N次：
 
@@ -138,9 +302,9 @@ Day 8     48h无响应 → 触达次数=3 ≥ 上限 → 状态=已关闭
 
 ---
 
-## 四、通道策略
+## 五、通道策略
 
-### 4.1 通道优先级逻辑
+### 5.1 通道优先级逻辑
 
 ```
 有评论记录？
@@ -158,7 +322,7 @@ Day 8     48h无响应 → 触达次数=3 ≥ 上限 → 状态=已关闭
            └── 否 → 跳过（无可用通道）
 ```
 
-### 4.2 链接策略
+### 5.2 链接策略
 
 | 时机 | 链接 | 原因 |
 |------|------|------|
@@ -166,7 +330,7 @@ Day 8     48h无响应 → 触达次数=3 ≥ 上限 → 状态=已关闭
 | DM用户响应后 | 发 | 已建立对话，不会被拦截 |
 | 评论回复 | 可以发 | 公开场合FB不拦截 |
 
-### 4.3 UTM追踪参数
+### 5.3 UTM追踪参数
 
 ```
 基础链接：https://xxx.com/apply
@@ -182,15 +346,15 @@ Day 8     48h无响应 → 触达次数=3 ≥ 上限 → 状态=已关闭
 
 ---
 
-## 五、选人优先级
+## 六、选人优先级
 
-### 5.1 优先级算法
+### 6.1 优先级算法
 
 ```
 优先级分数 = 意图评分 × 语义权重
 ```
 
-### 5.2 语义权重表
+### 6.2 语义权重表
 
 | 语义标签 | 权重 | 理由 |
 |---------|------|------|
@@ -204,7 +368,7 @@ Day 8     48h无响应 → 触达次数=3 ≥ 上限 → 状态=已关闭
 | 分享/推荐 | 0.5 | 低优先 |
 | 闲聊 | 0.3 | 基本不触达 |
 
-### 5.3 示例计算
+### 6.3 示例计算
 
 | 用户 | 意图评分 | 语义权重 | 优先级分数 | 排序 |
 |------|---------|---------|-----------|------|
@@ -213,7 +377,7 @@ Day 8     48h无响应 → 触达次数=3 ≥ 上限 → 状态=已关闭
 | C | 0.5 | 1.0（咨询中等） | 0.50 | 3 |
 | D | 0.4 | 0.8（求助） | 0.32 | 4 |
 
-### 5.4 时间衰减（暂不加）
+### 6.4 时间衰减（暂不加）
 
 触发条件：待触达队列 > 50人时再加
 
@@ -223,9 +387,9 @@ Day 8     48h无响应 → 触达次数=3 ≥ 上限 → 状态=已关闭
 
 ---
 
-## 六、话术模板
+## 七、话术模板
 
-### 6.1 DM话术模板（按语义标签分多套）
+### 7.1 DM话术模板（按语义标签分多套）
 
 ```python
 # config/templates.py
@@ -350,7 +514,7 @@ TEMPLATES = {
 }
 ```
 
-### 6.2 评论回复话术模板（MVP版本3套通用）
+### 7.2 评论回复话术模板（MVP版本3套通用）
 
 ```python
 COMMENT_TEMPLATES = {
@@ -375,7 +539,7 @@ COMMENT_TEMPLATES = {
 }
 ```
 
-### 6.3 间接意向评论回复
+### 7.3 间接意向评论回复
 
 针对没有直接求购但有潜在意向的评论：
 
@@ -385,7 +549,7 @@ COMMENT_TEMPLATES = {
 | 提到品牌/行业 | "正好看到你提到的这个话题, 我们有更多选择 👉 {链接}" |
 | 吐槽竞品/行业 | "理解你的感受, 这里有替代方案可以看看 👉 {链接}" |
 
-### 6.4 模板变量
+### 7.4 模板变量
 
 | 变量 | 来源 | 用途 |
 |------|------|------|
@@ -394,7 +558,7 @@ COMMENT_TEMPLATES = {
 | `{原始内容}` | 触达表.原始内容（截取前30字） | 证明不是群发 |
 | `{链接}` | UTM生成 | 进件链接 |
 
-### 6.5 轮换逻辑
+### 7.5 轮换逻辑
 
 ```python
 import random
@@ -413,9 +577,9 @@ def pick_template(semantic_label, templates_dict):
 
 ---
 
-## 七、AdsPower集成
+## 八、AdsPower集成
 
-### 7.1 架构分层
+### 8.1 架构分层
 
 | 层级 | 负责方 | 职责 |
 |------|--------|------|
@@ -423,7 +587,7 @@ def pick_template(semantic_label, templates_dict):
 | 操作层 | Playwright | 打开主页 → 点击消息 → 输入 → 发送 → 验证 |
 | 逻辑层 | 二娃脚本 | 选人 → 选账号 → 选话术 → 记录 → 风控 |
 
-### 7.2 AdsPower API能力
+### 8.2 AdsPower API能力
 
 | 能做的 | 不能做的 |
 |--------|---------|
@@ -434,7 +598,7 @@ def pick_template(semantic_label, templates_dict):
 
 **方案：AdsPower管浏览器，Playwright管页面操作。**
 
-### 7.3 发消息流程（7步）
+### 8.3 发消息流程（7步）
 
 ```
 步骤1: 启动浏览器
@@ -465,7 +629,7 @@ def pick_template(semantic_label, templates_dict):
   更新触达表：触达状态=触达中，触达时间=now，触达内容=话术
 ```
 
-### 7.4 评论回复流程
+### 8.4 评论回复流程
 
 ```
 步骤1: 启动浏览器（同DM）
@@ -488,7 +652,7 @@ def pick_template(semantic_label, templates_dict):
 步骤7: 验证 + 记录
 ```
 
-### 7.5 风险点和应对
+### 8.5 风险点和应对
 
 | 风险 | 应对 |
 |------|------|
@@ -500,9 +664,9 @@ def pick_template(semantic_label, templates_dict):
 
 ---
 
-## 八、风控参数
+## 九、风控参数
 
-### 8.1 参数配置
+### 9.1 参数配置
 
 ```python
 # config/settings.py
@@ -531,7 +695,7 @@ ACCOUNTS = [
 ]
 ```
 
-### 8.2 账号轮换逻辑
+### 9.2 账号轮换逻辑
 
 ```python
 def pick_account(accounts):
@@ -558,7 +722,7 @@ def execute_outreach(user, account, template):
     time.sleep(interval)
 ```
 
-### 8.3 冷却控制
+### 9.3 冷却控制
 
 每次触达后，设置冷却截止时间：
 
@@ -571,9 +735,9 @@ cooldown_until = datetime.now() + timedelta(hours=OUTREACH["cooldown_hours"])
 
 ---
 
-## 九、Skill设计
+## 十、Skill设计
 
-### 9.1 Skill清单
+### 10.1 Skill清单
 
 | Skill | 触发命令 | 功能 |
 |-------|---------|------|
@@ -581,7 +745,7 @@ cooldown_until = datetime.now() + timedelta(hours=OUTREACH["cooldown_hours"])
 | outreach-run | `#outreach-run` | 执行触达（选人 → 发消息） |
 | outreach-followup | `#outreach-followup` | 检查响应 + 二次触达 |
 
-### 9.2 触发方式（MVP阶段）
+### 10.2 触发方式（MVP阶段）
 
 | Skill | 触发方式 | 时机 |
 |-------|---------|------|
@@ -594,7 +758,7 @@ cooldown_until = datetime.now() + timedelta(hours=OUTREACH["cooldown_hours"])
 - 每日待触达 > 30人
 - AdsPower登录状态能保持24h+
 
-### 9.3 并发控制
+### 10.3 并发控制
 
 用文件锁防止重复触发：
 
@@ -625,15 +789,15 @@ finally:
 
 ---
 
-## 十、与大娃的接口约定
+## 十一、与大娃的接口约定
 
-### 10.1 移交条件
+### 11.1 移交条件
 
 ```
 采集用户表.状态 = "已验证"
 ```
 
-### 10.2 移交字段
+### 11.2 移交字段
 
 | 字段 | 说明 |
 |------|------|
@@ -647,7 +811,7 @@ finally:
 | 原始内容 | — |
 | 采集记录ID | — |
 
-### 10.3 移交后处理
+### 11.3 移交后处理
 
 ```
 采集用户表.状态 → "已移交"（大娃不再处理）
@@ -655,7 +819,7 @@ finally:
 
 ---
 
-## 十一、度量指标
+## 十二、度量指标
 
 | 指标 | 公式 | 目标值 |
 |------|------|--------|
@@ -666,7 +830,7 @@ finally:
 
 ---
 
-## 十二、文件结构
+## 十三、文件结构
 
 ```
 outreach_agent_v1.0/
@@ -700,7 +864,7 @@ outreach_agent_v1.0/
 
 ---
 
-## 十三、后续迭代计划
+## 十四、后续迭代计划
 
 | 版本 | 新功能 | 触发条件 |
 |------|--------|---------|
