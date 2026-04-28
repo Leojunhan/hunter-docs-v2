@@ -830,41 +830,7 @@ finally:
 
 ---
 
-## 十三、文件结构
-
-```
-outreach_agent_v1.0/
-├── config/
-│   ├── settings.py          # 配置参数（风控、状态机、链接）
-│   └── templates.py         # 话术模板库
-│
-├── scripts/
-│   ├── handoff.py           # 移交脚本（采集表 → 触达表）
-│   ├── outreach_run.py      # 主流程（选人 → 选策略 → 执行）
-│   ├── check_responses.py   # 检查用户响应
-│   └── follow_up.py         # 二次触达
-│
-├── tools/
-│   ├── fb_messenger.py      # FB DM发送（Playwright）
-│   ├── fb_comment.py        # 评论回复（Playwright）
-│   ├── feishu_reader.py     # 读触达表
-│   ├── feishu_writer.py     # 写触达表
-│   └── adspower_api.py      # AdsPower API封装
-│
-├── knowledge/
-│   └── templates/           # 话术模板（按语义标签分类）
-│
-├── data/
-│   ├── .outreach_run.lock   # 文件锁
-│   ├── .outreach_handoff.lock
-│   └── .outreach_followup.lock
-│
-└── .env                     # 飞书API密钥等
-```
-
----
-
-## 十四、后续迭代计划
+## 十三、后续迭代计划
 
 | 版本 | 新功能 | 触发条件 |
 |------|--------|---------|
@@ -875,5 +841,21 @@ outreach_agent_v1.0/
 | v1.5 | 间接意向自动识别 | 有间接意向评论数据积累 |
 
 ---
+
+---
+
+## 十四、提示词设计
+
+> 📝 **提示词待补充**
+>
+> 此章节用于记录二娃使用的LLM提示词。
+>
+> 计划包含：
+> - 响应分类提示词（RESPONSE_CLASSIFIER_PROMPT，四分类）
+> - 异议处理辅助提示词（HESITANT用户场景）
+> - 用户意图重分类提示词（模糊场景LLM兜底）
+> - 评论内容相关性判断提示词
+>
+> *Diwei 后续补充具体内容*
 
 **文档完成。**

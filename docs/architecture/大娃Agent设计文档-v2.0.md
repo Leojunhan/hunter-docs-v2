@@ -688,41 +688,7 @@ ADSPOWER_PROFILE_ID=xxx
 
 ---
 
-## 十五、文件结构
-
-```
-intelligence_agent_v1.0/
-├── config/
-│   └── settings.py              # 统一配置（飞书/AdsPower）
-│
-├── scripts/
-│   ├── hunter_run.py            # 一键采集（主流程）
-│   ├── clean_collected_data.py  # 基础清洗 + 意图分类 + 语义识别
-│   ├── deep_clean.py            # 深度清洗 v2.0（18项检查）
-│   ├── verify_users.py          # 用户验证（僵尸检测）
-│   ├── clean_kol_v2.py          # KOL 清洗 v2.0
-│   ├── audit_kol_data.py        # KOL 数据审计
-│   ├── sync_status.py           # 状态同步
-│   ├── add_new_kols.py          # KOL 新增
-│   ├── mark_kol_priority.py     # 贷款优先级标记
-│   ├── count_kols.py            # KOL 统计
-│   ├── resolve_kol_urls.py      # KOL URL 解析
-│   ├── fb_login.py              # Cookie 登录
-│   └── fb_cookie_refresh.py     # Cookie 刷新
-│
-├── tools/
-│   ├── fb_user_id_extractor.py  # FB 用户 ID 提取
-│   ├── feishu_cli.py            # 飞书 CLI
-│   └── feishu_updater.py        # 飞书更新
-│
-├── knowledge/                   # 知识库
-├── data/                        # 数据文件（Cookie/缓存）
-└── .env                         # 凭证（不入库）
-```
-
----
-
-## 十六、度量指标
+## 十五、度量指标
 
 | 指标 | 公式 | 当前值 |
 |------|------|--------|
@@ -749,7 +715,24 @@ intelligence_agent_v1.0/
 
 ---
 
-## 十七、后续迭代计划
+## 十六、后续迭代计划
+
+---
+
+## 十七、提示词设计
+
+> 📝 **提示词待补充**
+>
+> 此章节用于记录大娃各Skill和流程中使用的LLM提示词。
+>
+> 计划包含：
+> - 意图分类提示词
+> - 语义识别提示词
+> - 僵尸检测复核提示词（人工复核辅助）
+> - 清洗流程中的LLM兜底提示词
+> - KOL清洗辅助判断提示词
+>
+> *Diwei 后续补充具体内容*
 
 | 版本 | 新功能 | 触发条件 |
 |------|--------|---------|
