@@ -469,12 +469,12 @@
             <div class="filter-item active" data-agent="dawa">
                 <div class="filter-color color-dawa">🤖</div>
                 <label>大娃Agent</label>
-                <span class="count">9</span>
+                <span class="count">8</span>
             </div>
             <div class="filter-item active" data-agent="erwa">
                 <div class="filter-color color-erwa">🤖</div>
                 <label>二娃Agent</label>
-                <span class="count">3</span>
+                <span class="count">4</span>
             </div>
             <div class="filter-item active" data-agent="shared">
                 <div class="filter-color color-shared">共用</div>
@@ -513,14 +513,15 @@
                 <span>二娃Agent - 触达域</span>
             </div>
             <div class="agent-list">
-                触达用户、触达策略、触达记录
+                触达用户、触达策略、触达记录、获客结果
             </div>
             <div class="agent-item" style="margin-top: 12px;">
                 <div class="agent-dot color-shared">共用</div>
                 <span>共用资源 - 账号/IP</span>
             </div>
             <div class="agent-list">
-                自媒体账号矩阵、IP矩阵
+                账号矩阵、IP矩阵<br/>
+                <span style="color: #f39c12;">大娃爬取使用 + </span><span style="color: #27ae60;">二娃触达使用</span>
             </div>
             <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #e1e5e9;">
                 <div style="font-size: 11px; color: #e74c3c; font-weight: 500;">
@@ -574,7 +575,7 @@
             { id: "verify_strategy", name: "验证策略", agent: "dawa", description: "自动验证", icon: "✓", properties: { 定义: "verify_users.py", 作用: "验证用户真实性", 方式: "浏览器访问主页评估活跃度", 负责: "大娃Agent" } },
             { id: "dig_strategy", name: "挖掘策略", agent: "dawa", description: "统一策略", icon: "⛏", properties: { 定义: "发现目标的顶层策略", 包含: "采集、清洗、加工（现阶段统一）", 输出: "结构化输出", 负责: "大娃Agent" } },
             { id: "struct_output", name: "结构化输出", agent: "dawa", description: "能力+结果", icon: "📊", properties: { 定义: "挖掘策略的输出", 形态: "用户画像、数据产品", 作用: "数据产品化", 负责: "大娃Agent" } },
-            { id: "traffic", name: "流量", agent: "dawa", description: "业务结果", icon: "📈", properties: { 定义: "最终业务目标", 作用: "获客转化的结果（归因到KOL）", 注意: "由触达用户转化产生" } },
+            { id: "traffic", name: "获客结果", agent: "erwa", description: "业务产出", icon: "🎉", properties: { 定义: "成功转化的客户，业务最终产出", 来源: "由触达用户转化产生", 归因: "可追溯到来源KOL和帖子", 负责: "二娃Agent（触达域产出）" } },
             
             // 二娃Agent负责 - 触达域 (绿色)
             { id: "touch_user", name: "触达用户", agent: "erwa", description: "触达域", icon: "🎯", properties: { 状态: "已分配 → 已触达 → 已转化 → 已关闭", 属性: "信任度、归因", 负责Agent: "二娃", 阶段: "触达域", 来源: "由采集用户转化" } },
@@ -582,8 +583,8 @@
             { id: "touch_record", name: "触达记录", agent: "erwa", description: "执行记录", icon: "📋", properties: { 定义: "每次触达动作", 包含: "触达用户ID、执行账号、执行时间、话术内容", 属性: "效果（是否回复、是否转化）", 负责: "二娃Agent" } },
             
             // 共用资源 (蓝色)
-            { id: "account_matrix", name: "账号矩阵", agent: "shared", description: "账号资源", icon: "📱", properties: { 定义: "具体的社媒账号资源", 用途: "触达时使用的账号", 包含: "小红书账号、抖音账号等", 使用者: "二娃Agent调用" } },
-            { id: "ip_matrix", name: "IP矩阵", agent: "shared", description: "网络IP", icon: "🌐", properties: { 定义: "网络IP资源", 用途: "触达时绑定的IP", 作用: "防止账号被封", 使用者: "二娃Agent调用" } }
+            { id: "account_matrix", name: "账号矩阵", agent: "shared", description: "账号资源", icon: "📱", properties: { 定义: "具体的社媒账号资源", 用途: "爬取+触达都需要使用", 包含: "小红书账号、抖音账号等", 使用者: "大娃爬取 + 二娃触达" } },
+            { id: "ip_matrix", name: "IP矩阵", agent: "shared", description: "网络IP", icon: "🌐", properties: { 定义: "网络IP资源", 用途: "爬取+触达都需要绑定", 作用: "防止账号被封，模拟真实用户", 使用者: "大娃爬取 + 二娃触达" } }
         ];
         
         // 关系数据
@@ -604,7 +605,7 @@
             { source: "touch_strategy", target: "touch_user", label: "执行", agent: "erwa" },
             { source: "touch_user", target: "touch_record", label: "产生", agent: "erwa" },
             { source: "touch_user", target: "traffic", label: "转化", agent: "erwa" },
-            { source: "touch_user", target: "kol", label: "归因", agent: "erwa" }
+            { source: "traffic", target: "kol", label: "归因来源", agent: "erwa" }
         ];
         
         // Agent颜色映射
