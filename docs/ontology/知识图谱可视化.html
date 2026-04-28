@@ -6,12 +6,7 @@
     <title>本体论 · 自媒体流量获客截留业务 · 知识图谱</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
             background: #f5f7fa;
@@ -19,7 +14,6 @@
             overflow: hidden;
         }
         
-        /* 左侧工具栏 */
         .sidebar {
             position: fixed;
             left: 0;
@@ -34,24 +28,10 @@
             box-shadow: 2px 0 8px rgba(0,0,0,0.05);
         }
         
-        .sidebar h1 {
-            font-size: 20px;
-            color: #2c3e50;
-            margin-bottom: 4px;
-            font-weight: 600;
-        }
+        .sidebar h1 { font-size: 20px; color: #2c3e50; margin-bottom: 4px; font-weight: 600; }
+        .sidebar .subtitle { font-size: 13px; color: #7f8c8d; margin-bottom: 24px; }
         
-        .sidebar .subtitle {
-            font-size: 13px;
-            color: #7f8c8d;
-            margin-bottom: 24px;
-        }
-        
-        /* 搜索框 */
-        .search-box {
-            margin-bottom: 24px;
-        }
-        
+        .search-box { margin-bottom: 24px; }
         .search-box input {
             width: 100%;
             padding: 12px 16px;
@@ -62,7 +42,6 @@
             font-size: 14px;
             transition: all 0.3s;
         }
-        
         .search-box input:focus {
             outline: none;
             border-color: #3498db;
@@ -70,21 +49,14 @@
             box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
         }
         
-        /* 分组 */
-        .section {
-            margin-bottom: 24px;
-        }
+        .section { margin-bottom: 24px; }
+        .section h3 { font-size: 12px; color: #7f8c8d; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; font-weight: 500; }
         
-        .section h3 {
-            font-size: 12px;
-            color: #7f8c8d;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 12px;
-            font-weight: 500;
-        }
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 24px; }
+        .stat-card { background: #f8f9fa; padding: 12px; border-radius: 8px; text-align: center; }
+        .stat-card .stat-number { font-size: 20px; font-weight: 600; color: #2c3e50; }
+        .stat-card .stat-label { font-size: 11px; color: #7f8c8d; margin-top: 2px; }
         
-        /* 实体类型筛选 */
         .filter-item {
             display: flex;
             align-items: center;
@@ -94,15 +66,8 @@
             cursor: pointer;
             transition: background 0.2s;
         }
-        
-        .filter-item:hover {
-            background: #f8f9fa;
-        }
-        
-        .filter-item.active {
-            background: #f8f9fa;
-        }
-        
+        .filter-item:hover { background: #f8f9fa; }
+        .filter-item.active { background: #f8f9fa; }
         .filter-color {
             width: 24px;
             height: 24px;
@@ -115,23 +80,9 @@
             color: #fff;
             border: 2px solid rgba(0,0,0,0.1);
         }
+        .filter-item label { font-size: 14px; color: #2c3e50; cursor: pointer; }
+        .filter-item .count { margin-left: auto; font-size: 12px; color: #7f8c8d; background: #f0f0f0; padding: 2px 8px; border-radius: 10px; }
         
-        .filter-item label {
-            font-size: 14px;
-            color: #2c3e50;
-            cursor: pointer;
-        }
-        
-        .filter-item .count {
-            margin-left: auto;
-            font-size: 12px;
-            color: #7f8c8d;
-            background: #f0f0f0;
-            padding: 2px 8px;
-            border-radius: 10px;
-        }
-        
-        /* 操作按钮 */
         .action-btn {
             width: 100%;
             padding: 12px 16px;
@@ -148,24 +99,12 @@
             justify-content: center;
             gap: 8px;
         }
+        .action-btn:hover { background: #3498db; border-color: #3498db; color: #ffffff; }
+        .action-btn.primary { background: #3498db; border-color: #3498db; color: #ffffff; }
+        .action-btn.primary:hover { background: #2980b9; }
         
-        .action-btn:hover {
-            background: #3498db;
-            border-color: #3498db;
-            color: #ffffff;
-        }
+        .layer-info { font-size: 11px; color: #7f8c8d; margin-top: 8px; line-height: 1.5; }
         
-        .action-btn.primary {
-            background: #3498db;
-            border-color: #3498db;
-            color: #ffffff;
-        }
-        
-        .action-btn.primary:hover {
-            background: #2980b9;
-        }
-        
-        /* 节点详情面板 */
         .node-detail {
             position: fixed;
             right: 24px;
@@ -181,17 +120,8 @@
             overflow-y: auto;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
-        
-        .node-detail.active {
-            display: block;
-        }
-        
-        .node-detail-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
+        .node-detail.active { display: block; }
+        .node-detail-header { display: flex; align-items: center; margin-bottom: 20px; }
         .node-detail-icon {
             width: 48px;
             height: 48px;
@@ -203,22 +133,8 @@
             font-size: 20px;
             color: #fff;
         }
-        
-        .node-detail h2 {
-            font-size: 18px;
-            color: #2c3e50;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        
-        .node-detail .type-tag {
-            font-size: 12px;
-            color: #7f8c8d;
-            padding: 4px 12px;
-            background: #f0f0f0;
-            border-radius: 12px;
-        }
-        
+        .node-detail h2 { font-size: 18px; color: #2c3e50; font-weight: 600; margin-bottom: 4px; }
+        .node-detail .type-tag { font-size: 12px; color: #7f8c8d; padding: 4px 12px; background: #f0f0f0; border-radius: 12px; }
         .node-detail .close-btn {
             position: absolute;
             top: 20px;
@@ -236,46 +152,12 @@
             justify-content: center;
             transition: all 0.2s;
         }
-        
-        .node-detail .close-btn:hover {
-            background: #f0f0f0;
-            color: #e74c3c;
-        }
-        
-        .node-detail .property-group {
-            margin-bottom: 16px;
-        }
-        
-        .node-detail .property-label {
-            font-size: 11px;
-            color: #7f8c8d;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 6px;
-        }
-        
-        .node-detail .property-value {
-            font-size: 14px;
-            color: #2c3e50;
-            padding: 10px 14px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            line-height: 1.5;
-        }
-        
-        .node-detail .relations-section {
-            margin-top: 24px;
-            padding-top: 20px;
-            border-top: 1px solid #e1e5e9;
-        }
-        
-        .node-detail .relations-section h3 {
-            font-size: 14px;
-            color: #2c3e50;
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-        
+        .node-detail .close-btn:hover { background: #f0f0f0; color: #e74c3c; }
+        .node-detail .property-group { margin-bottom: 16px; }
+        .node-detail .property-label { font-size: 11px; color: #7f8c8d; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+        .node-detail .property-value { font-size: 14px; color: #2c3e50; padding: 10px 14px; background: #f8f9fa; border-radius: 8px; line-height: 1.5; }
+        .node-detail .relations-section { margin-top: 24px; padding-top: 20px; border-top: 1px solid #e1e5e9; }
+        .node-detail .relations-section h3 { font-size: 14px; color: #2c3e50; font-weight: 600; margin-bottom: 12px; }
         .node-detail .relation-item {
             display: flex;
             align-items: center;
@@ -286,64 +168,19 @@
             cursor: pointer;
             transition: all 0.2s;
         }
+        .node-detail .relation-item:hover { background: #3498db; color: #ffffff; }
+        .node-detail .relation-arrow { margin-right: 8px; font-size: 12px; }
         
-        .node-detail .relation-item:hover {
-            background: #3498db;
-            color: #ffffff;
-        }
+        .visualization { position: fixed; left: 260px; top: 0; right: 0; bottom: 0; }
         
-        .node-detail .relation-arrow {
-            margin-right: 8px;
-            font-size: 12px;
-        }
+        .link { fill: none; stroke: #95a5a6; stroke-width: 2; stroke-opacity: 0.5; }
+        .link.highlighted { stroke: #3498db; stroke-width: 3; stroke-opacity: 1; }
+        .link-label-bg { fill: #ffffff; stroke: #e1e5e9; stroke-width: 1; }
+        .link-label { font-size: 11px; fill: #5a6c7d; pointer-events: none; }
         
-        /* 主可视化区域 */
-        .visualization {
-            position: fixed;
-            left: 260px;
-            top: 0;
-            right: 0;
-            bottom: 0;
-        }
+        .node-circle { cursor: pointer; }
+        .node-bg { transition: stroke-width 0.2s, stroke 0.2s; }
         
-        /* 圆形节点样式 */
-        .node-circle {
-            cursor: pointer;
-        }
-        
-        /* 连线样式 */
-        .link {
-            fill: none;
-            stroke: #95a5a6;
-            stroke-width: 2;
-            stroke-opacity: 0.5;
-        }
-        
-        .link.highlighted {
-            stroke: #3498db;
-            stroke-width: 3;
-            stroke-opacity: 1;
-        }
-        
-        /* 连线标签背景 */
-        .link-label-bg {
-            fill: #ffffff;
-            stroke: #e1e5e9;
-            stroke-width: 1;
-        }
-        
-        .link-label {
-            font-size: 11px;
-            fill: #5a6c7d;
-            pointer-events: none;
-        }
-        
-        /* 节点圆形 */
-        .node-bg {
-            transition: stroke-width 0.2s, stroke 0.2s;
-        }
-        
-        /* 底部提示 */
         .tip-bar {
             position: fixed;
             bottom: 24px;
@@ -359,122 +196,65 @@
             color: #7f8c8d;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
+        .tip-bar .tip-item { display: flex; align-items: center; gap: 6px; }
         
-        .tip-bar .tip-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+        .color-dawa { background: #f39c12; }
+        .color-erwa { background: #27ae60; }
+        .color-shared { background: #3498db; }
         
-        /* 统计卡片 */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            margin-bottom: 24px;
-        }
-        
-        .stat-card {
-            background: #f8f9fa;
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-        }
-        
-        .stat-card .stat-number {
-            font-size: 20px;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-        
-        .stat-card .stat-label {
-            font-size: 11px;
-            color: #7f8c8d;
-            margin-top: 2px;
-        }
-        
-        /* Agent颜色方案 */
-        .color-dawa { background: #f39c12; }  /* 大娃 - 橙色 */
-        .color-erwa { background: #27ae60; }  /* 二娃 - 绿色 */
-        .color-shared { background: #3498db; }  /* 共用资源 - 蓝色 */
-        
-        /* Agent说明区块 */
-        .agent-section {
-            margin-top: 24px;
-            padding: 16px;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-        
-        .agent-section h4 {
-            font-size: 12px;
-            color: #2c3e50;
-            margin-bottom: 12px;
-            font-weight: 600;
-        }
-        
-        .agent-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-            font-size: 11px;
-            color: #7f8c8d;
-        }
-        
-        .agent-dot {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            margin-right: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-size: 8px;
-        }
-        
-        .agent-list {
-            margin-top: 4px;
-            font-size: 10px;
-            color: #95a5a6;
-        }
+        .agent-section { margin-top: 24px; padding: 16px; background: #f8f9fa; border-radius: 8px; }
+        .agent-section h4 { font-size: 12px; color: #2c3e50; margin-bottom: 12px; font-weight: 600; }
+        .agent-item { display: flex; align-items: center; margin-bottom: 8px; font-size: 11px; color: #7f8c8d; }
+        .agent-dot { width: 16px; height: 16px; border-radius: 50%; margin-right: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 8px; }
+        .agent-list { margin-top: 4px; font-size: 10px; color: #95a5a6; }
     </style>
 </head>
 <body>
-    <!-- 左侧工具栏 -->
     <div class="sidebar">
         <h1>本体论知识图谱</h1>
         <p class="subtitle">自媒体流量获客截留业务</p>
         
-        <!-- 统计 -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-number">14</div>
+                <div class="stat-number" id="nodeCount">18</div>
                 <div class="stat-label">实体</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">17</div>
+                <div class="stat-number" id="linkCount">26</div>
                 <div class="stat-label">关系</div>
             </div>
         </div>
+        <div style="font-size:11px;color:#95a5a6;margin-bottom:16px;padding:8px;background:#f8f9fa;border-radius:6px;">
+            概念层：18实体 + 26关系<br/>
+            脚本层：9实体 + 18关系（点击展开）
+        </div>
         
-        <!-- 搜索 -->
         <div class="search-box">
             <input type="text" id="searchInput" placeholder="搜索实体..." />
         </div>
         
-        <!-- Agent筛选 -->
+        <div class="section">
+            <h3>显示层级</h3>
+            <button class="action-btn" id="toggleScriptBtn" onclick="toggleScriptLayer()">
+                <span>⚙</span> 显示脚本层
+            </button>
+            <div class="layer-info">
+                概念层：实体 + 策略 + 资源<br/>
+                脚本层：具体实现脚本（点击展开）
+            </div>
+        </div>
+        
         <div class="section">
             <h3>Agent负责领域</h3>
             <div class="filter-item active" data-agent="dawa">
                 <div class="filter-color color-dawa">🤖</div>
                 <label>大娃Agent</label>
-                <span class="count">8</span>
+                <span class="count" id="dawaCount">8</span>
             </div>
             <div class="filter-item active" data-agent="erwa">
                 <div class="filter-color color-erwa">🤖</div>
                 <label>二娃Agent</label>
-                <span class="count">4</span>
+                <span class="count" id="erwaCount">4</span>
             </div>
             <div class="filter-item active" data-agent="shared">
                 <div class="filter-color color-shared">共用</div>
@@ -483,7 +263,6 @@
             </div>
         </div>
         
-        <!-- 操作 -->
         <div class="section">
             <h3>操作</h3>
             <button class="action-btn primary" onclick="resetView()">
@@ -497,22 +276,22 @@
             </button>
         </div>
         
-        <!-- Agent说明 -->
         <div class="agent-section">
             <h4>Agent职责边界</h4>
             <div class="agent-item">
                 <div class="agent-dot color-dawa">🤖</div>
                 <span>大娃Agent - 挖掘域</span>
             </div>
-            <div class="agent-list">
-                KOL、帖子、评论行为、评论内容<br/>
+            <div class="agent-list" id="dawaList">
+                KOL、帖子、用户、评论行为、评论内容<br/>
+                意图评分、意图状态、语义标签<br/>
                 采集用户、验证策略、挖掘策略、结构化输出
             </div>
             <div class="agent-item" style="margin-top: 12px;">
                 <div class="agent-dot color-erwa">🤖</div>
                 <span>二娃Agent - 触达域</span>
             </div>
-            <div class="agent-list">
+            <div class="agent-list" id="erwaList">
                 触达用户、触达策略、触达记录、获客结果
             </div>
             <div class="agent-item" style="margin-top: 12px;">
@@ -525,16 +304,13 @@
             </div>
             <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #e1e5e9;">
                 <div style="font-size: 11px; color: #e74c3c; font-weight: 500;">
-                    🔄 边界：采集用户 → 触达用户
-                </div>
-                <div style="font-size: 10px; color: #95a5a6; margin-top: 4px;">
-                    已验证的采集用户转化为触达用户
+                    🔄 边界：采集用户 → 触达用户<br/>
+                    🔄 边界：语义标签 → 触达用户（上下文）
                 </div>
             </div>
         </div>
     </div>
     
-    <!-- 节点详情面板 -->
     <div class="node-detail" id="nodeDetail">
         <button class="close-btn" onclick="closeDetail()">×</button>
         <div class="node-detail-header">
@@ -547,476 +323,509 @@
         <div id="detailContent"></div>
     </div>
     
-    <!-- 主可视化区域 -->
     <div class="visualization" id="visualization"></div>
     
-    <!-- 底部提示 -->
     <div class="tip-bar">
         <div class="tip-item">
-            <span>🤖</span> 橙色=大娃 · 绿色=二娃
+            <span>🤖</span> 橙色=大娃 · 绿色=二娃 · 蓝色=共用
+        </div>
+        <div class="tip-item">
+            <span>⚙</span> 点击"显示脚本层"查看实现细节
         </div>
         <div class="tip-item">
             <span>🖱️</span> 拖拽移动 · 滚轮缩放
         </div>
-        <div class="tip-item">
-            <span>👆</span> 点击查看详情
-        </div>
     </div>
     
     <script>
-        // 实体数据 - 按Agent负责分类
-        const nodes = [
+        // ==================== 数据定义 ====================
+        
+        // 全部节点数据
+        const allNodes = [
             // 大娃Agent负责 - 挖掘域 (橙色)
-            { id: "kol", name: "KOL", agent: "dawa", size: 50, description: "流量源头", icon: "📢", properties: { 定义: "意见领袖，拥有粉丝和影响力", 作用: "流量来源，帖子的发布者", 负责: "大娃Agent" } },
-            { id: "post", name: "帖子", agent: "dawa", size: 50, description: "内容载体", icon: "📝", properties: { 定义: "KOL发布的内容", 作用: "承载评论，发现用户的入口", 负责: "大娃Agent" } },
-            { id: "comment_act", name: "评论行为", agent: "dawa", size: 45, description: "消费行为", icon: "💬", properties: { 定义: "用户对帖子的评论行为", 包含: "谁、何时、对哪个帖子", 负责: "大娃Agent" } },
-            { id: "comment_content", name: "评论内容", agent: "dawa", size: 50, description: "行为结果", icon: "📄", properties: { 定义: "评论的具体内容", 属性: "意图评分、意图状态、语义标签", 作用: "分析用户意图的基础", 负责: "大娃Agent" } },
-            { id: "collect_user", name: "采集用户", agent: "dawa", size: 60, description: "挖掘域", icon: "👤", properties: { 状态: "待清洗 → 待分配 → 已验证 → 待人工 → 已过滤", 属性: "契合度", 负责Agent: "大娃", 阶段: "挖掘域", 边界: "已验证后转化为触达用户" } },
-            { id: "verify_strategy", name: "验证策略", agent: "dawa", size: 50, description: "自动验证", icon: "✓", properties: { 定义: "verify_users.py", 作用: "验证用户真实性", 方式: "浏览器访问主页评估活跃度", 负责: "大娃Agent" } },
-            { id: "dig_strategy", name: "挖掘策略", agent: "dawa", size: 55, description: "统一策略", icon: "⛏", properties: { 定义: "发现目标的顶层策略", 包含: "采集、清洗、加工（现阶段统一）", 输出: "结构化输出", 负责: "大娃Agent" } },
-            { id: "struct_output", name: "结构化输出", agent: "dawa", size: 45, description: "能力+结果", icon: "📊", properties: { 定义: "挖掘策略的输出", 形态: "用户画像、数据产品", 作用: "数据产品化", 负责: "大娃Agent" } },
+            { id: "kol", name: "KOL", agent: "dawa", size: 50, layer: "concept", description: "流量源头", icon: "📢", properties: { 定义: "意见领袖，拥有粉丝和影响力", 作用: "流量来源，帖子的发布者", 负责: "大娃Agent" } },
+            { id: "post", name: "帖子", agent: "dawa", size: 50, layer: "concept", description: "内容载体", icon: "📝", properties: { 定义: "KOL发布的内容", 作用: "承载评论，发现用户的入口", 负责: "大娃Agent" } },
+            { id: "user", name: "用户", agent: "dawa", size: 40, layer: "concept", description: "评论发起者", icon: "👤", properties: { 定义: "发布评论的人，潜在获客对象", 角色: "评论行为的发起者", 注意: "不是核心业务对象，而是行为主体" } },
+            { id: "comment_act", name: "评论行为", agent: "dawa", size: 45, layer: "concept", description: "消费行为", icon: "💬", properties: { 定义: "用户对帖子的评论行为", 包含: "谁、何时、对哪个帖子", 负责: "大娃Agent" } },
+            { id: "comment_content", name: "评论内容", agent: "dawa", size: 50, layer: "concept", description: "行为结果", icon: "📄", properties: { 定义: "评论的具体内容", 产出: "意图评分、意图状态、语义标签", 负责: "大娃Agent" } },
+            { id: "intent_score", name: "意图评分", agent: "dawa", size: 38, layer: "concept", description: "意向强度", icon: "📊", properties: { 定义: "评论内容的意图强度评分", 计算: "关键词加权 + 有联系方式+0.3", 范围: "0-1.0", 映射: "约等于契合度" } },
+            { id: "intent_status", name: "意图状态", agent: "dawa", size: 38, layer: "concept", description: "状态判定", icon: "🏷", properties: { 定义: "意图分类后的状态判定", 值: "待分配/待观察/已过滤", 依据: "评分阈值" } },
+            { id: "semantic_tag", name: "语义标签", agent: "dawa", size: 38, layer: "concept", description: "行为描述", icon: "🏷", properties: { 定义: "语义识别输出的行为标签", 组成: "行为意图 + 情绪强度 + 语言", 示例: "投诉 | 强烈 | ES" } },
+            { id: "collect_user", name: "采集用户", agent: "dawa", size: 60, layer: "concept", description: "挖掘域核心", icon: "👤", properties: { 状态: "待清洗 → 待分配 → 已验证 → 待人工 → 已过滤", 属性: "契合度（≈意图评分）", 负责Agent: "大娃", 边界: "已验证后转化为触达用户" } },
+            { id: "verify_strategy", name: "验证策略", agent: "dawa", size: 50, layer: "concept", description: "自动验证", icon: "✓", properties: { 定义: "验证用户真实性的策略", 方式: "浏览器访问主页评估活跃度", 负责: "大娃Agent" } },
+            { id: "dig_strategy", name: "挖掘策略", agent: "dawa", size: 55, layer: "concept", description: "统一策略", icon: "⛏", properties: { 定义: "发现目标的顶层策略", 包含: "采集、清洗、加工", 负责: "大娃Agent" } },
+            { id: "struct_output", name: "结构化输出", agent: "dawa", size: 45, layer: "concept", description: "能力+结果", icon: "📊", properties: { 定义: "挖掘策略的输出", 形态: "用户画像、数据产品", 负责: "大娃Agent" } },
             
             // 二娃Agent负责 - 触达域 (绿色)
-            { id: "traffic", name: "获客结果", agent: "erwa", size: 60, description: "业务产出", icon: "🎉", properties: { 定义: "成功转化的客户，业务最终产出", 来源: "由触达用户转化产生", 归因: "可追溯到来源KOL和帖子", 负责: "二娃Agent（触达域产出）" } },
-            { id: "touch_user", name: "触达用户", agent: "erwa", size: 60, description: "触达域", icon: "🎯", properties: { 状态: "已分配 → 已触达 → 已转化 → 已关闭", 属性: "信任度、归因", 负责Agent: "二娃", 阶段: "触达域", 来源: "由采集用户转化" } },
-            { id: "touch_strategy", name: "触达策略", agent: "erwa", size: 55, description: "触达方式", icon: "🎬", properties: { 定义: "触达用户的策略方式", 包含: "账号绑定、IP绑定、话术、时机、行为方式、人设", MVP阶段: "与剧本合一", 负责: "二娃Agent" } },
-            { id: "touch_record", name: "触达记录", agent: "erwa", size: 45, description: "执行记录", icon: "📋", properties: { 定义: "每次触达动作", 包含: "触达用户ID、执行账号、执行时间、话术内容", 属性: "效果（是否回复、是否转化）", 负责: "二娃Agent" } },
+            { id: "traffic", name: "获客结果", agent: "erwa", size: 60, layer: "concept", description: "业务产出", icon: "🎉", properties: { 定义: "成功转化的客户", 来源: "由触达用户转化产生", 负责: "二娃Agent" } },
+            { id: "touch_user", name: "触达用户", agent: "erwa", size: 60, layer: "concept", description: "触达域核心", icon: "🎯", properties: { 状态: "已分配 → 已触达 → 已转化 → 已关闭", 属性: "信任度、归因", 负责Agent: "二娃" } },
+            { id: "touch_strategy", name: "触达策略", agent: "erwa", size: 55, layer: "concept", description: "触达方式", icon: "🎬", properties: { 定义: "触达用户的策略方式", 包含: "账号绑定、IP绑定、话术、时机", 负责: "二娃Agent" } },
+            { id: "touch_record", name: "触达记录", agent: "erwa", size: 45, layer: "concept", description: "执行记录", icon: "📋", properties: { 定义: "每次触达动作的记录", 属性: "效果（是否回复、是否转化）", 负责: "二娃Agent" } },
             
             // 共用资源 (蓝色)
-            { id: "account_matrix", name: "账号矩阵", agent: "shared", size: 40, description: "账号资源", icon: "📱", properties: { 定义: "具体的社媒账号资源", 用途: "爬取+触达都需要使用", 包含: "小红书账号、抖音账号等", 使用者: "大娃爬取 + 二娃触达" } },
-            { id: "ip_matrix", name: "IP矩阵", agent: "shared", size: 40, description: "网络IP", icon: "🌐", properties: { 定义: "网络IP资源", 用途: "爬取+触达都需要绑定", 作用: "防止账号被封，模拟真实用户", 使用者: "大娃爬取 + 二娃触达" } }
+            { id: "account_matrix", name: "账号矩阵", agent: "shared", size: 40, layer: "resource", description: "账号资源", icon: "📱", properties: { 定义: "具体的社媒账号资源", 使用者: "大娃爬取 + 二娃触达" } },
+            { id: "ip_matrix", name: "IP矩阵", agent: "shared", size: 40, layer: "resource", description: "网络IP", icon: "🌐", properties: { 定义: "网络IP资源", 使用者: "大娃爬取 + 二娃触达" } },
+            
+            // 大娃脚本层
+            { id: "kol_crawler", name: "kol_crawler.py", agent: "dawa", size: 35, layer: "script", description: "爬取脚本", icon: "⚙", properties: { 功能: "爬取KOL帖子内容", 使用: "账号矩阵 + IP矩阵" } },
+            { id: "comment_parser", name: "comment_parser.py", agent: "dawa", size: 35, layer: "script", description: "解析脚本", icon: "⚙", properties: { 功能: "解析评论行为和内容" } },
+            { id: "intent_classifier", name: "intent_classifier.py", agent: "dawa", size: 35, layer: "script", description: "分类脚本", icon: "⚙", properties: { 功能: "意图分类，分析用户需求" } },
+            { id: "verify_script", name: "verify_users.py", agent: "dawa", size: 35, layer: "script", description: "验证脚本", icon: "⚙", properties: { 功能: "验证用户真实性" } },
+            { id: "user_processor", name: "user_processor.py", agent: "dawa", size: 35, layer: "script", description: "加工脚本", icon: "⚙", properties: { 功能: "清洗加工用户数据" } },
+            
+            // 二娃脚本层
+            { id: "touch_scheduler", name: "touch_scheduler.py", agent: "erwa", size: 35, layer: "script", description: "调度脚本", icon: "⚙", properties: { 功能: "触达任务调度" } },
+            { id: "message_sender", name: "message_sender.py", agent: "erwa", size: 35, layer: "script", description: "发送脚本", icon: "⚙", properties: { 功能: "执行触达动作" } },
+            { id: "account_mgr", name: "account_manager.py", agent: "erwa", size: 35, layer: "script", description: "账号管理", icon: "⚙", properties: { 功能: "账号状态监控轮换" } },
+            { id: "ip_rotator", name: "ip_rotator.py", agent: "erwa", size: 35, layer: "script", description: "IP轮换", icon: "⚙", properties: { 功能: "IP分配轮换" } }
         ];
         
-        // 关系数据
-        const links = [
-            { source: "kol", target: "post", label: "拥有", agent: "dawa" },
-            { source: "post", target: "comment_act", label: "承载", agent: "dawa" },
-            { source: "comment_act", target: "comment_content", label: "产生", agent: "dawa" },
-            { source: "comment_content", target: "collect_user", label: "意图分类", agent: "dawa" },
-            { source: "dig_strategy", target: "post", label: "爬取", agent: "dawa" },
-            { source: "dig_strategy", target: "collect_user", label: "发现", agent: "dawa" },
-            { source: "dig_strategy", target: "struct_output", label: "输出", agent: "dawa" },
-            { source: "collect_user", target: "verify_strategy", label: "验证", agent: "dawa" },
-            { source: "collect_user", target: "touch_user", label: "转化边界", agent: "boundary" },
-            { source: "dig_strategy", target: "account_matrix", label: "使用", agent: "dawa" },
-            { source: "dig_strategy", target: "ip_matrix", label: "使用", agent: "dawa" },
-            { source: "touch_strategy", target: "account_matrix", label: "绑定", agent: "erwa" },
-            { source: "touch_strategy", target: "ip_matrix", label: "绑定", agent: "erwa" },
-            { source: "touch_strategy", target: "touch_user", label: "执行", agent: "erwa" },
-            { source: "touch_user", target: "touch_record", label: "产生", agent: "erwa" },
-            { source: "touch_user", target: "traffic", label: "转化", agent: "erwa" },
-            { source: "traffic", target: "kol", label: "归因来源", agent: "erwa" }
+        // 全部关系数据
+        const allLinks = [
+            // 概念层关系 - 核心业务链
+            { source: "kol", target: "post", label: "拥有", agent: "dawa", layer: "concept" },
+            { source: "user", target: "post", label: "消费", agent: "dawa", layer: "concept" },
+            { source: "user", target: "comment_act", label: "发起", agent: "dawa", layer: "concept" },
+            { source: "post", target: "comment_act", label: "承载", agent: "dawa", layer: "concept" },
+            { source: "comment_act", target: "comment_content", label: "产生", agent: "dawa", layer: "concept" },
+            
+            // 概念层关系 - 意图分类系统
+            { source: "comment_content", target: "intent_score", label: "意图分类", agent: "dawa", layer: "concept" },
+            { source: "comment_content", target: "intent_status", label: "意图分类", agent: "dawa", layer: "concept" },
+            { source: "intent_score", target: "collect_user", label: "映射为契合度", agent: "dawa", layer: "concept" },
+            { source: "intent_status", target: "collect_user", label: "决定状态", agent: "dawa", layer: "concept" },
+            
+            // 概念层关系 - 语义识别系统
+            { source: "comment_content", target: "semantic_tag", label: "语义识别", agent: "dawa", layer: "concept" },
+            { source: "semantic_tag", target: "touch_user", label: "提供上下文", agent: "boundary", layer: "concept" },
+            
+            // 概念层关系 - 挖掘策略域
+            { source: "dig_strategy", target: "post", label: "爬取", agent: "dawa", layer: "concept" },
+            { source: "dig_strategy", target: "collect_user", label: "发现", agent: "dawa", layer: "concept" },
+            { source: "dig_strategy", target: "struct_output", label: "输出", agent: "dawa", layer: "concept" },
+            { source: "dig_strategy", target: "account_matrix", label: "使用", agent: "dawa", layer: "concept" },
+            { source: "dig_strategy", target: "ip_matrix", label: "使用", agent: "dawa", layer: "concept" },
+            { source: "collect_user", target: "verify_strategy", label: "验证", agent: "dawa", layer: "concept" },
+            
+            // 概念层关系 - Agent边界
+            { source: "collect_user", target: "touch_user", label: "转化边界", agent: "boundary", layer: "concept" },
+            
+            // 概念层关系 - 触达域
+            { source: "touch_strategy", target: "account_matrix", label: "绑定", agent: "erwa", layer: "concept" },
+            { source: "touch_strategy", target: "ip_matrix", label: "绑定", agent: "erwa", layer: "concept" },
+            { source: "touch_strategy", target: "touch_user", label: "执行", agent: "erwa", layer: "concept" },
+            { source: "touch_user", target: "touch_record", label: "产生", agent: "erwa", layer: "concept" },
+            { source: "touch_user", target: "traffic", label: "转化", agent: "erwa", layer: "concept" },
+            { source: "traffic", target: "kol", label: "归因来源", agent: "erwa", layer: "concept" },
+            
+            // 脚本层关系 - 大娃
+            { source: "kol_crawler", target: "dig_strategy", label: "实现", agent: "dawa", layer: "script" },
+            { source: "kol_crawler", target: "account_matrix", label: "使用", agent: "dawa", layer: "script" },
+            { source: "kol_crawler", target: "ip_matrix", label: "使用", agent: "dawa", layer: "script" },
+            { source: "kol_crawler", target: "post", label: "爬取", agent: "dawa", layer: "script" },
+            { source: "comment_parser", target: "comment_act", label: "解析", agent: "dawa", layer: "script" },
+            { source: "comment_parser", target: "comment_content", label: "输出", agent: "dawa", layer: "script" },
+            { source: "intent_classifier", target: "comment_content", label: "分类", agent: "dawa", layer: "script" },
+            { source: "intent_classifier", target: "collect_user", label: "输出", agent: "dawa", layer: "script" },
+            { source: "verify_script", target: "verify_strategy", label: "实现", agent: "dawa", layer: "script" },
+            { source: "verify_script", target: "collect_user", label: "验证", agent: "dawa", layer: "script" },
+            { source: "user_processor", target: "collect_user", label: "加工", agent: "dawa", layer: "script" },
+            { source: "user_processor", target: "struct_output", label: "输出", agent: "dawa", layer: "script" },
+            
+            // 脚本层关系 - 二娃
+            { source: "touch_scheduler", target: "touch_strategy", label: "实现", agent: "erwa", layer: "script" },
+            { source: "touch_scheduler", target: "touch_user", label: "调度", agent: "erwa", layer: "script" },
+            { source: "message_sender", target: "touch_user", label: "发送", agent: "erwa", layer: "script" },
+            { source: "message_sender", target: "touch_record", label: "记录", agent: "erwa", layer: "script" },
+            { source: "account_mgr", target: "account_matrix", label: "管理", agent: "erwa", layer: "script" },
+            { source: "ip_rotator", target: "ip_matrix", label: "轮换", agent: "erwa", layer: "script" }
         ];
         
-        // Agent颜色映射
+        // ==================== 状态变量 ====================
+        let showScriptLayer = false;
+        let simulation, svg, mainGroup, zoom;
+        
         const agentColorMap = {
-            dawa: "#f39c12",   // 大娃 - 橙色
-            erwa: "#27ae60",   // 二娃 - 绿色
-            shared: "#3498db"  // 共用 - 蓝色
+            dawa: "#f39c12",
+            erwa: "#27ae60",
+            shared: "#3498db"
         };
         
-        // 初始化SVG
+        // ==================== 层级筛选 ====================
+        function getFilteredData() {
+            let nodes = allNodes.filter(n => {
+                if (showScriptLayer) return true;
+                return n.layer !== 'script';
+            });
+            
+            let links = allLinks.filter(l => {
+                if (showScriptLayer) return true;
+                return l.layer !== 'script';
+            });
+            
+            // 确保link的source和target都在nodes中
+            const nodeIds = new Set(nodes.map(n => n.id));
+            links = links.filter(l => {
+                const sourceId = l.source.id || l.source;
+                const targetId = l.target.id || l.target;
+                return nodeIds.has(sourceId) && nodeIds.has(targetId);
+            });
+            
+            return { nodes, links };
+        }
+        
+        function updateCounts() {
+            const data = getFilteredData();
+            document.getElementById('nodeCount').textContent = data.nodes.length;
+            document.getElementById('linkCount').textContent = data.links.length;
+            
+            const dawaCount = data.nodes.filter(n => n.agent === 'dawa').length;
+            const erwaCount = data.nodes.filter(n => n.agent === 'erwa').length;
+            document.getElementById('dawaCount').textContent = dawaCount;
+            document.getElementById('erwaCount').textContent = erwaCount;
+        }
+        
+        // ==================== 切换脚本层 ====================
+        function toggleScriptLayer() {
+            showScriptLayer = !showScriptLayer;
+            
+            const btn = document.getElementById('toggleScriptBtn');
+            if (showScriptLayer) {
+                btn.innerHTML = '<span>⚙</span> 隐藏脚本层';
+                btn.classList.add('primary');
+                
+                document.getElementById('dawaList').innerHTML = 
+                    'KOL、帖子、评论行为、评论内容<br/>采集用户、验证策略、挖掘策略、结构化输出<br/><span style="color:#f39c12">kol_crawler、comment_parser、intent_classifier<br/>verify_users、user_processor</span>';
+                document.getElementById('erwaList').innerHTML = 
+                    '触达用户、触达策略、触达记录、获客结果<br/><span style="color:#27ae60">touch_scheduler、message_sender<br/>account_manager、ip_rotator</span>';
+            } else {
+                btn.innerHTML = '<span>⚙</span> 显示脚本层';
+                btn.classList.remove('primary');
+                
+                document.getElementById('dawaList').innerHTML = 
+                    'KOL、帖子、评论行为、评论内容<br/>采集用户、验证策略、挖掘策略、结构化输出';
+                document.getElementById('erwaList').innerHTML = 
+                    '触达用户、触达策略、触达记录、获客结果';
+            }
+            
+            updateCounts();
+            renderGraph();
+        }
+        
+        // ==================== 初始化SVG ====================
         const width = window.innerWidth - 260;
         const height = window.innerHeight - 60;
         
-        const svg = d3.select("#visualization")
+        svg = d3.select("#visualization")
             .append("svg")
             .attr("width", width)
             .attr("height", height);
         
-        // 缩放功能
-        const zoom = d3.zoom()
+        zoom = d3.zoom()
             .scaleExtent([0.3, 2])
             .on("zoom", (event) => {
                 mainGroup.attr("transform", event.transform);
             });
         
         svg.call(zoom);
+        mainGroup = svg.append("g");
         
-        const mainGroup = svg.append("g");
-        
-        // 创建力导向图
-        const simulation = d3.forceSimulation(nodes)
-            .force("link", d3.forceLink(links).id(d => d.id).distance(180))
-            .force("charge", d3.forceManyBody().strength(-500))
-            .force("center", d3.forceCenter(width / 2, height / 2))
-            .force("collision", d3.forceCollide().radius(d => (d.size || 50) + 20))
-            // 分组力：同Agent的节点互相吸引
-            .force("group", forceGroup(nodes, d => d.agent, 150))
-            .on("tick", ticked);
-        
-        // 分组力函数
-        function forceGroup(nodes, groupKey, strength) {
-            // 分组中心位置
-            const groupCenters = {
-                dawa: { x: width * 0.35, y: height * 0.5 },   // 大娃 - 左侧
-                erwa: { x: width * 0.65, y: height * 0.5 },   // 二娃 - 右侧
-                shared: { x: width * 0.5, y: height * 0.5 }   // 共用 - 中间
-            };
+        // ==================== 渲染图谱 ====================
+        function renderGraph() {
+            // 清除旧内容
+            mainGroup.selectAll("*").remove();
             
-            return function(alpha) {
-                nodes.forEach(n => {
-                    const key = groupKey(n);
-                    const center = groupCenters[key];
-                    if (center) {
-                        // 向分组中心移动
-                        n.vx += (center.x - n.x) * alpha * 0.15;
-                        n.vy += (center.y - n.y) * alpha * 0.15;
-                    }
-                });
+            const { nodes, links } = getFilteredData();
+            
+            // 为link数据添加source/target对象引用
+            const nodeMap = {};
+            nodes.forEach(n => nodeMap[n.id] = n);
+            links.forEach(l => {
+                l.source = nodeMap[l.source] || l.source;
+                l.target = nodeMap[l.target] || l.target;
+            });
+            
+            // 创建力导向图
+            simulation = d3.forceSimulation(nodes)
+                .force("link", d3.forceLink(links).id(d => d.id).distance(180))
+                .force("charge", d3.forceManyBody().strength(-500))
+                .force("center", d3.forceCenter(width / 2, height / 2))
+                .force("collision", d3.forceCollide().radius(d => (d.size || 50) + 20))
+                .force("group", forceGroup(nodes))
+                .on("tick", ticked);
+            
+            // 分组力函数
+            function forceGroup(nodes) {
+                const groupCenters = {
+                    dawa: { x: width * 0.35, y: height * 0.5 },
+                    erwa: { x: width * 0.65, y: height * 0.5 },
+                    shared: { x: width * 0.5, y: height * 0.5 }
+                };
                 
-                // 同组节点之间增加吸引力
-                const groups = {};
-                nodes.forEach(n => {
-                    const key = groupKey(n);
-                    if (!groups[key]) groups[key] = [];
-                    groups[key].push(n);
-                });
-                
-                Object.values(groups).forEach(group => {
-                    group.forEach(n1 => {
-                        group.forEach(n2 => {
-                            if (n1 !== n2) {
-                                const dx = n2.x - n1.x;
-                                const dy = n2.y - n1.y;
-                                const dist = Math.sqrt(dx * dx + dy * dy);
-                                if (dist > 80) {
-                                    const force = strength * alpha * 0.08;
-                                    n1.vx += dx / dist * force;
-                                    n1.vy += dy / dist * force;
+                return function(alpha) {
+                    nodes.forEach(n => {
+                        const center = groupCenters[n.agent];
+                        if (center) {
+                            n.vx += (center.x - n.x) * alpha * 0.15;
+                            n.vy += (center.y - n.y) * alpha * 0.15;
+                        }
+                    });
+                    
+                    // 同组吸引力
+                    const groups = {};
+                    nodes.forEach(n => {
+                        if (!groups[n.agent]) groups[n.agent] = [];
+                        groups[n.agent].push(n);
+                    });
+                    
+                    Object.values(groups).forEach(group => {
+                        group.forEach(n1 => {
+                            group.forEach(n2 => {
+                                if (n1 !== n2) {
+                                    const dx = n2.x - n1.x;
+                                    const dy = n2.y - n1.y;
+                                    const dist = Math.sqrt(dx * dx + dy * dy);
+                                    if (dist > 80) {
+                                        const force = 150 * alpha * 0.08;
+                                        n1.vx += dx / dist * force;
+                                        n1.vy += dy / dist * force;
+                                    }
                                 }
-                            }
+                            });
                         });
                     });
+                };
+            }
+            
+            // 绘制连线
+            const link = mainGroup.append("g")
+                .selectAll("path")
+                .data(links)
+                .enter()
+                .append("path")
+                .attr("class", "link")
+                .attr("stroke", d => d.agent === "boundary" ? "#e74c3c" : agentColorMap[d.agent] || "#95a5a6")
+                .attr("stroke-width", d => d.agent === "boundary" ? 4 : 2)
+                .attr("stroke-opacity", d => d.agent === "boundary" ? 1 : 0.5);
+            
+            // 连线标签背景
+            const linkLabelBg = mainGroup.append("g")
+                .selectAll("rect")
+                .data(links)
+                .enter()
+                .append("rect")
+                .attr("class", "link-label-bg")
+                .attr("width", d => d.label.length * 8 + 16)
+                .attr("height", 20)
+                .attr("rx", 4)
+                .attr("fill", d => d.agent === "boundary" ? "#ffebee" : "#ffffff")
+                .attr("stroke", d => d.agent === "boundary" ? "#e74c3c" : "#e1e5e9");
+            
+            // 连线标签
+            const linkLabel = mainGroup.append("g")
+                .selectAll("text")
+                .data(links)
+                .enter()
+                .append("text")
+                .attr("class", "link-label")
+                .attr("text-anchor", "middle")
+                .attr("dy", 4)
+                .attr("fill", d => d.agent === "boundary" ? "#e74c3c" : "#5a6c7d")
+                .attr("font-weight", d => d.agent === "boundary" ? "600" : "400")
+                .text(d => d.label);
+            
+            // 绘制节点
+            const node = mainGroup.append("g")
+                .selectAll("g")
+                .data(nodes)
+                .enter()
+                .append("g")
+                .attr("class", "node-circle")
+                .call(d3.drag()
+                    .on("start", dragStarted)
+                    .on("drag", dragged)
+                    .on("end", dragEnded))
+                .on("click", showDetail);
+            
+            // 圆形背景
+            node.append("circle")
+                .attr("class", "node-bg")
+                .attr("r", d => d.size || 50)
+                .attr("fill", d => agentColorMap[d.agent])
+                .attr("stroke", "#ffffff")
+                .attr("stroke-width", 4);
+            
+            // Agent标识
+            node.append("circle")
+                .attr("r", 12)
+                .attr("cx", d => (d.size || 50) * 0.8)
+                .attr("cy", d => -(d.size || 50) * 0.8)
+                .attr("fill", d => agentColorMap[d.agent])
+                .attr("stroke", "#ffffff")
+                .attr("stroke-width", 2);
+            
+            // Agent标识文字
+            node.append("text")
+                .attr("x", d => (d.size || 50) * 0.8)
+                .attr("y", d => -(d.size || 50) * 0.8 + 4)
+                .attr("text-anchor", "middle")
+                .attr("fill", "#ffffff")
+                .attr("font-size", "9px")
+                .text(d => d.agent === "dawa" ? "大" : d.agent === "erwa" ? "二" : "共");
+            
+            // 图标
+            node.append("text")
+                .attr("dy", d => -(d.size || 50) * 0.15)
+                .attr("text-anchor", "middle")
+                .attr("fill", "#ffffff")
+                .attr("font-size", d => (d.size || 50) * 0.35 + "px")
+                .text(d => d.icon);
+            
+            // 名称
+            node.append("text")
+                .attr("dy", d => (d.size || 50) * 0.3)
+                .attr("text-anchor", "middle")
+                .attr("fill", "#ffffff")
+                .attr("font-size", d => (d.size || 50) * 0.25 + "px")
+                .attr("font-weight", "600")
+                .text(d => d.name);
+            
+            // Agent标签
+            node.append("text")
+                .attr("dy", d => (d.size || 50) + 18)
+                .attr("text-anchor", "middle")
+                .attr("fill", d => agentColorMap[d.agent])
+                .attr("font-size", "11px")
+                .attr("font-weight", "500")
+                .text(d => d.agent === "dawa" ? "🤖 大娃" : d.agent === "erwa" ? "🤖 二娃" : "共用");
+            
+            // 更新位置函数
+            function ticked() {
+                link.attr("d", d => {
+                    const midX = (d.source.x + d.target.x) / 2;
+                    const midY = (d.source.y + d.target.y) / 2;
+                    const dx = d.target.x - d.source.x;
+                    const dy = d.target.y - d.source.y;
+                    return `M${d.source.x},${d.source.y} Q${midX + dy * 0.3},${midY - dx * 0.3} ${d.target.x},${d.target.y}`;
                 });
-            };
-        }
-        
-        // 边界约束
-        simulation.force("bounds", () => {
-            nodes.forEach(d => {
-                const radius = d.size || 50;
-                d.x = Math.max(radius + 20, Math.min(width - radius - 20, d.x));
-                d.y = Math.max(radius + 20, Math.min(height - radius - 20, d.y));
-            });
-        });
-        
-        // 绘制连线（使用曲线）
-        const link = mainGroup.append("g")
-            .selectAll("path")
-            .data(links)
-            .enter()
-            .append("path")
-            .attr("class", "link")
-            .attr("stroke", d => {
-                if (d.agent === "boundary") return "#e74c3c"; // 边界关系 - 红色
-                return agentColorMap[d.agent] || "#95a5a6";
-            })
-            .attr("stroke-width", d => d.agent === "boundary" ? 4 : 2)
-            .attr("stroke-opacity", d => d.agent === "boundary" ? 1 : 0.5)
-            .attr("id", d => `link-${d.source.id || d.source}-${d.target.id || d.target}`);
-        
-        // 绘制连线标签背景
-        const linkLabelBg = mainGroup.append("g")
-            .selectAll("rect")
-            .data(links)
-            .enter()
-            .append("rect")
-            .attr("class", "link-label-bg")
-            .attr("width", d => d.label.length * 8 + 16)
-            .attr("height", 20)
-            .attr("rx", 4)
-            .attr("fill", d => {
-                if (d.agent === "boundary") return "#ffebee";
-                return "#ffffff";
-            })
-            .attr("stroke", d => {
-                if (d.agent === "boundary") return "#e74c3c";
-                return "#e1e5e9";
-            });
-        
-        // 绘制连线标签
-        const linkLabel = mainGroup.append("g")
-            .selectAll("text")
-            .data(links)
-            .enter()
-            .append("text")
-            .attr("class", "link-label")
-            .attr("text-anchor", "middle")
-            .attr("dy", 4)
-            .attr("fill", d => d.agent === "boundary" ? "#e74c3c" : "#5a6c7d")
-            .attr("font-weight", d => d.agent === "boundary" ? "600" : "400")
-            .text(d => d.label);
-        
-        // 绘制圆形节点
-        const node = mainGroup.append("g")
-            .selectAll("g")
-            .data(nodes)
-            .enter()
-            .append("g")
-            .attr("class", "node-circle")
-            .attr("id", d => `node-${d.id}`)
-            .call(d3.drag()
-                .on("start", dragStarted)
-                .on("drag", dragged)
-                .on("end", dragEnded))
-            .on("click", showDetail);
-        
-        // 圆形背景
-        node.append("circle")
-            .attr("class", "node-bg")
-            .attr("r", d => d.size || 50)
-            .attr("fill", d => agentColorMap[d.agent])
-            .attr("stroke", "#ffffff")
-            .attr("stroke-width", 4);
-        
-        // Agent标识（小圆圈）
-        node.append("circle")
-            .attr("r", 12)
-            .attr("cx", d => (d.size || 50) * 0.8)
-            .attr("cy", d => -(d.size || 50) * 0.8)
-            .attr("fill", d => agentColorMap[d.agent])
-            .attr("stroke", "#ffffff")
-            .attr("stroke-width", 2);
-        
-        // Agent标识文字
-        node.append("text")
-            .attr("x", d => (d.size || 50) * 0.8)
-            .attr("y", d => -(d.size || 50) * 0.8 + 4)
-            .attr("text-anchor", "middle")
-            .attr("fill", "#ffffff")
-            .attr("font-size", "9px")
-            .text(d => {
-                if (d.agent === "dawa") return "大";
-                if (d.agent === "erwa") return "二";
-                return "共";
-            });
-        
-        // 图标
-        node.append("text")
-            .attr("class", "node-icon")
-            .attr("dy", d => -(d.size || 50) * 0.15)
-            .attr("text-anchor", "middle")
-            .attr("fill", "#ffffff")
-            .attr("font-size", d => (d.size || 50) * 0.35 + "px")
-            .text(d => d.icon);
-        
-        // 实体名称
-        node.append("text")
-            .attr("class", "node-name")
-            .attr("dy", d => (d.size || 50) * 0.3)
-            .attr("text-anchor", "middle")
-            .attr("fill", "#ffffff")
-            .attr("font-size", d => (d.size || 50) * 0.25 + "px")
-            .attr("font-weight", "600")
-            .text(d => d.name);
-        
-        // Agent标签（节点外）
-        node.append("text")
-            .attr("class", "node-desc")
-            .attr("dy", d => (d.size || 50) + 18)
-            .attr("text-anchor", "middle")
-            .attr("fill", d => agentColorMap[d.agent])
-            .attr("font-size", "11px")
-            .attr("font-weight", "500")
-            .text(d => {
-                if (d.agent === "dawa") return "🤖 大娃";
-                if (d.agent === "erwa") return "🤖 二娃";
-                return "共用";
-            });
-        
-        // 更新位置函数
-        function ticked() {
-            // 曲线连线
-            link.attr("d", d => {
-                const dx = d.target.x - d.source.x;
-                const dy = d.target.y - d.source.y;
-                const midX = (d.source.x + d.target.x) / 2;
-                const midY = (d.source.y + d.target.y) / 2;
                 
-                return `M${d.source.x},${d.source.y} 
-                        Q${midX + dy * 0.3},${midY - dx * 0.3} 
-                        ${d.target.x},${d.target.y}`;
-            });
+                linkLabelBg
+                    .attr("x", d => (d.source.x + d.target.x) / 2 - d.label.length * 4 - 8)
+                    .attr("y", d => (d.source.y + d.target.y) / 2 - 10);
+                
+                linkLabel
+                    .attr("x", d => (d.source.x + d.target.x) / 2)
+                    .attr("y", d => (d.source.y + d.target.y) / 2);
+                
+                node.attr("transform", d => `translate(${d.x},${d.y})`);
+            }
             
-            // 更新标签位置
-            linkLabelBg
-                .attr("x", d => (d.source.x + d.target.x) / 2 - d.label.length * 4 - 8)
-                .attr("y", d => (d.source.y + d.target.y) / 2 - 10);
+            function dragStarted(event, d) {
+                if (!event.active) simulation.alphaTarget(0.3).restart();
+                d.fx = d.x;
+                d.fy = d.y;
+            }
             
-            linkLabel
-                .attr("x", d => (d.source.x + d.target.x) / 2)
-                .attr("y", d => (d.source.y + d.target.y) / 2);
+            function dragged(event, d) {
+                d.fx = event.x;
+                d.fy = event.y;
+            }
             
-            node.attr("transform", d => `translate(${d.x},${d.y})`);
+            function dragEnded(event, d) {
+                if (!event.active) simulation.alphaTarget(0);
+                d.fx = null;
+                d.fy = null;
+            }
         }
         
-        // 拖拽函数
-        function dragStarted(event, d) {
-            if (!event.active) simulation.alphaTarget(0.3).restart();
-            d.fx = d.x;
-            d.fy = d.y;
-        }
-        
-        function dragged(event, d) {
-            d.fx = event.x;
-            d.fy = event.y;
-        }
-        
-        function dragEnded(event, d) {
-            if (!event.active) simulation.alphaTarget(0);
-            d.fx = null;
-            d.fy = null;
-        }
-        
-        // 显示节点详情
+        // ==================== 详情面板 ====================
         function showDetail(event, d) {
             event.stopPropagation();
             
-            const detail = document.getElementById("nodeDetail");
-            const icon = document.getElementById("detailIcon");
-            const title = document.getElementById("detailTitle");
-            const type = document.getElementById("detailType");
-            const content = document.getElementById("detailContent");
-            
-            icon.textContent = d.icon;
-            icon.className = `node-detail-icon color-${d.agent}`;
-            title.textContent = d.name;
-            type.textContent = d.agent === "dawa" ? "🤖 大娃Agent负责" : 
-                               d.agent === "erwa" ? "🤖 二娃Agent负责" : "共用资源";
+            document.getElementById("detailIcon").textContent = d.icon;
+            document.getElementById("detailIcon").className = `node-detail-icon color-${d.agent}`;
+            document.getElementById("detailTitle").textContent = d.name;
+            document.getElementById("detailType").textContent = 
+                d.layer === 'script' ? '脚本层 - ' + (d.agent === 'dawa' ? '大娃实现' : '二娃实现') :
+                d.agent === "dawa" ? "🤖 大娃Agent负责" : 
+                d.agent === "erwa" ? "🤖 二娃Agent负责" : "共用资源";
             
             let html = '';
-            
             if (d.properties) {
                 for (const [key, value] of Object.entries(d.properties)) {
-                    html += `
-                        <div class="property-group">
-                            <div class="property-label">${key}</div>
-                            <div class="property-value">${value}</div>
-                        </div>
-                    `;
+                    html += `<div class="property-group"><div class="property-label">${key}</div><div class="property-value">${value}</div></div>`;
                 }
             }
             
-            // 显示关系
-            const relations = links.filter(l => l.source.id === d.id || l.target.id === d.id);
+            // 相关关系
+            const relations = allLinks.filter(l => {
+                const sourceId = l.source.id || l.source;
+                const targetId = l.target.id || l.target;
+                return sourceId === d.id || targetId === d.id;
+            });
+            
             if (relations.length > 0) {
-                html += `
-                    <div class="relations-section">
-                        <h3>相关关系 (${relations.length})</h3>
-                `;
-                
+                html += `<div class="relations-section"><h3>相关关系 (${relations.length})</h3>`;
                 relations.forEach(r => {
-                    const targetName = r.source.id === d.id ? r.target.name : r.source.name;
-                    const arrow = r.source.id === d.id ? "→" : "←";
+                    const targetName = (r.source.id || r.source) === d.id ? 
+                        allNodes.find(n => n.id === (r.target.id || r.target)).name :
+                        allNodes.find(n => n.id === (r.source.id || r.source)).name;
+                    const arrow = (r.source.id || r.source) === d.id ? "→" : "←";
                     const isBoundary = r.agent === "boundary";
-                    html += `
-                        <div class="relation-item" onclick="highlightNode('${r.source.id === d.id ? r.target.id : r.source.id}')"
-                             style="${isBoundary ? 'background: #ffebee; color: #e74c3c;' : ''}">
-                            <span class="relation-arrow">${arrow}</span>
-                            <span>${r.label} ${targetName}${isBoundary ? ' (边界)' : ''}</span>
-                        </div>
-                    `;
+                    html += `<div class="relation-item" style="${isBoundary ? 'background:#ffebee;color:#e74c3c;' : ''}">
+                        <span class="relation-arrow">${arrow}</span>
+                        <span>${r.label} ${targetName}${isBoundary ? ' (边界)' : ''}</span>
+                    </div>`;
                 });
-                
                 html += "</div>";
             }
             
-            content.innerHTML = html;
-            detail.classList.add("active");
-            
-            // 高亮当前节点
-            highlightNode(d.id);
+            document.getElementById("detailContent").innerHTML = html;
+            document.getElementById("nodeDetail").classList.add("active");
         }
         
-        // 关闭详情
         function closeDetail() {
             document.getElementById("nodeDetail").classList.remove("active");
-            resetHighlight();
         }
         
-        // 高亮节点
-        function highlightNode(nodeId) {
-            d3.selectAll(".node-bg")
-                .attr("stroke-width", d => d.id === nodeId ? 6 : 4)
-                .attr("stroke", d => d.id === nodeId ? "#2c3e50" : "#ffffff");
-            
-            d3.selectAll(".link")
-                .attr("stroke-width", d => (d.source.id === nodeId || d.target.id === nodeId) ? 4 : 2)
-                .attr("stroke-opacity", d => (d.source.id === nodeId || d.target.id === nodeId) ? 1 : 0.3);
-        }
-        
-        // 重置高亮
-        function resetHighlight() {
-            d3.selectAll(".node-bg")
-                .attr("stroke-width", 4)
-                .attr("stroke", "#ffffff");
-            
-            d3.selectAll(".link")
-                .attr("stroke-width", d => d.agent === "boundary" ? 4 : 2)
-                .attr("stroke-opacity", d => d.agent === "boundary" ? 1 : 0.5);
-        }
-        
-        // 重置视图
+        // ==================== 其他功能 ====================
         function resetView() {
-            svg.transition()
-                .duration(500)
-                .call(zoom.transform, d3.zoomIdentity);
-            
-            simulation.alpha(1).restart();
+            svg.transition().duration(500).call(zoom.transform, d3.zoomIdentity);
+            renderGraph();
             closeDetail();
         }
         
-        // 高亮路径
         function highlightPath() {
             const pathNodes = ["kol", "post", "comment_act", "comment_content", "collect_user", "touch_user", "traffic"];
-            
-            d3.selectAll(".node-bg")
+            mainGroup.selectAll(".node-bg")
                 .attr("stroke-width", d => pathNodes.includes(d.id) ? 6 : 2)
-                .attr("stroke", d => pathNodes.includes(d.id) ? "#2c3e50" : "#e0e0e0")
-                .attr("fill-opacity", d => pathNodes.includes(d.id) ? 1 : 0.5);
-            
-            d3.selectAll(".node-circle")
+                .attr("stroke", d => pathNodes.includes(d.id) ? "#2c3e50" : "#e0e0e0");
+            mainGroup.selectAll(".node-circle")
                 .attr("opacity", d => pathNodes.includes(d.id) ? 1 : 0.4);
-            
-            d3.selectAll(".link")
-                .attr("stroke-width", d => (pathNodes.includes(d.source.id) && pathNodes.includes(d.target.id)) ? 4 : 1)
-                .attr("stroke-opacity", d => (pathNodes.includes(d.source.id) && pathNodes.includes(d.target.id)) ? 1 : 0.2);
+            mainGroup.selectAll(".link")
+                .attr("stroke-width", d => pathNodes.includes(d.source.id) && pathNodes.includes(d.target.id) ? 4 : 1)
+                .attr("stroke-opacity", d => pathNodes.includes(d.source.id) && pathNodes.includes(d.target.id) ? 1 : 0.2);
         }
         
-        // 导出数据
         function exportData() {
-            const data = {
-                nodes: nodes,
-                links: links.map(l => ({
-                    source: l.source.id || l.source,
-                    target: l.target.id || l.target,
-                    label: l.label,
-                    agent: l.agent
-                }))
-            };
-            
+            const data = { nodes: allNodes, links: allLinks };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
-            a.href = url;
-            a.download = "本体论-知识图谱数据.json";
+            a.href = URL.createObjectURL(blob);
+            a.download = "本体论-知识图谱完整数据.json";
             a.click();
-            URL.revokeObjectURL(url);
         }
         
         // 搜索功能
         document.getElementById("searchInput").addEventListener("input", function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            
-            d3.selectAll(".node-circle")
-                .attr("opacity", d => d.name.toLowerCase().includes(searchTerm) || searchTerm === "" ? 1 : 0.3);
-            
-            d3.selectAll(".link")
+            const term = e.target.value.toLowerCase();
+            mainGroup.selectAll(".node-circle")
+                .attr("opacity", d => d.name.toLowerCase().includes(term) || !term ? 1 : 0.3);
+            mainGroup.selectAll(".link")
                 .attr("stroke-opacity", d => {
-                    const sourceMatch = d.source.name && d.source.name.toLowerCase().includes(searchTerm);
-                    const targetMatch = d.target.name && d.target.name.toLowerCase().includes(searchTerm);
-                    return (sourceMatch || targetMatch || searchTerm === "") ? 0.5 : 0.15;
+                    const s = d.source.name?.toLowerCase().includes(term);
+                    const t = d.target.name?.toLowerCase().includes(term);
+                    return (s || t || !term) ? 0.5 : 0.15;
                 });
         });
         
@@ -1024,31 +833,25 @@
         document.querySelectorAll(".filter-item[data-agent]").forEach(item => {
             item.addEventListener("click", function() {
                 this.classList.toggle("active");
-                
-                const activeAgents = [];
-                document.querySelectorAll(".filter-item[data-agent].active").forEach(active => {
-                    activeAgents.push(active.dataset.agent);
-                });
-                
-                d3.selectAll(".node-circle")
-                    .attr("opacity", d => activeAgents.includes(d.agent) ? 1 : 0.3);
-                
-                d3.selectAll(".link")
+                const active = [...document.querySelectorAll(".filter-item[data-agent].active")].map(i => i.dataset.agent);
+                mainGroup.selectAll(".node-circle")
+                    .attr("opacity", d => active.includes(d.agent) ? 1 : 0.3);
+                mainGroup.selectAll(".link")
                     .attr("stroke-opacity", d => {
                         if (d.agent === "boundary") return 1;
-                        const sourceActive = activeAgents.includes(d.source.agent);
-                        const targetActive = activeAgents.includes(d.target.agent);
-                        return (sourceActive && targetActive) ? 0.5 : 0.15;
+                        return active.includes(d.source.agent) && active.includes(d.target.agent) ? 0.5 : 0.15;
                     });
             });
         });
         
         // 点击空白关闭详情
         svg.on("click", function(event) {
-            if (event.target === this) {
-                closeDetail();
-            }
+            if (event.target === this) closeDetail();
         });
+        
+        // 初始化
+        updateCounts();
+        renderGraph();
     </script>
 </body>
 </html>
