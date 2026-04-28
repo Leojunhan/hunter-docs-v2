@@ -641,7 +641,56 @@
             .force("charge", d3.forceManyBody().strength(-500))
             .force("center", d3.forceCenter(width / 2, height / 2))
             .force("collision", d3.forceCollide().radius(70))
+            // 分组力：同Agent的节点互相吸引
+            .force("group", forceGroup(nodes, d => d.agent, 150))
             .on("tick", ticked);
+        
+        // 分组力函数
+        function forceGroup(nodes, groupKey, strength) {
+            // 分组中心位置
+            const groupCenters = {
+                dawa: { x: width * 0.35, y: height * 0.5 },   // 大娃 - 左侧
+                erwa: { x: width * 0.65, y: height * 0.5 },   // 二娃 - 右侧
+                shared: { x: width * 0.5, y: height * 0.5 }   // 共用 - 中间
+            };
+            
+            return function(alpha) {
+                nodes.forEach(n => {
+                    const key = groupKey(n);
+                    const center = groupCenters[key];
+                    if (center) {
+                        // 向分组中心移动
+                        n.vx += (center.x - n.x) * alpha * 0.15;
+                        n.vy += (center.y - n.y) * alpha * 0.15;
+                    }
+                });
+                
+                // 同组节点之间增加吸引力
+                const groups = {};
+                nodes.forEach(n => {
+                    const key = groupKey(n);
+                    if (!groups[key]) groups[key] = [];
+                    groups[key].push(n);
+                });
+                
+                Object.values(groups).forEach(group => {
+                    group.forEach(n1 => {
+                        group.forEach(n2 => {
+                            if (n1 !== n2) {
+                                const dx = n2.x - n1.x;
+                                const dy = n2.y - n1.y;
+                                const dist = Math.sqrt(dx * dx + dy * dy);
+                                if (dist > 80) {
+                                    const force = strength * alpha * 0.08;
+                                    n1.vx += dx / dist * force;
+                                    n1.vy += dy / dist * force;
+                                }
+                            }
+                        });
+                    });
+                });
+            };
+        }
         
         // 边界约束
         simulation.force("bounds", () => {
