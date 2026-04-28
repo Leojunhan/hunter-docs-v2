@@ -100,14 +100,20 @@
         }
         
         .filter-item.active {
-            background: #e8f4f8;
+            background: #f8f9fa;
         }
         
         .filter-color {
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #fff;
+            border: 2px solid rgba(0,0,0,0.1);
         }
         
         .filter-item label {
@@ -310,7 +316,7 @@
             fill: none;
             stroke: #95a5a6;
             stroke-width: 2;
-            stroke-opacity: 0.6;
+            stroke-opacity: 0.5;
         }
         
         .link.highlighted {
@@ -335,10 +341,6 @@
         /* 节点圆形 */
         .node-bg {
             transition: stroke-width 0.2s, stroke 0.2s;
-        }
-        
-        .node-bg:hover {
-            stroke-width: 4;
         }
         
         /* 底部提示 */
@@ -391,27 +393,27 @@
             margin-top: 2px;
         }
         
-        /* 颜色方案 */
-        .color-core { background: #3498db; }
-        .color-resource { background: #9b59b6; }
-        .color-dig { background: #f39c12; }
-        .color-touch { background: #27ae60; }
+        /* Agent颜色方案 */
+        .color-dawa { background: #f39c12; }  /* 大娃 - 橙色 */
+        .color-erwa { background: #27ae60; }  /* 二娃 - 绿色 */
+        .color-shared { background: #3498db; }  /* 共用资源 - 蓝色 */
         
-        /* 说明 */
-        .legend {
+        /* Agent说明区块 */
+        .agent-section {
             margin-top: 24px;
             padding: 16px;
             background: #f8f9fa;
             border-radius: 8px;
         }
         
-        .legend h4 {
+        .agent-section h4 {
             font-size: 12px;
             color: #2c3e50;
             margin-bottom: 12px;
+            font-weight: 600;
         }
         
-        .legend-item {
+        .agent-item {
             display: flex;
             align-items: center;
             margin-bottom: 8px;
@@ -419,11 +421,22 @@
             color: #7f8c8d;
         }
         
-        .legend-dot {
-            width: 12px;
-            height: 12px;
+        .agent-dot {
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
             margin-right: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 8px;
+        }
+        
+        .agent-list {
+            margin-top: 4px;
+            font-size: 10px;
+            color: #95a5a6;
         }
     </style>
 </head>
@@ -450,27 +463,22 @@
             <input type="text" id="searchInput" placeholder="搜索实体..." />
         </div>
         
-        <!-- 实体类型筛选 -->
+        <!-- Agent筛选 -->
         <div class="section">
-            <h3>实体类型</h3>
-            <div class="filter-item active" data-type="core">
-                <div class="filter-color color-core"></div>
-                <label>核心业务对象</label>
-                <span class="count">8</span>
+            <h3>Agent负责领域</h3>
+            <div class="filter-item active" data-agent="dawa">
+                <div class="filter-color color-dawa">🤖</div>
+                <label>大娃Agent</label>
+                <span class="count">9</span>
             </div>
-            <div class="filter-item active" data-type="resource">
-                <div class="filter-color color-resource"></div>
-                <label>账号资源</label>
-                <span class="count">2</span>
+            <div class="filter-item active" data-agent="erwa">
+                <div class="filter-color color-erwa">🤖</div>
+                <label>二娃Agent</label>
+                <span class="count">3</span>
             </div>
-            <div class="filter-item active" data-type="dig">
-                <div class="filter-color color-dig"></div>
-                <label>挖掘策略域</label>
-                <span class="count">2</span>
-            </div>
-            <div class="filter-item active" data-type="touch">
-                <div class="filter-color color-touch"></div>
-                <label>触达策略域</label>
+            <div class="filter-item active" data-agent="shared">
+                <div class="filter-color color-shared">共用</div>
+                <label>共用资源</label>
                 <span class="count">2</span>
             </div>
         </div>
@@ -489,20 +497,38 @@
             </button>
         </div>
         
-        <!-- 说明 -->
-        <div class="legend">
-            <h4>业务路径说明</h4>
-            <div class="legend-item">
-                <div class="legend-dot color-dig"></div>
-                <span>挖掘域（大娃Agent负责）</span>
+        <!-- Agent说明 -->
+        <div class="agent-section">
+            <h4>Agent职责边界</h4>
+            <div class="agent-item">
+                <div class="agent-dot color-dawa">🤖</div>
+                <span>大娃Agent - 挖掘域</span>
             </div>
-            <div class="legend-item">
-                <div class="legend-dot color-touch"></div>
-                <span>触达域（二娃Agent负责）</span>
+            <div class="agent-list">
+                KOL、帖子、评论行为、评论内容<br/>
+                采集用户、验证策略、挖掘策略、结构化输出
             </div>
-            <div class="legend-item">
-                <div class="legend-dot" style="background: #e74c3c;"></div>
-                <span>边界：采集用户 → 触达用户</span>
+            <div class="agent-item" style="margin-top: 12px;">
+                <div class="agent-dot color-erwa">🤖</div>
+                <span>二娃Agent - 触达域</span>
+            </div>
+            <div class="agent-list">
+                触达用户、触达策略、触达记录
+            </div>
+            <div class="agent-item" style="margin-top: 12px;">
+                <div class="agent-dot color-shared">共用</div>
+                <span>共用资源 - 账号/IP</span>
+            </div>
+            <div class="agent-list">
+                自媒体账号矩阵、IP矩阵
+            </div>
+            <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #e1e5e9;">
+                <div style="font-size: 11px; color: #e74c3c; font-weight: 500;">
+                    🔄 边界：采集用户 → 触达用户
+                </div>
+                <div style="font-size: 10px; color: #95a5a6; margin-top: 4px;">
+                    已验证的采集用户转化为触达用户
+                </div>
             </div>
         </div>
     </div>
@@ -526,67 +552,64 @@
     <!-- 底部提示 -->
     <div class="tip-bar">
         <div class="tip-item">
+            <span>🤖</span> 橙色=大娃 · 绿色=二娃
+        </div>
+        <div class="tip-item">
             <span>🖱️</span> 拖拽移动 · 滚轮缩放
         </div>
         <div class="tip-item">
-            <span>👆</span> 点击圆圈查看详情
-        </div>
-        <div class="tip-item">
-            <span>🔍</span> 搜索实时筛选
+            <span>👆</span> 点击查看详情
         </div>
     </div>
     
     <script>
-        // 实体数据
+        // 实体数据 - 按Agent负责分类
         const nodes = [
-            // 核心业务对象
-            { id: "kol", name: "KOL", type: "core", description: "流量源头", icon: "📢", properties: { 定义: "意见领袖，拥有粉丝和影响力", 作用: "流量来源，帖子的发布者", 负责: "大娃Agent" } },
-            { id: "post", name: "帖子", type: "core", description: "内容载体", icon: "📝", properties: { 定义: "KOL发布的内容", 作用: "承载评论，发现用户的入口", 负责: "大娃Agent" } },
-            { id: "comment_act", name: "评论行为", type: "core", description: "消费行为", icon: "💬", properties: { 定义: "用户对帖子的评论行为", 包含: "谁、何时、对哪个帖子", 负责: "大娃Agent" } },
-            { id: "comment_content", name: "评论内容", type: "core", description: "行为结果", icon: "📄", properties: { 定义: "评论的具体内容", 属性: "意图评分、意图状态、语义标签", 作用: "分析用户意图的基础", 负责: "大娃Agent" } },
-            { id: "collect_user", name: "采集用户", type: "core", description: "大娃负责", icon: "👤", properties: { 状态: "待清洗 → 待分配 → 已验证 → 待人工 → 已过滤", 属性: "契合度", 负责Agent: "大娃", 阶段: "挖掘域" } },
-            { id: "touch_user", name: "触达用户", type: "core", description: "二娃负责", icon: "🎯", properties: { 状态: "已分配 → 已触达 → 已转化 → 已关闭", 属性: "信任度、归因", 负责Agent: "二娃", 阶段: "触达域" } },
-            { id: "traffic", name: "流量", type: "core", description: "业务结果", icon: "📈", properties: { 定义: "最终业务目标", 作用: "获客转化的结果" } },
-            { id: "verify_strategy", name: "验证策略", type: "core", description: "自动验证", icon: "✓", properties: { 定义: "verify_users.py", 作用: "验证用户真实性", 方式: "浏览器访问主页评估活跃度", 负责: "大娃Agent" } },
+            // 大娃Agent负责 - 挖掘域 (橙色)
+            { id: "kol", name: "KOL", agent: "dawa", description: "流量源头", icon: "📢", properties: { 定义: "意见领袖，拥有粉丝和影响力", 作用: "流量来源，帖子的发布者", 负责: "大娃Agent" } },
+            { id: "post", name: "帖子", agent: "dawa", description: "内容载体", icon: "📝", properties: { 定义: "KOL发布的内容", 作用: "承载评论，发现用户的入口", 负责: "大娃Agent" } },
+            { id: "comment_act", name: "评论行为", agent: "dawa", description: "消费行为", icon: "💬", properties: { 定义: "用户对帖子的评论行为", 包含: "谁、何时、对哪个帖子", 负责: "大娃Agent" } },
+            { id: "comment_content", name: "评论内容", agent: "dawa", description: "行为结果", icon: "📄", properties: { 定义: "评论的具体内容", 属性: "意图评分、意图状态、语义标签", 作用: "分析用户意图的基础", 负责: "大娃Agent" } },
+            { id: "collect_user", name: "采集用户", agent: "dawa", description: "挖掘域", icon: "👤", properties: { 状态: "待清洗 → 待分配 → 已验证 → 待人工 → 已过滤", 属性: "契合度", 负责Agent: "大娃", 阶段: "挖掘域", 边界: "已验证后转化为触达用户" } },
+            { id: "verify_strategy", name: "验证策略", agent: "dawa", description: "自动验证", icon: "✓", properties: { 定义: "verify_users.py", 作用: "验证用户真实性", 方式: "浏览器访问主页评估活跃度", 负责: "大娃Agent" } },
+            { id: "dig_strategy", name: "挖掘策略", agent: "dawa", description: "统一策略", icon: "⛏", properties: { 定义: "发现目标的顶层策略", 包含: "采集、清洗、加工（现阶段统一）", 输出: "结构化输出", 负责: "大娃Agent" } },
+            { id: "struct_output", name: "结构化输出", agent: "dawa", description: "能力+结果", icon: "📊", properties: { 定义: "挖掘策略的输出", 形态: "用户画像、数据产品", 作用: "数据产品化", 负责: "大娃Agent" } },
+            { id: "traffic", name: "流量", agent: "dawa", description: "业务结果", icon: "📈", properties: { 定义: "最终业务目标", 作用: "获客转化的结果（归因到KOL）", 注意: "由触达用户转化产生" } },
             
-            // 账号资源
-            { id: "account_matrix", name: "自媒体账号矩阵", type: "resource", description: "账号资源", icon: "📱", properties: { 定义: "具体的社媒账号资源", 用途: "触达时使用的账号", 包含: "小红书账号、抖音账号等" } },
-            { id: "ip_matrix", name: "IP矩阵", type: "resource", description: "网络IP", icon: "🌐", properties: { 定义: "网络IP资源", 用途: "触达时绑定的IP", 作用: "防止账号被封" } },
+            // 二娃Agent负责 - 触达域 (绿色)
+            { id: "touch_user", name: "触达用户", agent: "erwa", description: "触达域", icon: "🎯", properties: { 状态: "已分配 → 已触达 → 已转化 → 已关闭", 属性: "信任度、归因", 负责Agent: "二娃", 阶段: "触达域", 来源: "由采集用户转化" } },
+            { id: "touch_strategy", name: "触达策略", agent: "erwa", description: "触达方式", icon: "🎬", properties: { 定义: "触达用户的策略方式", 包含: "账号绑定、IP绑定、话术、时机、行为方式、人设", MVP阶段: "与剧本合一", 负责: "二娃Agent" } },
+            { id: "touch_record", name: "触达记录", agent: "erwa", description: "执行记录", icon: "📋", properties: { 定义: "每次触达动作", 包含: "触达用户ID、执行账号、执行时间、话术内容", 属性: "效果（是否回复、是否转化）", 负责: "二娃Agent" } },
             
-            // 挖掘策略域
-            { id: "dig_strategy", name: "挖掘策略", type: "dig", description: "统一策略", icon: "⛏", properties: { 定义: "发现目标的顶层策略", 包含: "采集、清洗、加工（现阶段统一）", 输出: "结构化输出", 负责: "大娃Agent" } },
-            { id: "struct_output", name: "结构化输出", type: "dig", description: "能力+结果", icon: "📊", properties: { 定义: "挖掘策略的输出", 形态: "用户画像、数据产品", 作用: "数据产品化" } },
-            
-            // 触达策略域
-            { id: "touch_strategy", name: "触达策略（剧本）", type: "touch", description: "触达方式", icon: "🎬", properties: { 定义: "触达用户的策略方式", 包含: "账号绑定、IP绑定、话术、时机、行为方式、人设", MVP阶段: "与剧本合一", 负责: "二娃Agent" } },
-            { id: "touch_record", name: "触达记录", type: "touch", description: "执行记录", icon: "📋", properties: { 定义: "每次触达动作", 包含: "触达用户ID、执行账号、执行时间、话术内容", 属性: "效果（是否回复、是否转化）", 负责: "二娃Agent" } }
+            // 共用资源 (蓝色)
+            { id: "account_matrix", name: "账号矩阵", agent: "shared", description: "账号资源", icon: "📱", properties: { 定义: "具体的社媒账号资源", 用途: "触达时使用的账号", 包含: "小红书账号、抖音账号等", 使用者: "二娃Agent调用" } },
+            { id: "ip_matrix", name: "IP矩阵", agent: "shared", description: "网络IP", icon: "🌐", properties: { 定义: "网络IP资源", 用途: "触达时绑定的IP", 作用: "防止账号被封", 使用者: "二娃Agent调用" } }
         ];
         
         // 关系数据
         const links = [
-            { source: "kol", target: "post", label: "拥有", type: "core" },
-            { source: "post", target: "comment_act", label: "承载", type: "core" },
-            { source: "comment_act", target: "comment_content", label: "产生", type: "core" },
-            { source: "comment_content", target: "collect_user", label: "意图分类", type: "dig" },
-            { source: "dig_strategy", target: "post", label: "爬取", type: "dig" },
-            { source: "dig_strategy", target: "collect_user", label: "发现", type: "dig" },
-            { source: "dig_strategy", target: "struct_output", label: "输出", type: "dig" },
-            { source: "collect_user", target: "verify_strategy", label: "验证", type: "core" },
-            { source: "collect_user", target: "touch_user", label: "转化为", type: "transform" },
-            { source: "touch_strategy", target: "account_matrix", label: "绑定", type: "resource" },
-            { source: "touch_strategy", target: "ip_matrix", label: "绑定", type: "resource" },
-            { source: "touch_strategy", target: "touch_user", label: "执行", type: "touch" },
-            { source: "touch_user", target: "touch_record", label: "产生", type: "touch" },
-            { source: "touch_user", target: "traffic", label: "转化", type: "touch" },
-            { source: "touch_user", target: "kol", label: "归因", type: "attribute" }
+            { source: "kol", target: "post", label: "拥有", agent: "dawa" },
+            { source: "post", target: "comment_act", label: "承载", agent: "dawa" },
+            { source: "comment_act", target: "comment_content", label: "产生", agent: "dawa" },
+            { source: "comment_content", target: "collect_user", label: "意图分类", agent: "dawa" },
+            { source: "dig_strategy", target: "post", label: "爬取", agent: "dawa" },
+            { source: "dig_strategy", target: "collect_user", label: "发现", agent: "dawa" },
+            { source: "dig_strategy", target: "struct_output", label: "输出", agent: "dawa" },
+            { source: "collect_user", target: "verify_strategy", label: "验证", agent: "dawa" },
+            { source: "collect_user", target: "touch_user", label: "转化边界", agent: "boundary" },
+            { source: "touch_strategy", target: "account_matrix", label: "绑定", agent: "erwa" },
+            { source: "touch_strategy", target: "ip_matrix", label: "绑定", agent: "erwa" },
+            { source: "touch_strategy", target: "touch_user", label: "执行", agent: "erwa" },
+            { source: "touch_user", target: "touch_record", label: "产生", agent: "erwa" },
+            { source: "touch_user", target: "traffic", label: "转化", agent: "erwa" },
+            { source: "touch_user", target: "kol", label: "归因", agent: "erwa" }
         ];
         
-        // 颜色映射
-        const colorMap = {
-            core: "#3498db",
-            resource: "#9b59b6",
-            dig: "#f39c12",
-            touch: "#27ae60"
+        // Agent颜色映射
+        const agentColorMap = {
+            dawa: "#f39c12",   // 大娃 - 橙色
+            erwa: "#27ae60",   // 二娃 - 绿色
+            shared: "#3498db"  // 共用 - 蓝色
         };
         
         // 初始化SVG
@@ -611,17 +634,17 @@
         
         // 创建力导向图
         const simulation = d3.forceSimulation(nodes)
-            .force("link", d3.forceLink(links).id(d => d.id).distance(160))
-            .force("charge", d3.forceManyBody().strength(-400))
+            .force("link", d3.forceLink(links).id(d => d.id).distance(180))
+            .force("charge", d3.forceManyBody().strength(-500))
             .force("center", d3.forceCenter(width / 2, height / 2))
-            .force("collision", d3.forceCollide().radius(60))
+            .force("collision", d3.forceCollide().radius(70))
             .on("tick", ticked);
         
         // 边界约束
         simulation.force("bounds", () => {
             nodes.forEach(d => {
-                d.x = Math.max(60, Math.min(width - 60, d.x));
-                d.y = Math.max(60, Math.min(height - 60, d.y));
+                d.x = Math.max(70, Math.min(width - 70, d.x));
+                d.y = Math.max(70, Math.min(height - 70, d.y));
             });
         });
         
@@ -632,6 +655,12 @@
             .enter()
             .append("path")
             .attr("class", "link")
+            .attr("stroke", d => {
+                if (d.agent === "boundary") return "#e74c3c"; // 边界关系 - 红色
+                return agentColorMap[d.agent] || "#95a5a6";
+            })
+            .attr("stroke-width", d => d.agent === "boundary" ? 4 : 2)
+            .attr("stroke-opacity", d => d.agent === "boundary" ? 1 : 0.5)
             .attr("id", d => `link-${d.source.id || d.source}-${d.target.id || d.target}`);
         
         // 绘制连线标签背景
@@ -643,7 +672,15 @@
             .attr("class", "link-label-bg")
             .attr("width", d => d.label.length * 8 + 16)
             .attr("height", 20)
-            .attr("rx", 4);
+            .attr("rx", 4)
+            .attr("fill", d => {
+                if (d.agent === "boundary") return "#ffebee";
+                return "#ffffff";
+            })
+            .attr("stroke", d => {
+                if (d.agent === "boundary") return "#e74c3c";
+                return "#e1e5e9";
+            });
         
         // 绘制连线标签
         const linkLabel = mainGroup.append("g")
@@ -654,6 +691,8 @@
             .attr("class", "link-label")
             .attr("text-anchor", "middle")
             .attr("dy", 4)
+            .attr("fill", d => d.agent === "boundary" ? "#e74c3c" : "#5a6c7d")
+            .attr("font-weight", d => d.agent === "boundary" ? "600" : "400")
             .text(d => d.label);
         
         // 绘制圆形节点
@@ -673,38 +712,65 @@
         // 圆形背景
         node.append("circle")
             .attr("class", "node-bg")
-            .attr("r", 45)
-            .attr("fill", d => colorMap[d.type])
+            .attr("r", 50)
+            .attr("fill", d => agentColorMap[d.agent])
             .attr("stroke", "#ffffff")
-            .attr("stroke-width", 3);
+            .attr("stroke-width", 4);
+        
+        // Agent标识（小圆圈）
+        node.append("circle")
+            .attr("r", 12)
+            .attr("cx", 40)
+            .attr("cy", -40)
+            .attr("fill", d => agentColorMap[d.agent])
+            .attr("stroke", "#ffffff")
+            .attr("stroke-width", 2);
+        
+        // Agent标识文字
+        node.append("text")
+            .attr("x", 40)
+            .attr("y", -36)
+            .attr("text-anchor", "middle")
+            .attr("fill", "#ffffff")
+            .attr("font-size", "9px")
+            .text(d => {
+                if (d.agent === "dawa") return "大";
+                if (d.agent === "erwa") return "二";
+                return "共";
+            });
         
         // 图标
         node.append("text")
             .attr("class", "node-icon")
-            .attr("dy", -8)
+            .attr("dy", -6)
             .attr("text-anchor", "middle")
             .attr("fill", "#ffffff")
-            .attr("font-size", "18px")
+            .attr("font-size", "20px")
             .text(d => d.icon);
         
         // 实体名称
         node.append("text")
             .attr("class", "node-name")
-            .attr("dy", 12)
+            .attr("dy", 18)
             .attr("text-anchor", "middle")
             .attr("fill", "#ffffff")
             .attr("font-size", "13px")
             .attr("font-weight", "600")
             .text(d => d.name);
         
-        // 描述标签（节点外）
+        // Agent标签（节点外）
         node.append("text")
             .attr("class", "node-desc")
-            .attr("dy", 60)
+            .attr("dy", 68)
             .attr("text-anchor", "middle")
-            .attr("fill", "#7f8c8d")
+            .attr("fill", d => agentColorMap[d.agent])
             .attr("font-size", "11px")
-            .text(d => d.description);
+            .attr("font-weight", "500")
+            .text(d => {
+                if (d.agent === "dawa") return "🤖 大娃";
+                if (d.agent === "erwa") return "🤖 二娃";
+                return "共用";
+            });
         
         // 更新位置函数
         function ticked() {
@@ -712,19 +778,15 @@
             link.attr("d", d => {
                 const dx = d.target.x - d.source.x;
                 const dy = d.target.y - d.source.y;
-                const dr = Math.sqrt(dx * dx + dy * dy) * 0.8;
-                
-                // 计算方向，避免曲线都弯向同一侧
                 const midX = (d.source.x + d.target.x) / 2;
                 const midY = (d.source.y + d.target.y) / 2;
                 
-                // 使用贝塞尔曲线，弯向不同方向
                 return `M${d.source.x},${d.source.y} 
                         Q${midX + dy * 0.3},${midY - dx * 0.3} 
                         ${d.target.x},${d.target.y}`;
             });
             
-            // 更新标签位置（在曲线中点）
+            // 更新标签位置
             linkLabelBg
                 .attr("x", d => (d.source.x + d.target.x) / 2 - d.label.length * 4 - 8)
                 .attr("y", d => (d.source.y + d.target.y) / 2 - 10);
@@ -765,9 +827,10 @@
             const content = document.getElementById("detailContent");
             
             icon.textContent = d.icon;
-            icon.className = `node-detail-icon color-${d.type}`;
+            icon.className = `node-detail-icon color-${d.agent}`;
             title.textContent = d.name;
-            type.textContent = d.description;
+            type.textContent = d.agent === "dawa" ? "🤖 大娃Agent负责" : 
+                               d.agent === "erwa" ? "🤖 二娃Agent负责" : "共用资源";
             
             let html = '';
             
@@ -793,10 +856,12 @@
                 relations.forEach(r => {
                     const targetName = r.source.id === d.id ? r.target.name : r.source.name;
                     const arrow = r.source.id === d.id ? "→" : "←";
+                    const isBoundary = r.agent === "boundary";
                     html += `
-                        <div class="relation-item" onclick="highlightNode('${r.source.id === d.id ? r.target.id : r.source.id}')">
+                        <div class="relation-item" onclick="highlightNode('${r.source.id === d.id ? r.target.id : r.source.id}')"
+                             style="${isBoundary ? 'background: #ffebee; color: #e74c3c;' : ''}">
                             <span class="relation-arrow">${arrow}</span>
-                            <span>${r.label} ${targetName}</span>
+                            <span>${r.label} ${targetName}${isBoundary ? ' (边界)' : ''}</span>
                         </div>
                     `;
                 });
@@ -820,21 +885,23 @@
         // 高亮节点
         function highlightNode(nodeId) {
             d3.selectAll(".node-bg")
-                .attr("stroke-width", d => d.id === nodeId ? 5 : 3)
+                .attr("stroke-width", d => d.id === nodeId ? 6 : 4)
                 .attr("stroke", d => d.id === nodeId ? "#2c3e50" : "#ffffff");
             
             d3.selectAll(".link")
-                .classed("highlighted", d => (d.source.id === nodeId || d.target.id === nodeId));
+                .attr("stroke-width", d => (d.source.id === nodeId || d.target.id === nodeId) ? 4 : 2)
+                .attr("stroke-opacity", d => (d.source.id === nodeId || d.target.id === nodeId) ? 1 : 0.3);
         }
         
         // 重置高亮
         function resetHighlight() {
             d3.selectAll(".node-bg")
-                .attr("stroke-width", 3)
+                .attr("stroke-width", 4)
                 .attr("stroke", "#ffffff");
             
             d3.selectAll(".link")
-                .classed("highlighted", false);
+                .attr("stroke-width", d => d.agent === "boundary" ? 4 : 2)
+                .attr("stroke-opacity", d => d.agent === "boundary" ? 1 : 0.5);
         }
         
         // 重置视图
@@ -852,18 +919,16 @@
             const pathNodes = ["kol", "post", "comment_act", "comment_content", "collect_user", "touch_user", "traffic"];
             
             d3.selectAll(".node-bg")
-                .attr("stroke-width", d => pathNodes.includes(d.id) ? 5 : 2)
+                .attr("stroke-width", d => pathNodes.includes(d.id) ? 6 : 2)
                 .attr("stroke", d => pathNodes.includes(d.id) ? "#2c3e50" : "#e0e0e0")
                 .attr("fill-opacity", d => pathNodes.includes(d.id) ? 1 : 0.5);
-            
-            d3.selectAll(".link")
-                .classed("highlighted", d => (pathNodes.includes(d.source.id) && pathNodes.includes(d.target.id)));
             
             d3.selectAll(".node-circle")
                 .attr("opacity", d => pathNodes.includes(d.id) ? 1 : 0.4);
             
             d3.selectAll(".link")
-                .attr("stroke-opacity", d => (pathNodes.includes(d.source.id) && pathNodes.includes(d.target.id)) ? 1 : 0.15);
+                .attr("stroke-width", d => (pathNodes.includes(d.source.id) && pathNodes.includes(d.target.id)) ? 4 : 1)
+                .attr("stroke-opacity", d => (pathNodes.includes(d.source.id) && pathNodes.includes(d.target.id)) ? 1 : 0.2);
         }
         
         // 导出数据
@@ -874,7 +939,7 @@
                     source: l.source.id || l.source,
                     target: l.target.id || l.target,
                     label: l.label,
-                    type: l.type
+                    agent: l.agent
                 }))
             };
             
@@ -898,28 +963,29 @@
                 .attr("stroke-opacity", d => {
                     const sourceMatch = d.source.name && d.source.name.toLowerCase().includes(searchTerm);
                     const targetMatch = d.target.name && d.target.name.toLowerCase().includes(searchTerm);
-                    return (sourceMatch || targetMatch || searchTerm === "") ? 0.6 : 0.15;
+                    return (sourceMatch || targetMatch || searchTerm === "") ? 0.5 : 0.15;
                 });
         });
         
-        // 类型筛选
-        document.querySelectorAll(".filter-item").forEach(item => {
+        // Agent筛选
+        document.querySelectorAll(".filter-item[data-agent]").forEach(item => {
             item.addEventListener("click", function() {
                 this.classList.toggle("active");
                 
-                const activeTypes = [];
-                document.querySelectorAll(".filter-item.active").forEach(active => {
-                    activeTypes.push(active.dataset.type);
+                const activeAgents = [];
+                document.querySelectorAll(".filter-item[data-agent].active").forEach(active => {
+                    activeAgents.push(active.dataset.agent);
                 });
                 
                 d3.selectAll(".node-circle")
-                    .attr("opacity", d => activeTypes.includes(d.type) ? 1 : 0.3);
+                    .attr("opacity", d => activeAgents.includes(d.agent) ? 1 : 0.3);
                 
                 d3.selectAll(".link")
                     .attr("stroke-opacity", d => {
-                        const sourceActive = activeTypes.includes(d.source.type);
-                        const targetActive = activeTypes.includes(d.target.type);
-                        return (sourceActive && targetActive) ? 0.6 : 0.15;
+                        if (d.agent === "boundary") return 1;
+                        const sourceActive = activeAgents.includes(d.source.agent);
+                        const targetActive = activeAgents.includes(d.target.agent);
+                        return (sourceActive && targetActive) ? 0.5 : 0.15;
                     });
             });
         });
