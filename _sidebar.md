@@ -8,6 +8,7 @@
   - [顶层设计](/docs/strategy/top-level-design.md)
   - [业务架构](/docs/strategy/business-architecture.md)
   - [Hunter 重新定义 v2.0](/docs/strategy/hunter-redefined-v2.0.md)
+  - [2026-04-30 复盘总结](/docs/review/2026-04-30-复盘总结.md)
 
 - 💼 **商业需求**
   - [BRD v1](/docs/brd-mrd/OFW_BRD_v1.md)
@@ -38,7 +39,6 @@
 
 - 🔍 **评审记录**
   - [PRD 评审](/docs/review/hunter-agent-prd-review.md)
-  - [2026-04-30 复盘总结](/docs/review/2026-04-30-复盘总结.md)
 
 - 🧪 **验证报告**
   - [FB API 可行性验证](/docs/validation/fb-api-validation.md)
