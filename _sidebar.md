@@ -38,6 +38,7 @@
 
 - 🔍 **评审记录**
   - [PRD 评审](/docs/review/hunter-agent-prd-review.md)
+  - [2026-04-30 复盘总结](/docs/review/2026-04-30-复盘总结.md)
 
 - 🧪 **验证报告**
   - [FB API 可行性验证](/docs/validation/fb-api-validation.md)
